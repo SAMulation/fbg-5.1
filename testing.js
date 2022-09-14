@@ -548,92 +548,98 @@ function two_min_check(game) {
 
     // Two-minute warning needs to start
     } else {
-        tim_chg = 9l
+        tim_chg = 9;
         two_min = true;
-        console.log('Two-minute warning...')
+        console.log('Two-minute warning...');
     }
 
     game.set('time_change', tim_chg);
     game.set('two_minute', two_min);
 }
 
+function set_status(game, p1, p2) {
+    let stat = 0;
+    let ono = game.get('off_num');
 
-def set_status(game, p1, p2):
-    stat = 0
-    ono = game.get("off_num")
+    if ("SRLRSPLP".includes(p1)) {
+        stat = 11;
+    }
 
-    if p1 in "SRLRSPLP":
-        stat = 11
+    if (!stat) {
+        if (p1 === 'HM' || p2 === 'HM') {
+            stat = 17;
+        } else if (p1 === 'FG' || p2 === 'FG') {
+            stat = 15;
+        } else if (p1 === 'PUNT' || p2 === 'PUNT') {
+            stat = 16;
+        }
+    }
 
-    if stat == 0:
-        if p1 == "HM" or p2 == "HM":
-            stat = 17
-        elif p1 == "FG" or p2 == "FG":
-            stat = 15
-        elif p1 == "PUNT" or p2 == "PUNT":
-            stat = 16
+    if (!stat) {
+        if (p1 === 'TP') {
+            stat = ono === 1 ? 12 : 13;
+        } else if (p2 === 'TP') {
+            stat = ono === 1 ? 13 : 12;
+        } else {
+            stat = 11;
+        }
+    }
 
-    if stat == 0:
-        if p1 == "TP":
-            stat = 12 if ono == 1 else 13
-        elif p2 == "TP":
-            stat = 13 if ono == 1 else 13
-        else:
-            stat = 11
+    return stat;
+}
 
-    return stat
+function pick_play(game) {
+    for (let p = 1; p <= 2; p++) {
+        game.getpl(p).set('currentPlay', '');
 
+        // Computer Stuff
+        if (game.get('status') !== 999 && !(game.isReal(2))) {
+            // This is where the computer can call timeout or pick special play
+            // # LATER Print that computer is picking play
+            // if game.get("time_change") == 0:
+            //     pass
+            //     # LATER cpu_time(game, plrs)
+            // # LATER cpu_play(game, plrs)   
+        }
 
-def pick_play(game):
-    for p in range(1, 3):
-        game.set_plr(p, "current_play", "")
+        while (game.getpl(p).get('currentPlay') === '' && game.get('status') !== 999) {
+            if (game.isReal(p)) {
+                play_pages(game, p);
+            } else {
+                //  cpu_pages(game, p)  // It used to say 'plrs' for second param investigate
+            }
+        }
+        
+    }
 
-        # Computer Stuff
-        if game.get("status") != 999 and p == 2 and game.get("num_plr") == 1:
-            # LATER Print that computer is picking play
-            if game.get("time_change") == 0:
-                pass
-                # LATER cpu_time(game, plrs)
-            # LATER cpu_play(game, plrs)
+    // Making sure you didn't exit
+    if (game.get('status') !== 999) {
+        let stat = set_status(game, game.getpl(1).get('currentPlay'),game.getpl(2).get('currentPlay'));
+        game.set('status', stat);
 
-        while game.get_plr(p, "current_play") == "" and game.get("status") != 999:
-            if is_real(game, p):
-                play_pages(game, p)
-            else:
-                pass
-                # cpu_pages(game, plrs)
-        # End-While
-    # End-For
-
-    if game.get("status") != 999:
-        stat = set_status(game, game.get_plr(1, "current_play"), game.get_plr(2, "current_play"))
-        game.set("status", stat)
-        # LATER "Both teams are lining up for the snap..."
-        print("\nBoth teams are lining up for the snap...")
-        # pygame.display.update()
-
-    # Exit out of game
-    else:
-        # LATER "Catch ya laterrr!"
-        print("Catch ya laterrr!")
-        # pygame.display.update()
-        pass
+        console.log("Both teams are lining up for the snap...")
+    
+    // Exit out of the game
+    } else {
+        console.log('Catch ya laterrrrr!');
+    }
+}
 
 
-# LATER Make this more graphically pleasing
-def load_play(pg):
-    if pg == 1:
-        print("a. SHORT RUN\ns. LONG RUN\nd. SHORT PASS\n")
-    elif pg == 2:
-        print("a. LONG PASS\ns. TRICK PLAY\nd. HAIL MARY\n")
-    elif pg == 3:
-        print("a. FIELD GOAL\ns. PUNT\n")
-    elif pg == 7:
-        print("a. REGULAR KICK\ns. ONSIDE KICK\nd. SQUIB KICK\n")
-    elif pg ==8:
-        print("a. REGULAR RETURN\ns. TOUCHBACK\n")
-    elif pg == 9:
-        print("a. EXTRA POINT\ns. TWO-POINT CONV\n")
+// # LATER Make this more graphically pleasing
+// def load_play(pg):
+//     if pg == 1:
+//         print("a. SHORT RUN\ns. LONG RUN\nd. SHORT PASS\n")
+//     elif pg == 2:
+//         print("a. LONG PASS\ns. TRICK PLAY\nd. HAIL MARY\n")
+//     elif pg == 3:
+//         print("a. FIELD GOAL\ns. PUNT\n")
+//     elif pg == 7:
+//         print("a. REGULAR KICK\ns. ONSIDE KICK\nd. SQUIB KICK\n")
+//     elif pg ==8:
+//         print("a. REGULAR RETURN\ns. TOUCHBACK\n")
+//     elif pg == 9:
+//         print("a. EXTRA POINT\ns. TWO-POINT CONV\n")
 
 
 let testTeam1 = new Team('Rams', 'Los Angeles', 'LAR');
