@@ -20,7 +20,7 @@
     box-shadow: 0 0 3px rgba(black, 0.33);
   
     display: grid;
-    grid-template-columns: minmax(10px, 3fr) minmax(10px, 1fr);
+    grid-template-columns: minmax(10px, 1fr) minmax(10px, 1fr);
     grid-template-rows: min-content 1fr min-content min-content;
     gap: 1px;
   }
@@ -57,6 +57,9 @@
     background: #e1bee7;
   }
 
+  .page-main *, .page-sidebar * {
+    margin-bottom: 10px;;
+  }
 
   .page-subfooter {
     grid-column: 1 / -1;
@@ -90,4 +93,8 @@
     .page-sidebar {
         display: none;
     }
+  }
+
+  h1 {
+    font-size: 2em;
   }

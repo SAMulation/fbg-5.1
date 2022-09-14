@@ -174,6 +174,19 @@ const pick_play = (game) => {
 //     elif pg == 9:
 //         print("a. EXTRA POINT\ns. TWO-POINT CONV\n")
 
+// SITE FUNCTIONS
+const setTeamList = (lists) => {
+    lists.forEach(list => {
+        list.removeChild(list.firstElementChild);
+        for (let t = 0; t < TEAMS.length; t++) {
+            const team = TEAMS[t];
+            const el = document.createElement('option');
+            el.value = team.city + " " + team.name;
+            el.dataset.index = t;
+            list.appendChild(el);
+        }
+    });
+}
 
 let testTeam1 = new Team('Rams', 'Los Angeles', 'LAR');
 console.log(testTeam1.getTeam());
@@ -186,3 +199,6 @@ console.log(testGame);
 
 prePlay(testGame, testGame.get('status'));
 console.log(testGame);
+
+// Populate team list
+setTeamList(document.querySelectorAll('.teamList'));

@@ -13,19 +13,41 @@
         <header class="page-header">
           Header
         </header>
+
         <section class="page-subheader">
           Subheader
         </section>
+
         <main class="page-main">
-          <h1>Reporting results below</h1>
-          <p>Results</p>
+          <h1>Select Team 1</h1>
+          <form action="/action_page.php">
+
+            <input list="p1Team" name="p1Team">
+            <datalist id="p1Team" class="teamList">
+                <option value="The data didn't load">
+            </datalist>
+            <br>
+            <input type="submit">
+          </form>
         </main>
+
         <aside class="page-sidebar">
-          Aside
+            <h1>Select Team 2</h1>
+            <form action="/action_page.php">
+            <input list="play2Team" name="p2Team">
+            <datalist id="play2Team" class="teamList">
+                <option value="The data didn't load">
+            </datalist><br>
+            <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked>
+            <label for="vehicle1"> Computer</label><br>
+            <input type="submit">
+            </form>
         </aside>
+
         <section class="page-subfooter">
             Subfooter
         </section>
+
         <footer class="page-footer">
           Footer
         </footer>
