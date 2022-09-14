@@ -19,29 +19,39 @@
         </section>
 
         <main class="page-main">
-          <h1>Select Team 1</h1>
-          <form action="/action_page.php">
+          <h1>Select Team 1</h1><br>
 
-            <input list="p1Team" name="p1Team">
-            <datalist id="p1Team" class="teamList">
-                <option value="The data didn't load">
-            </datalist>
-            <br>
-            <input type="submit">
-          </form>
+          <div class="selection pl1">
+            <form>
+
+                <input list="p1Team" name="p1Team">
+                <datalist id="p1Team" class="teamList">
+                    <option value="The data didn't load">
+                </datalist>
+                <br>
+                <input type="submit">
+              </form><br>
+          </div>
+
+          <p class="pl1 hidden">Player 1 selected <span>team</span>!</p>
         </main>
 
         <aside class="page-sidebar">
-            <h1>Select Team 2</h1>
-            <form action="/action_page.php">
-            <input list="play2Team" name="p2Team">
-            <datalist id="play2Team" class="teamList">
-                <option value="The data didn't load">
-            </datalist><br>
-            <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked>
-            <label for="vehicle1"> Computer</label><br>
-            <input type="submit">
-            </form>
+            <h1>Select Team 2</h1><br>
+
+            <div class="selection pl2">
+                <form action="#">
+                    <input list="play2Team" name="p2Team">
+                    <datalist id="play2Team" class="teamList">
+                        <option value="The data didn't load">
+                    </datalist><br>
+                    <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked>
+                    <label for="vehicle1"> Computer</label><br>
+                    <input type="submit">
+                    </form><br>
+            </div>
+
+            <p class="pl2 hidden">Player 2 selected <span>team</span>!</p>
         </aside>
 
         <section class="page-subfooter">
