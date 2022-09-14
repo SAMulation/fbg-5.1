@@ -188,6 +188,30 @@ const setTeamList = (lists) => {
     });
 }
 
+const submitTeam = (submits) => {
+    submits.forEach(submit => {
+        submit.addEventListener('pointerdown', event => {
+            console.log('Does this work?');
+            let plr;
+            event.preventDefault();
+            // const teamIndex = TEAMS[event.target.dataset.index];
+            // const team = new Team(team.name, team.city, team.abrv);
+            if (event.currentTarget.parentNode.id === 'p1Team') {
+                plr = 0;
+            } else {
+                plr = 1;
+            }
+            teams[plr] = event.target.dataset.index;
+
+            document.querySelector('.selection.pl' + plr.toString()).classList.toggle('hidden');
+            document.querySelector('p.pl' + plr.toString()).classList.toggle('hidden');
+        })
+    })
+}
+
+
+let teams = [0, 0];
+
 let testTeam1 = new Team('Rams', 'Los Angeles', 'LAR');
 console.log(testTeam1.getTeam());
 
@@ -201,4 +225,5 @@ prePlay(testGame, testGame.get('status'));
 console.log(testGame);
 
 // Populate team list
-setTeamList(document.querySelectorAll('.teamList'));
+setTeamList(document.querySelectorAll('.teamList', testGame));
+submitTeam(document.querySelectorAll('input[type="submit"]'))
