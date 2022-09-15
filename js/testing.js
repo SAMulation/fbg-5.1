@@ -1,10 +1,70 @@
 import Team from './team.js';
-// import Player from './player.js';
-// import Play from './play.js';
+import Player from './player.js';
+import Play from './play.js';
 import Game from './game.js';
 
 class Site {
+    constructor(root) {
+        //this.game = new Game(TEAMS[25], TEAMS[2], 'reg', 2, 1, 2);
+        this.team1 = '';
+        this.team2 = '';
+        this.qtrlen = '';
+        // LATER: These won't autofill
+        this.gamtyp = 'reg';
+        this.numplr = 2;
+    }
+
+    // setTeamLists(root) {
+    //     const lists = root.querySelectorAll('.teamList');
+    //     lists.forEach(list => {
+    //         // list.removeChild(list.firstElementChild);
+    //         for (let t = 0; t < TEAMS.length; t++) {
+    //             const team = TEAMS[t];
+    //             const el = document.createElement('option');
+    //             //el.value = team.city + " " + team.name;
+    //             el.textContent = team.city + ' ' + team.name;
+    //             //el.dataset.index = t;
+    //             el.value = t;
+    //             // console.log(el);
+    //             list.appendChild(el);
+    //         }
+    //     });
+    // }
     
+    // submitTeams(root) {
+    //     const submit = root.querySelector('input[type="submit"]');
+    //     submit.addEventListener('pointerdown', event => {
+    //         let el;
+    //         let value = [-1, -1];
+    //         let valid = true;
+    //         console.log('submit');
+    
+    //         for (let t = 0; t < 2 && valid; t++) {
+    //             el = document.getElementById('p' + (t + 1) + 'Team');
+    //             console.log(el.selectedIndex);
+    
+    //             value[t] = el.selectedIndex;
+    //             console.log("val: " + value[t]);
+    //             // console.log("nan: " + NaN(value[t]));
+    //             if (value[t] === 0) {
+    //                 valid = false;
+    //             } else {
+    //                 // value[t]--;  //It's off by one because of 'Please select...' option
+    //             }
+    //             console.log("valid: " + valid)
+    //             console.log('add some message to user warning of invalid choices')
+    //         }
+    
+    //         if (valid && value[0] !== 0 && value[1] !== 0) {
+    //             //let team1 = TEAMS[value[0]--];
+    //             //console.log(team1['name']);
+    //             //game = new Game(new Team(TEAMS[value[0]--]['name'], TEAMS[value[0]--]['city'], TEAMS[value[0]--]['abrv']), new Team(TEAMS[value[1]--].name, TEAMS[value[1]--].city, TEAMS[value[0]--].abrv), 'reg', 1, 2, 1);
+    //             this.team1 = value[0];
+    //             this.team2 = value[1];
+    //             startGame(this);
+    //         }
+    //     });
+    // }
 }
 
 // GLOBAL VARIABLES
@@ -256,7 +316,7 @@ const setTeamLists = (lists) => {
 //     })
 // }
 
-const submitTeams = (submit, game) => {
+const submitTeams = (submit) => {
     submit.addEventListener('pointerdown', event => {
         let el;
         let value = [-1, -1];
@@ -280,16 +340,22 @@ const submitTeams = (submit, game) => {
         }
 
         if (valid && value[0] !== 0 && value[1] !== 0) {
-            let team1 = TEAMS[value[0]--];
+            //let team1 = TEAMS[value[0]--];
             //console.log(team1['name']);
-            game = new Game(new Team(TEAMS[value[0]--]['name'], TEAMS[value[0]--]['city'], TEAMS[value[0]--]['abrv']), new Team(TEAMS[value[1]--].name, TEAMS[value[1]--].city, TEAMS[value[0]--].abrv), 'reg', 1, 2, 1);
+            //game = new Game(new Team(TEAMS[value[0]--]['name'], TEAMS[value[0]--]['city'], TEAMS[value[0]--]['abrv']), new Team(TEAMS[value[1]--].name, TEAMS[value[1]--].city, TEAMS[value[0]--].abrv), 'reg', 1, 2, 1);
+            site.team1 = value[0];
+            site.team2 = value[1];
+            startGame(site);
         }
     });
 }
 
+const startGame = (site) => {
+    console.log(site);
+}
 
-let tempTeams = [-1, -1];
-let testGame;
+let site = new Site(document);
+
 
 
 
@@ -297,14 +363,13 @@ let testGame;
 // console.log(testGame);
 
 // Populate team list
-setTeamLists(document.querySelectorAll('.teamList'));
-submitTeams(document.querySelector('input[type="submit"]'), testGame);
-console.log(tempTeams);
 
-let testTeam1 = TEAMS[tempTeams[0]];
+//console.log(tempTeams);
+
+//let testTeam1 = TEAMS[tempTeams[0]];
 // console.log(testTeam1.getTeam());
 
-let testTeam2 = TEAMS[tempTeams[0]];
+//let testTeam2 = TEAMS[tempTeams[0]];
 // console.log(testTeam2.getTeam());
 
 // let testTeam2 = new Team('Rams', 'Los Angeles', 'LAR');
@@ -313,4 +378,7 @@ let testTeam2 = TEAMS[tempTeams[0]];
 //     // waiting...
 // }
 //let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
-console.log(testGame);
+//console.log(testGame);
+
+setTeamLists(document.querySelectorAll('.teamList'));
+submitTeams(document.querySelector('input[type="submit"]'));
