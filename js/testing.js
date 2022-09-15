@@ -3,6 +3,10 @@ import Team from './team.js';
 // import Play from './play.js';
 import Game from './game.js';
 
+class Site {
+    
+}
+
 // GLOBAL VARIABLES
 const TEAMS = [
     {'name': '49ers', 'city': 'San Francisco', 'abrv': 'SF'},
@@ -175,55 +179,138 @@ const pick_play = (game) => {
 //         print("a. EXTRA POINT\ns. TWO-POINT CONV\n")
 
 // SITE FUNCTIONS
-const setTeamList = (lists) => {
+const setTeamLists = (lists) => {
     lists.forEach(list => {
-        list.removeChild(list.firstElementChild);
+        // list.removeChild(list.firstElementChild);
         for (let t = 0; t < TEAMS.length; t++) {
             const team = TEAMS[t];
             const el = document.createElement('option');
-            el.value = team.city + " " + team.name;
-            el.dataset.index = t;
+            //el.value = team.city + " " + team.name;
+            el.textContent = team.city + ' ' + team.name;
+            //el.dataset.index = t;
+            el.value = t;
+            // console.log(el);
             list.appendChild(el);
         }
     });
 }
 
-const submitTeam = (submits) => {
-    submits.forEach(submit => {
-        submit.addEventListener('pointerdown', event => {
-            console.log('Does this work?');
-            let plr;
-            event.preventDefault();
-            // const teamIndex = TEAMS[event.target.dataset.index];
-            // const team = new Team(team.name, team.city, team.abrv);
-            if (event.currentTarget.parentNode.id === 'p1Team') {
-                plr = 0;
-            } else {
-                plr = 1;
-            }
-            teams[plr] = event.target.dataset.index;
+// Trying to only make list once
+// const setTeamLists = (lists) => {
+//     let lists;
 
-            document.querySelector('.selection.pl' + plr.toString()).classList.toggle('hidden');
-            document.querySelector('p.pl' + plr.toString()).classList.toggle('hidden');
-        })
-    })
+//     for (let t = 0; t < TEAMS.length; t++) {
+//         const team = TEAMS[t];
+//         const el = document.createElement('option');
+//         //el.value = team.city + " " + team.name;
+//         el.textContent = team.city + ' ' + team.name;
+//         //el.dataset.index = t;
+//         el.value = t;
+//         console.log(el);
+//         for (let l = 0; l < 2; l++) {
+//             lists[l].appendChild(el);
+//         }
+//     }
+
+//     lists.forEach(list => {
+//         // list.removeChild(list.firstElementChild);
+//         list.appendChild(el);
+//     });
+// }
+
+// const submitTeam = (submits, tms) => {
+//     submits.forEach(submit => {
+//         submit.addEventListener('pointerdown', event => {
+//             console.log('Does this work?');
+//             console.log(tms);
+//             let plr;
+//             event.preventDefault();
+//             // const teamIndex = TEAMS[event.target.dataset.index];
+//             // const team = new Team(team.name, team.city, team.abrv);
+//             console.log(event.target.classList);
+//             console.log(document.querySelector('#p1Team'));
+//             console.log(document.querySelector('#p1Team').dataset.index);
+//             //console.log(event.target);
+//             //console.log(event.currentTarget);
+//             if (event.currentTarget.parentNode.id === 'p1Team') {
+//                 plr = 0;
+//             } else {
+//                 plr = 1;
+//             }
+
+//             // Check selection vs. list
+//             for (let t = 0; t < TEAMS.length; t++) {
+//                 const team = TEAMS[t];
+//                 const el = document.createElement('option');
+//                 el.value = team.city + " " + team.name;
+//                 el.dataset.index = t;
+//                 list.appendChild(el);
+//             }
+
+//             tms[plr] = event.target.dataset.index;
+//             console.log(tms);
+//             document.querySelector('.selection.pl' + plr.toString()).classList.toggle('hidden');
+//             document.querySelector('p span.pl' + plr.toString()).textContent = tms[plr];
+//             document.querySelector('p.pl' + plr.toString()).classList.toggle('hidden');
+//         })
+//     })
+// }
+
+const submitTeams = (submit, game) => {
+    submit.addEventListener('pointerdown', event => {
+        let el;
+        let value = [-1, -1];
+        let valid = true;
+        console.log('submit');
+
+        for (let t = 0; t < 2 && valid; t++) {
+            el = document.getElementById('p' + (t + 1) + 'Team');
+            console.log(el.selectedIndex);
+
+            value[t] = el.selectedIndex;
+            console.log("val: " + value[t]);
+            // console.log("nan: " + NaN(value[t]));
+            if (value[t] === 0) {
+                valid = false;
+            } else {
+                // value[t]--;  //It's off by one because of 'Please select...' option
+            }
+            console.log("valid: " + valid)
+            console.log('add some message to user warning of invalid choices')
+        }
+
+        if (valid && value[0] !== 0 && value[1] !== 0) {
+            let team1 = TEAMS[value[0]--];
+            //console.log(team1['name']);
+            game = new Game(new Team(TEAMS[value[0]--]['name'], TEAMS[value[0]--]['city'], TEAMS[value[0]--]['abrv']), new Team(TEAMS[value[1]--].name, TEAMS[value[1]--].city, TEAMS[value[0]--].abrv), 'reg', 1, 2, 1);
+        }
+    });
 }
 
 
-let teams = [0, 0];
+let tempTeams = [-1, -1];
+let testGame;
 
-let testTeam1 = new Team('Rams', 'Los Angeles', 'LAR');
-console.log(testTeam1.getTeam());
 
-let testTeam2 = new Team('Seahawks', 'Seattle', 'SEA');
-console.log(testTeam2.getTeam());
 
-let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
-console.log(testGame);
-
-prePlay(testGame, testGame.get('status'));
-console.log(testGame);
+// prePlay(testGame, testGame.get('status'));
+// console.log(testGame);
 
 // Populate team list
-setTeamList(document.querySelectorAll('.teamList', testGame));
-submitTeam(document.querySelectorAll('input[type="submit"]'))
+setTeamLists(document.querySelectorAll('.teamList'));
+submitTeams(document.querySelector('input[type="submit"]'), testGame);
+console.log(tempTeams);
+
+let testTeam1 = TEAMS[tempTeams[0]];
+// console.log(testTeam1.getTeam());
+
+let testTeam2 = TEAMS[tempTeams[0]];
+// console.log(testTeam2.getTeam());
+
+// let testTeam2 = new Team('Rams', 'Los Angeles', 'LAR');
+// console.log(testTeam2.getTeam());
+// while (tempTeams[0] === -1 || tempTeams[1] === -1)  {
+//     // waiting...
+// }
+//let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
+console.log(testGame);

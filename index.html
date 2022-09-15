@@ -23,17 +23,19 @@
 
           <div class="selection pl1">
             <form>
-
-                <input list="p1Team" name="p1Team">
-                <datalist id="p1Team" class="teamList">
-                    <option value="The data didn't load">
-                </datalist>
-                <br>
-                <input type="submit">
+                <!-- <input class="p1Pick" list="p1Team" name="p1Team"> -->
+                <label for="p1Team">Choose P1 team:</label><br>
+                <select id="p1Team" class="teamList" name="p1Team">
+                <!-- <datalist id="p1Team" class="teamList"> -->
+                    <option value="">Please select P1's team</option>
+                </select> <br>
+                <!-- </datalist> -->
+                <!-- <br>
+                <input class="pl1" type="submit"> -->
               </form><br>
           </div>
 
-          <p class="pl1 hidden">Player 1 selected <span>team</span>!</p>
+          <p class="pl1 hidden">Player 1 selected <span class="pl1">team</span>!</p>
         </main>
 
         <aside class="page-sidebar">
@@ -41,22 +43,34 @@
 
             <div class="selection pl2">
                 <form action="#">
-                    <input list="play2Team" name="p2Team">
-                    <datalist id="play2Team" class="teamList">
-                        <option value="The data didn't load">
-                    </datalist><br>
-                    <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked>
-                    <label for="vehicle1"> Computer</label><br>
-                    <input type="submit">
+                    <!-- <input list="play2Team" name="p2Team"> -->
+                    <label for="p2Team">Choose P2 team:</label><br>
+                    <select id="p2Team" class="teamList" name="p2Team">
+                    <!-- <datalist id="play2Team" class="teamList"> -->
+                        <option value="-1" selected>Please select P2's team</option>
+                    <!-- </datalist><br> -->
+                     </select> <br>
+                    <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked disabled>
+                    <label for="cpuSelect"> Computer?</label><br>
+                    <!-- <input class="pl2" type="submit"> -->
                     </form><br>
             </div>
 
-            <p class="pl2 hidden">Player 2 selected <span>team</span>!</p>
+            <p class="pl2 hidden">Player 2 selected <span class="pl2">team</span>!</p>
         </aside>
 
-        <section class="page-subfooter">
-            Subfooter
+        <section class="page-selection2">
+            <form>
+                <label for="quantity">Quarter Length (between 1 and 15)</label><br>
+                <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
+                <br>
+                <input type="submit" value="Submit">
+              </form>
         </section>
+
+        <footer class="page-subfooter">
+            Subfooter
+          </footer>
 
         <footer class="page-footer">
           Footer
