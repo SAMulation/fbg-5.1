@@ -1,7 +1,7 @@
 import Team from './team.js';
-import Player from './player.js';
-import Play from './play.js';
-import Game from './game.js';
+// import Player from './player.js';
+// import Play from './play.js';
+//import Game from './game.js';
 
 class Site {
     constructor(root) {
@@ -68,7 +68,11 @@ class Site {
 }
 
 // GLOBAL VARIABLES
-const TEAMS = [
+const site = new Site(document);
+window.site = site;
+
+// const TEAMS = [ switch back later
+window.TEAMS = [
     {'name': '49ers', 'city': 'San Francisco', 'abrv': 'SF'},
     {'name': 'Bears', 'city': 'Chicago', 'abrv': 'CHI'},
     {'name': 'Bengals', 'city': 'Cincinnati', 'abrv': 'CIN'},
@@ -103,7 +107,7 @@ const TEAMS = [
     {'name': 'Vikings', 'city': 'Minnesota', 'abrv': 'MIN'}
 ]
 
-const LETTERS = ["SR", "LR", "SP", "LP", "TP", "HM", "FG", "PUNT", "RET", "XP", "2PT"]
+const LETTERS = ["SR", "LR", "SP", "LP", "TP", "HM", "FG", "PUNT", "RET", "XP", "2PT"];
 
 // FUNCTION DEFINITIONS
 
@@ -317,7 +321,8 @@ const setTeamLists = (lists) => {
 // }
 
 const submitTeams = (submit) => {
-    submit.addEventListener('pointerdown', event => {
+    submit.addEventListener('submit', event => {
+        event.preventDefault();
         let el;
         let value = [-1, -1];
         let valid = true;
@@ -345,7 +350,7 @@ const submitTeams = (submit) => {
             //game = new Game(new Team(TEAMS[value[0]--]['name'], TEAMS[value[0]--]['city'], TEAMS[value[0]--]['abrv']), new Team(TEAMS[value[1]--].name, TEAMS[value[1]--].city, TEAMS[value[0]--].abrv), 'reg', 1, 2, 1);
             site.team1 = value[0];
             site.team2 = value[1];
-            startGame(site);
+            //startGame(site);
         }
     });
 }
@@ -354,7 +359,7 @@ const submitTeams = (submit) => {
 //     console.log(site);
 // }
 
-// let site = new Site(document);
+
 
 
 
@@ -382,17 +387,17 @@ const submitTeams = (submit) => {
 
 let teams = [0, 0];
 
-let testTeam1 = new Team('Rams', 'Los Angeles', 'LAR');
-console.log(testTeam1.getTeam());
+let testTeam1 = new Team(TEAMS[24]);
+console.log(testTeam1);
 
 let testTeam2 = new Team('Seahawks', 'Seattle', 'SEA');
-console.log(testTeam2.getTeam());
+console.log(testTeam2);
 
-let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
-console.log(testGame);
+//let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
+//console.log(testGame);
 
-prePlay(testGame, testGame.get('status'));
-console.log(testGame);
+//prePlay(testGame, testGame.get('status'));
+//console.log(testGame);
 
 setTeamLists(document.querySelectorAll('.teamList'));
-submitTeams(document.querySelector('input[type="submit"]'));
+submitTeams(document.querySelector('#gameForm'));

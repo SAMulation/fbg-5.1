@@ -33,7 +33,7 @@ export default class Game {
         this.def_num = this.rec_first;
         this.current_time = this.qtr_length;
         this.thisPlay = new Play();
-        this.players = [0, new Player(this, team1), new Player(this, team2)];  // Placeholder at zero index
+        this.players = [0, new Player(this, team1), new Player(this, team2)];  // Placeholder at zero index -- Object {1: ..., 2: ...}
     }
 
     get(attr) {
