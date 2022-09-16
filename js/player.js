@@ -5,14 +5,15 @@ export default class Player {
     // minimum req: Player(game, team)
     constructor(game, team, init = true, score = 0, time = 3, plays = null, mults = null, yards = null, stats = null) {
         this.game = game;
-        this.team = new Team(team.get('name'), team.get('city'), team.get('abrv'));
+        this.team = new Team(team.name, team.get('city'), team.get('abrv'));
         this.score = score;
         this.timeouts = time;
         this.plays = plays;
-        this.mults = mults;
-        this.yards = yards;
+        this.mults = mults;  // Move me
+        this.yards = yards;  // Me too
         this.stats = stats;
         this.currentPlay = '';
+        //this.isReal = true;
 
         if (init) {
             this.score = 0;
