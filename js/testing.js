@@ -1,7 +1,7 @@
 import Team from './team.js';
 // import Player from './player.js';
 // import Play from './play.js';
-//import Game from './game.js';
+import Game from './game.js';
 
 class Site {
     constructor(root) {
@@ -68,8 +68,7 @@ class Site {
 }
 
 // GLOBAL VARIABLES
-const site = new Site(document);
-window.site = site;
+
 
 // const TEAMS = [ switch back later
 window.TEAMS = [
@@ -107,39 +106,55 @@ window.TEAMS = [
     {'name': 'Vikings', 'city': 'Minnesota', 'abrv': 'MIN'}
 ]
 
-const LETTERS = ["SR", "LR", "SP", "LP", "TP", "HM", "FG", "PUNT", "RET", "XP", "2PT"];
+// const LETTERS = 
+window.LETTERS = ["SR", "LR", "SP", "LP", "TP", "HM", "FG", "PUNT", "RET", "XP", "2PT"];
+
+const site = new Site(document);
+
+// TEAMS ARE TEMP
+let testTeam1 = new Team(window.TEAMS[24]);
+console.log(testTeam1);
+
+let testTeam2 = new Team('Seahawks', 'Seattle', 'SEA');
+console.log(testTeam2.abrv);
+
+let game = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
+console.log(game);
+
+window.site = site;
+window.game = game;
 
 // FUNCTION DEFINITIONS
 
 const prePlay = (game, stat) => {
     console.log('prePlay');
-    game.get('thisPlay').set('multiplier_card', 999);
-    game.get('thisPlay').set('multiplier_num', 999);
-    game.get('thisPlay').set('yard_card', 999);
-    game.get('thisPlay').set('multiplier', 999);
-    game.get('thisPlay').set('dist', 999);
-    game.get('thisPlay').set('bonus', 0);
+    game.thisPlay.multiplier_card = 999;
+    game.thisPlay.multiplier_num = 999;
+    game.thisPlay.yard_card = 999;
+    game.thisPlay.multiplier = 999;
+    game.thisPlay.dist = 999;
+    game.thisPlay.bonus = 0;
 
-    if (!(game.get('two_point') && game.get('time_change') === 4)) {
-        game.set('time_change', 0);
+    if (!(game.two_point && game.time_change === 4)) {
+        game.time_change = 0;
     }
 
-    if (game.get('turnover') && game.get('down') !== 1) {
-        game.set('down', 1);
+    if (game.turnover && game.down !== 1) {
+        game.down = 1;
     }
 
-    game.set('turnover', false);
+    game.turnover = false;
 
-    game.set('status', stat);
+    game.status = stat;
 
-    if ((game.get('qtr') === 2 || game.get('qtr') === 4) && game.get('current_time') === 2) {
+    if ((game.qtr === 2 || game.qtr === 4) && game.current_time === 2) {
         two_min_check(game);
     }   
 }
 
 
 const two_min_check = (game) => {
-    let two_min = game.get('two_minute');
+    let two_min = game.two_minute;
     let tim_chg;
 
     // Two-minute warning just ended
@@ -154,13 +169,13 @@ const two_min_check = (game) => {
         console.log('Two-minute warning...');
     }
 
-    game.set('time_change', tim_chg);
-    game.set('two_minute', two_min);
+    game.time_change = tim_chg;
+    game.two_minute = two_min;
 }
 
 const set_status = (game, p1, p2) => {
     let stat = 0;
-    let ono = game.get('off_num');
+    let ono = game.off_num;
 
     if ("SRLRSPLP".includes(p1)) {
         stat = 11;
@@ -191,10 +206,10 @@ const set_status = (game, p1, p2) => {
 
 const pick_play = (game) => {
     for (let p = 1; p <= 2; p++) {
-        game.getpl(p).set('currentPlay', '');
+        game.getpl(p).currentPlay = '';
 
         // Computer Stuff
-        if (game.get('status') !== 999 && !(game.isReal(2))) {
+        if (game.status !== 999 && !(game.isReal(2))) {
             // This is where the computer can call timeout or pick special play
             // # LATER Print that computer is picking play
             // if game.get("time_change") == 0:
@@ -203,7 +218,7 @@ const pick_play = (game) => {
             // # LATER cpu_play(game, plrs)   
         }
 
-        while (game.getpl(p).get('currentPlay') === '' && game.get('status') !== 999) {
+        while (game.players[p].currentPlay === '' && game.status !== 999) {
             if (game.isReal(p)) {
                 play_pages(game, p);
             } else {
@@ -214,9 +229,9 @@ const pick_play = (game) => {
     }
 
     // Making sure you didn't exit
-    if (game.get('status') !== 999) {
-        let stat = set_status(game, game.getpl(1).get('currentPlay'),game.getpl(2).get('currentPlay'));
-        game.set('status', stat);
+    if (game.status !== 999) {
+        let stat = set_status(game, game.players[1].currentPlay,game.players[2].currentPlay);
+        game.status = stat;
 
         console.log("Both teams are lining up for the snap...")
     
@@ -320,6 +335,10 @@ const setTeamLists = (lists) => {
 //     })
 // }
 
+const initGame = (site) => {
+    return new Game(TEAMS[site.team1], TEAMS[site.team2], site.gamtyp, site.numplr, 1, 2);
+}
+
 const submitTeams = (submit) => {
     submit.addEventListener('submit', event => {
         event.preventDefault();
@@ -338,7 +357,8 @@ const submitTeams = (submit) => {
             if (value[t] === 0) {
                 valid = false;
             } else {
-                // value[t]--;  //It's off by one because of 'Please select...' option
+                console.log('P' + (t + 1) + ' picked: ' + TEAMS[value[t] - 1].name);
+                value[t]--;  //It's off by one because of 'Please select...' option
             }
             console.log("valid: " + valid)
             console.log('add some message to user warning of invalid choices')
@@ -350,7 +370,11 @@ const submitTeams = (submit) => {
             //game = new Game(new Team(TEAMS[value[0]--]['name'], TEAMS[value[0]--]['city'], TEAMS[value[0]--]['abrv']), new Team(TEAMS[value[1]--].name, TEAMS[value[1]--].city, TEAMS[value[0]--].abrv), 'reg', 1, 2, 1);
             site.team1 = value[0];
             site.team2 = value[1];
-            //startGame(site);
+            console.log(site);
+            game = initGame(site);
+            window.game = game;
+            console.log(game);
+            console.log('P1: ' + game.players[1].team.print + '\nP2: ' + game.players[2].team.print)
         }
     });
 }
@@ -385,19 +409,24 @@ const submitTeams = (submit) => {
 // let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
 // console.log(testGame);
 
-let teams = [0, 0];
+//let teams = [0, 0];
 
-let testTeam1 = new Team(TEAMS[24]);
-console.log(testTeam1);
+// let testTeam1 = new Team(window.TEAMS[24]);
+// console.log(testTeam1);
 
-let testTeam2 = new Team('Seahawks', 'Seattle', 'SEA');
-console.log(testTeam2);
+// let testTeam2 = new Team('Seahawks', 'Seattle', 'SEA');
+// console.log(testTeam2.abrv);
 
-//let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
-//console.log(testGame);
+// let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
+// console.log(testGame);
 
-//prePlay(testGame, testGame.get('status'));
-//console.log(testGame);
 
+
+
+// This happens at the start
 setTeamLists(document.querySelectorAll('.teamList'));
 submitTeams(document.querySelector('#gameForm'));
+
+// This has to wait for something to happen first
+//prePlay(game, testGame.status);
+//console.log(testGame);

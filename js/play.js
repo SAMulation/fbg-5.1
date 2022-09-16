@@ -6,11 +6,11 @@ export default class Play {
     yard_card = 999;
     multiplier = 999;
 
-    get(attr) {
-        return this[attr];
-    }
+    // get(attr) {
+    //     return this[attr];
+    // }
 
-    set(attr, value) {
-        this[attr] = value;
-    }
+    // set(attr, value) {
+    //     this[attr] = value;
+    // }
 }

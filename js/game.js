@@ -2,7 +2,7 @@ import Player from './player.js'
 import Play from './play.js'
 
 export default class Game {
-    constructor(team1, team2, game_type, num_plr, away, home) {
+    constructor(team1, team2, game_type, num_plr, away, home, mults = null, yards = null) {
         //                  qtr_length, rec_first, qtr=1, score1=0,
         //                  score2=0,
         //                  time1=3, time2=3, plays1=None, plays2=None,
@@ -33,24 +33,34 @@ export default class Game {
         this.def_num = this.rec_first;
         this.current_time = this.qtr_length;
         this.thisPlay = new Play();
-        this.players = [0, new Player(this, team1), new Player(this, team2)];  // Placeholder at zero index -- Object {1: ..., 2: ...}
+        this.players = {1: new Player(this, team1), 2: new Player(this, team2)};  // Object {1: ..., 2: ...}
+        this.mults = mults;  // Move me
+        this.yards = yards;  // Me too
+
+        if (!this.mults) {
+            this.fillMults();
+        }
+
+        if (!this.plays) {
+            this.fillYards();
+        }
     }
 
-    get(attr) {
-        return this[attr];
-    }
+    // get(attr) {
+    //     return this[attr];
+    // }
 
-    getpl(plr, attr) {
-        return this.players[plr].get(attr);
-    }
+    // getpl(plr, attr) {
+    //     return this.players[plr].get(attr);
+    // }
 
-    set(attr, value) {
-        this[attr] = value;
-    }
+    // set(attr, value) {
+    //     this[attr] = value;
+    // }
 
-    setpl(plr, attr, value) {
-        this.players[plr].set(attr, value);
-    }
+    // setpl(plr, attr, value) {
+    //     this.players[plr].set(attr, value);
+    // }
 
     opp(num) {
         return num === 1 ? 2 : 1;
@@ -63,6 +73,18 @@ export default class Game {
     isOT() {
         return this.get('qtr') > 4;
     }
+
+    fillMults() {
+        this.mults = [4, 4, 4, 3];
+    }
+
+    // NEXT get, set, dec
+
+    fillYards() {
+        this.yards = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    }
+
+        // NEXT get, set, dec
 }
 
 // LATER

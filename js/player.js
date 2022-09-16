@@ -5,19 +5,19 @@ export default class Player {
     // minimum req: Player(game, team)
     constructor(game, team, init = true, score = 0, time = 3, plays = null, mults = null, yards = null, stats = null) {
         this.game = game;
-        this.team = new Team(team.name, team.get('city'), team.get('abrv'));
+        this.team = new Team(team);
         this.score = score;
         this.timeouts = time;
         this.plays = plays;
-        this.mults = mults;  // Move me
-        this.yards = yards;  // Me too
+        // this.mults = mults;  // Move me
+        // this.yards = yards;  // Me too
         this.stats = stats;
         this.currentPlay = '';
         //this.isReal = true;
 
         if (init) {
             this.score = 0;
-            if (this.game.get('qtr') < 5) {
+            if (this.game.qtr < 5) {
                 this.timeouts = 3;
             } else {
                 this.timeouts = 2;
@@ -25,16 +25,16 @@ export default class Player {
         }
 
         if (!plays) {
-            this.fillPlays('a', this.game.get('qtr'));
+            this.fillPlays('a', this.game.qtr);
         }
 
-        if (!mults) {
-            this.fillMults();
-        }
+        // if (!mults) {
+        //     this.fillMults();
+        // }
 
-        if (!plays) {
-            this.fillYards();
-        }
+        // if (!plays) {
+        //     this.fillYards();
+        // }
 
         // LATER: Come up with Stats class
         // if (!stats) {
@@ -53,29 +53,29 @@ export default class Player {
         if (option === 'a') {
             this.plays = [3, 3, 3, 3, 1, hm];
         } else if (option === 'h') {
-            this.plays[5] = hm;  // Resetting hm only
+            this.plays[5] = hm;  // Resetting hm only, FIX: THIS ISN'T RIGHT
         }
     }
 
         // NEXT get, set, dec
 
-    fillMults() {
-        this.mults = [4, 4, 4, 3];
-    }
+    // fillMults() {
+    //     this.mults = [4, 4, 4, 3];
+    // }
 
-    // NEXT get, set, dec
+    // // NEXT get, set, dec
 
-    fillYards() {
-        this.yards = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    }
+    // fillYards() {
+    //     this.yards = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    // }
 
-        // NEXT get, set, dec
+    //     // NEXT get, set, dec
 
-    get(attr) {
-        return this[attr];
-    }
+    // get(attr) {
+    //     return this[attr];
+    // }
 
-    set(attr, value) {
-        this[attr] = value;
-    }
+    // set(attr, value) {
+    //     this[attr] = value;
+    // }
 }
