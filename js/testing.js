@@ -350,11 +350,11 @@ const submitTeams = (submit) => {
     });
 }
 
-const startGame = (site) => {
-    console.log(site);
-}
+// const startGame = (site) => {
+//     console.log(site);
+// }
 
-let site = new Site(document);
+// let site = new Site(document);
 
 
 
@@ -377,8 +377,22 @@ let site = new Site(document);
 // while (tempTeams[0] === -1 || tempTeams[1] === -1)  {
 //     // waiting...
 // }
-//let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
-//console.log(testGame);
+// let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
+// console.log(testGame);
+
+let teams = [0, 0];
+
+let testTeam1 = new Team('Rams', 'Los Angeles', 'LAR');
+console.log(testTeam1.getTeam());
+
+let testTeam2 = new Team('Seahawks', 'Seattle', 'SEA');
+console.log(testTeam2.getTeam());
+
+let testGame = new Game(testTeam1, testTeam2, 'reg', 1, 2, 1);
+console.log(testGame);
+
+prePlay(testGame, testGame.get('status'));
+console.log(testGame);
 
 setTeamLists(document.querySelectorAll('.teamList'));
 submitTeams(document.querySelector('input[type="submit"]'));
