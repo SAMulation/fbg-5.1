@@ -260,17 +260,19 @@ const pick_play = (game) => {
 // SITE FUNCTIONS
 const setTeamLists = (lists) => {
     lists.forEach(list => {
-        // list.removeChild(list.firstElementChild);
+        list.removeChild(list.firstElementChild);
         for (let t = 0; t < TEAMS.length; t++) {
-            const team = TEAMS[t];
+            const team = new Team(TEAMS[t]);
             const el = document.createElement('option');
             //el.value = team.city + " " + team.name;
-            el.textContent = team.city + ' ' + team.name;
+            el.textContent = team.print;
             //el.dataset.index = t;
             el.value = t;
             // console.log(el);
             list.appendChild(el);
+            // console.log('what is t? ' + t)
         }
+        list.selectedIndex = list.id === 'p1Team' ? 24 : 2;
     });
 }
 
@@ -357,8 +359,8 @@ const submitTeams = (submit) => {
             if (value[t] === 0) {
                 valid = false;
             } else {
-                console.log('P' + (t + 1) + ' picked: ' + TEAMS[value[t] - 1].name);
-                value[t]--;  //It's off by one because of 'Please select...' option
+                console.log('P' + (t + 1) + ' picked: ' + TEAMS[value[t]].name);
+                value[t];  //It's off by one because of 'Please select...' option - not anymore
             }
             console.log("valid: " + valid)
             console.log('add some message to user warning of invalid choices')
@@ -374,9 +376,21 @@ const submitTeams = (submit) => {
             game = initGame(site);
             window.game = game;
             console.log(game);
-            console.log('P1: ' + game.players[1].team.print + '\nP2: ' + game.players[2].team.print)
+            console.log('P1: ' + game.players[1].team.print + '\nP2: ' + game.players[2].team.print);
+            document.querySelector('.playButton').disabled = false;
+            document.querySelector('.playSubmit').disabled = true;
         }
     });
+}
+
+const pressPlayButton = (button) => {
+    button.addEventListener('pointerdown', event => {
+        playGame(window.game);
+    })
+}
+
+const playGame = (game) => {
+    prePlay(game, game.status);
 }
 
 // const startGame = (site) => {
