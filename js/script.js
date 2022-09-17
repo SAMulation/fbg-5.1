@@ -145,7 +145,7 @@ const pickPlay = (game) => {
 
         while (game.players[p].currentPlay === '' && game.status !== 999) {
             if (game.isReal(p)) {
-                playPages(game, p, 'reg');
+                playPages(game, p);
             } else {
                 //  cpu_pages(game, p)  // It used to say 'plrs' for second param investigate
             }
@@ -166,7 +166,7 @@ const pickPlay = (game) => {
     }
 }
 
-const playPages = (game, p, state) => {
+const playPages = (game, p) => {
     let selection = null;
     let test = 'SRLRSPLPTPHMFGPT';
     if (state === 'xp') {
@@ -179,14 +179,67 @@ const playPages = (game, p, state) => {
 
     // Get message to display
     const options = loadPlay(state);
+    let errorMsg = null;
 
     // Get user input
     do {
-        selection = prompt(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
+        selection = prompt(options, 'Put abbreviation here (e.g., "sr" for Short Run)').toUpperCase();
         console.log(selection);
-    } while (!test.includes(selection.toUpperCase()));
+        errorMsg = playValid(game, p, selection);
+        if (errorMsg) {
+            alert(errorMsg);
+            selection = '';
+        }
+    } while (!test.includes(selection));
     //console.log(selection);
-    game.players[p].currentPlay = selection.toUpperCase();
+    game.players[p].currentPlay = selection;
+}
+
+const playValid = (game, p, sel) => {
+    console.log('playValid');
+    let msg = null;
+    const num = "SRLRSPLPTP".indexOf(sel) / 2;
+    let tot = 0;
+
+    if (sel === 'FG' || sel === 'PT') {
+        tot = -1;
+    } else if (sel = 'HM') {
+        tot = game.players[p].hm;
+    } else if (num !== -1) {
+        tot = game.players[p].plays[num];
+    }
+
+    if (num >= 0 && num <= 4) {
+        if (tot === 0) {
+            msg = 'No more ' + sel + ' left!';
+        }
+    }
+
+    if (!msg && num === -1) {
+        msg = 'Illegal play!';
+    }
+
+    if (!msg && num >= 6 && num <= 8 && game.def_num === p) {
+        msg = (num === 8) ? "PUNT" : sel + ' not allowed on defense!';
+    }
+
+    if (!msg && sel === 'FG' && game.spot < 30) {
+        msg = 'Way too far to kick a FG!';
+    }
+
+    if (!msg && sel === 'PT' && game.down !== 4) {
+        msg = 'Punt only allowed on 4th down!';
+    }
+
+    if (!msg && sel === 'PT' && game.isOT()) {
+        msg = "You can't punt in overtime!";
+    }
+
+    if (!msg && tot === -1 && game.two_point) {
+        msg = 'Kicks are not allowed during 2-point!';
+    }
+
+    return msg;
 }
 
 const loadPlay = (state) => {
