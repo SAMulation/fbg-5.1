@@ -78,11 +78,17 @@ export default class Game {
         this.mults = [4, 4, 4, 3];
     }
 
+    randInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+    }
+
     decMults() {
         let card = -1;
       
         while (card === -1) {
-            card = randInt(0, 3);
+            card = this.randInt(0, 3);
             // Out of this card, try again
             if (!this.mults[card]) {
                 card = -1;
@@ -115,7 +121,7 @@ export default class Game {
         let card = -1;
 
         while (card === -1) {
-            card = randInt(0,9);
+            card = this.randInt(0,9);
 
             if (!this.yards[card]) {
                 card = -1;
