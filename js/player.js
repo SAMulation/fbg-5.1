@@ -44,8 +44,6 @@ export default class Player {
     }
 
     fillPlays(option, qtr = 4) {
-
-
         if (option === 'a' || option === 'p') {
             this.plays = [3, 3, 3, 3, 1];
             console.log('Refilling Play Cards');
