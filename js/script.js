@@ -334,7 +334,7 @@ const doPlay = (game, stat, ono, p1, p2) => {
 
 const regPlay = (game, pl1, pl2) => {
     // hno = game.home;  // Used for scoreboard updating
-    let report = 'Here are the plays...\n' + pl1 + ' vs. ' + pl2;
+    // let report = 'Here are the plays...\n' + pl1 + ' vs. ' + pl2;
 
     drawPlay(game, 1, pl1);
     drawPlay(game, 2, pl2);
@@ -387,7 +387,7 @@ const endPlay = (game) => {
             // timeChange(game);
         }
 
-        alert('Teams huddling up...\nPress Enter...\n');
+        // alert('Teams huddling up...\nPress Enter...\n');
 
         if (game.status > 0 && game.status < 10) {
             game.status = 11;
@@ -450,7 +450,7 @@ const calcTimes = (game, p1, p2, multIdx) => {
 const reportPlay = (game, p1, p2) => {
     const tmp = game.thisPlay.multiplier === 999 ? '/' : null;
 
-    alert('Multiplier Card: ' + game.thisPlay.multiplier_card.card + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (tmp ? tmp : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\n');
+    alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + game.thisPlay.multiplier_card.card + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (tmp ? tmp : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
 }
 
 const checkScore = (game, bon, dst) => {
@@ -470,6 +470,10 @@ const playGame = (game) => {
     alert("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com")
     while (game.status !== 999) {
         playMechanism(game);
+
+        if (game.status !== 999) {
+            endPlay(game);
+        }
     }
 
     console.log(game);
