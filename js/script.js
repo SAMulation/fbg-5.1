@@ -62,6 +62,26 @@ window.site = site;
 window.game = game;
 
 // FUNCTION DEFINITIONS
+
+// PLAY MECHANISM
+const playMechanism = (game) => {
+    // stat,p1,p2,spt,fdn,ono
+    let stat, ono, p1, p2;
+
+    prePlay(game, 11);
+    pickPlay(game);
+
+    stat = game.status;
+    ono = game.off_num;
+    p1 = game.players[1].currentPlay;
+    p2 = game.players[2].currentPlay;
+    console.log(stat);
+    if (stat !== 999) {
+        // lastChanceTO(stat, game.qtr, game.current_time, game.time_change);
+        doPlay(game, stat, ono, p1, p2);
+    }
+}
+
 const prePlay = (game, stat) => {
     console.log('prePlay');
     game.thisPlay.multiplier_card = 999;
@@ -108,11 +128,86 @@ const two_min_check = (game) => {
     game.two_minute = two_min;
 }
 
+const pickPlay = (game) => {
+    console.log('pickPlay');
+    for (let p = 1; p <= 2; p++) {
+        game.players[p].currentPlay = '';
+
+        // Computer Stuff
+        if (game.status !== 999 && !(game.isReal(2))) {
+            // This is where the computer can call timeout or pick special play
+            // # LATER Print that computer is picking play
+            // if game.get("time_change") == 0:
+            //     pass
+            //     # LATER cpu_time(game, plrs)
+            // # LATER cpu_play(game, plrs)   
+        }
+
+        while (game.players[p].currentPlay === '' && game.status !== 999) {
+            if (game.isReal(p)) {
+                playPages(game, p, 'reg');
+            } else {
+                //  cpu_pages(game, p)  // It used to say 'plrs' for second param investigate
+            }
+        }
+        
+    }
+
+    // Making sure you didn't exit
+    if (game.status !== 999) {
+        let stat = set_status(game, game.players[1].currentPlay, game.players[2].currentPlay);
+        game.status = stat;
+
+        alert("Both teams are lining up for the snap...")
+    
+    // Exit out of the game
+    } else {
+        alert('Catch ya laterrrrr!');
+    }
+}
+
+const playPages = (game, p, state) => {
+    let selection = null;
+    let test = 'SRLRSPLPTPHMFGPT';
+    if (state === 'xp') {
+        test = 'XP2P';
+    } else if (state === 'kick') {
+        test = 'RKSKOK';
+    } else if (state === 'rec') {
+        test = 'RRORTB';
+    }
+
+    // Get message to display
+    const options = loadPlay(state);
+
+    // Get user input
+    do {
+        selection = prompt(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
+        console.log(selection);
+    } while (!test.includes(selection.toUpperCase()));
+    //console.log(selection);
+    game.players[p].currentPlay = selection.toUpperCase();
+}
+
+const loadPlay = (state) => {
+    let options = 'Pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
+    // LATER: This will be vastly different in a graphical world
+    if (state === 'xp') {
+        options = 'Pick your play:\n[XP] Extra Point\n[2P] Two Point Conversion\n';
+    } else if (state === 'kick') {
+        options = 'Pick your play:\n[RK] Regular Kick\n[SK] Squib Kick\n[OK] Onside Kick\n';
+    } else if (state === 'rec') {
+        options = 'Pick your play:\n[RK] Regular Returnb\n[OR] Onside Return\n[TB] Touchback\n';
+    }
+
+    return options;
+}
+
 const set_status = (game, p1, p2) => {
     let stat = 0;
     let ono = game.off_num;
 
-    if ("SRLRSPLP".includes(p1)) {
+    if ("SRLRSPLP".includes(p1) && "SRLRSPLP".includes(p2)) {
         stat = 11;
     }
 
@@ -139,65 +234,106 @@ const set_status = (game, p1, p2) => {
     return stat;
 }
 
-const pick_play = (game) => {
-    for (let p = 1; p <= 2; p++) {
-        game.getpl(p).currentPlay = '';
+const doPlay = (game, stat, ono, p1, p2) => {
+    // rplcpic boardtop
+    console.log('doPlay');
 
-        // Computer Stuff
-        if (game.status !== 999 && !(game.isReal(2))) {
-            // This is where the computer can call timeout or pick special play
-            // # LATER Print that computer is picking play
-            // if game.get("time_change") == 0:
-            //     pass
-            //     # LATER cpu_time(game, plrs)
-            // # LATER cpu_play(game, plrs)   
-        }
-
-        while (game.players[p].currentPlay === '' && game.status !== 999) {
-            if (game.isReal(p)) {
-                play_pages(game, p);
-            } else {
-                //  cpu_pages(game, p)  // It used to say 'plrs' for second param investigate
-            }
-        }
-        
+    if (stat >= 11 && stat <= 13) {
+        regPlay(game, p1, p2);        
     }
 
-    // Making sure you didn't exit
-    if (game.status !== 999) {
-        let stat = set_status(game, game.players[1].currentPlay,game.players[2].currentPlay);
-        game.status = stat;
+    stat = game.status;
 
-        console.log("Both teams are lining up for the snap...")
-    
-    // Exit out of the game
-    } else {
-        console.log('Catch ya laterrrrr!');
+    if (stat === 14) {
+        samePlay();        
+    } else if (stat >= 12 && stat <= 13) {
+        trickPlay(stat);
+    } else if (stat === 15) {
+        fieldGoal(ono);
+    } else if (stat === 16) {
+        punt(ono, 16);
+    } else if (stat === 17) {
+        hailMary();
     }
 }
 
-// # LATER Make this more graphically pleasing
-// def load_play(pg):
-//     if pg == 1:
-//         print("a. SHORT RUN\ns. LONG RUN\nd. SHORT PASS\n")
-//     elif pg == 2:
-//         print("a. LONG PASS\ns. TRICK PLAY\nd. HAIL MARY\n")
-//     elif pg == 3:
-//         print("a. FIELD GOAL\ns. PUNT\n")
-//     elif pg == 7:
-//         print("a. REGULAR KICK\ns. ONSIDE KICK\nd. SQUIB KICK\n")
-//     elif pg ==8:
-//         print("a. REGULAR RETURN\ns. TOUCHBACK\n")
-//     elif pg == 9:
-//         print("a. EXTRA POINT\ns. TWO-POINT CONV\n")
+const regPlay = (game, pl1, pl2) => {
+    // hno = game.home;  // Used for scoreboard updating
+    let report = 'Here are the plays...\n' + pl1 + ' vs. ' + pl2;
 
+    drawPlay(game, 1, pl1);
+    drawPlay(game, 2, pl2);
+
+    // If both players picked the same play, 50/50 chance of Same Play Mechanism
+    if (pl1 === pl2) {
+        if (pl1 === 'TP' || coinFlip()) {
+            // 14 = Same Play
+            game.status = 14;
+        }
+    }
+
+    alert(report);
+}
+
+const drawPlay = (game, plr, play) => {
+    const cardNum = "SRLRSPLPTP".indexOf(play) / 2;
+    game.players[plr].decPlays(cardNum);
+}
+
+// THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
 const playGame = (game) => {
     alert("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com")
-    
-    
-    
-    prePlay(game, game.status);
+    while (game.status !== 999) {
+        playMechanism(game);
+    }
 
+    // prePlay(game, game.status);
+    // pickPlay(game);
+}
+
+const gameLoop = (game, test) => {
+    game.status = test;
+    if (test === 0) {
+        game.current_time = 0.5;
+    }
+
+    while (game.status < 900) {
+        while (game.current_time >= 0 && game.status != 999) {
+            //game.save('as-' + datetime.now().strftime("%m.%d.%Y-%H.%M.%S"))
+            if (game.status < 0) {
+                // kickoff(game.status);
+            }
+
+            if (game.status < 10 || game.two_point) {
+                playMechanism(game);
+            }
+
+            if (game.status !== 999) {
+                endPlay(game);
+            }
+        }
+
+        if (game.status < 900) {
+            gameCtrl(game);
+        }
+    }
+
+    if (game.status === 999) {
+        game.status = 0;
+    }
+}
+
+// MISC FUNCTIONS
+// This is from mdn: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+// Refactored to be an arrow function for consistency and renamed for convenience
+const randInt = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
+}
+
+const coinFlip = () => {
+    return randInt(0,1);
 }
 
 // SITE FUNCTIONS

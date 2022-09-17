@@ -67,11 +67,11 @@ export default class Game {
     }
 
     isReal(num) {
-        return num === 1 || this.get('num_plr') === 2;
+        return num === 1 || this.num_plr === 2;
     }
 
     isOT() {
-        return this.get('qtr') > 4;
+        return this.qtr > 4;
     }
 
     fillMults() {

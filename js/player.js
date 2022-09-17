@@ -3,7 +3,7 @@ import Team from './team.js';
 export default class Player {
     // need to access quarter from parent Game class
     // minimum req: Player(game, team)
-    constructor(game, team, init = true, score = 0, time = 3, plays = null, mults = null, yards = null, stats = null) {
+    constructor(game, team, init = true, score = 0, time = 3, plays = null, hm = 3, stats = null) {
         this.game = game;
         this.team = new Team(team);
         this.score = score;
@@ -14,6 +14,7 @@ export default class Player {
         this.stats = stats;
         this.currentPlay = '';
         //this.isReal = true;
+        this.hm = hm;  // This is hail mary, I'm moving this here
 
         if (init) {
             this.score = 0;
@@ -43,17 +44,40 @@ export default class Player {
     }
 
     fillPlays(option, qtr = 4) {
-        // 3 hail marys by default per half
-        let hm = 3;
-        // If OT, only 2 hail marys
-        if (qtr > 4) {
-            hm = 2;
+
+
+        if (option === 'a' || option === 'p') {
+            this.plays = [3, 3, 3, 3, 1];
+            console.log('Refilling Play Cards');
         }
 
         if (option === 'a') {
-            this.plays = [3, 3, 3, 3, 1, hm];
-        } else if (option === 'h') {
-            this.plays[5] = hm;  // Resetting hm only, FIX: THIS ISN'T RIGHT
+            // 3 hail marys by default per half
+            this.hm = 3;
+            // If OT, only 2 hail marys
+            if (qtr > 4) {
+                this.hm = 2;
+            }
+        }
+    }
+
+    decPlays(idx) {
+        if (idx === 5) {  // HM
+            this.hm--;
+        } else {
+            if (this.plays[idx] <= 0) {
+                let refill = true;
+                // Check to see if the plays array is empty
+                this.plays.forEach(play => {
+                    if (play > 0) {
+                        refill = false;
+                    }
+                });
+                
+                if (refill) {
+                    this.fillPlays('p');
+                }
+            }
         }
     }
 
