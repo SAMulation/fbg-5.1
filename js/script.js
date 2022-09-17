@@ -45,6 +45,16 @@ window.TEAMS = [
 // const LETTERS = 
 window.LETTERS = ["SR", "LR", "SP", "LP", "TP", "HM", "FG", "PUNT", "RET", "XP", "2PT"];
 
+window.MATCHUP = [[5, 3, 3, 2],
+                  [2, 4, 1, 2],
+                  [3, 2, 5, 3],
+                  [1, 2, 2, 4]];
+
+window.MULTI = [[4, 3, 2, 1.5, 1],
+                [3, 2, 1, 1, .5],
+                [2, 1, .5, 0, 0],
+                [0, 0, 0, -1, -1]];
+
 const site = new Site(document);
 
 // TEAMS ARE TEMP
@@ -155,7 +165,7 @@ const pickPlay = (game) => {
 
     // Making sure you didn't exit
     if (game.status !== 999) {
-        let stat = set_status(game, game.players[1].currentPlay, game.players[2].currentPlay);
+        let stat = setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay);
         game.status = stat;
 
         alert("Both teams are lining up for the snap...")
@@ -163,34 +173,43 @@ const pickPlay = (game) => {
     // Exit out of the game
     } else {
         alert('Catch ya laterrrrr!');
+        // console.log(game);
     }
 }
 
 const playPages = (game, p) => {
     let selection = null;
     let test = 'SRLRSPLPTPHMFGPT';
-    if (state === 'xp') {
-        test = 'XP2P';
-    } else if (state === 'kick') {
-        test = 'RKSKOK';
-    } else if (state === 'rec') {
-        test = 'RRORTB';
-    }
+    // LATER: Use status to change validity based on play type
+    // if (state === 'xp') {
+    //     test = 'XP2P';
+    // } else if (state === 'kick') {
+    //     test = 'RKSKOK';
+    // } else if (state === 'rec') {
+    //     test = 'RRORTB';
+    // }
 
     // Get message to display
-    const options = loadPlay(state);
+    const options = loadPlay(p);
+    // const options = loadPlay(state);  // LATER
     let errorMsg = null;
 
     // Get user input
     do {
-        selection = prompt(options, 'Put abbreviation here (e.g., "sr" for Short Run)').toUpperCase();
-        console.log(selection);
-        errorMsg = playValid(game, p, selection);
-        if (errorMsg) {
-            alert(errorMsg);
-            selection = '';
+        selection = prompt(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
+        if (selection) {
+            selection = selection.toUpperCase();
+            errorMsg = playValid(game, p, selection);
+            if (errorMsg) {
+                alert(errorMsg);
+                selection = null;
+            }
+        } else {
+            selection = 'EXIT';
+            game.status = 999;
         }
-    } while (!test.includes(selection));
+        console.log(selection);
+    } while (!test.includes(selection) && game.status !== 999);
     //console.log(selection);
     game.players[p].currentPlay = selection;
 }
@@ -199,15 +218,18 @@ const playValid = (game, p, sel) => {
     console.log('playValid');
     let msg = null;
     const num = "SRLRSPLPTP".indexOf(sel) / 2;
+    console.log(num);
     let tot = 0;
 
     if (sel === 'FG' || sel === 'PT') {
         tot = -1;
-    } else if (sel = 'HM') {
+    } else if (sel === 'HM') {
         tot = game.players[p].hm;
     } else if (num !== -1) {
         tot = game.players[p].plays[num];
     }
+
+    console.log(tot);
 
     if (num >= 0 && num <= 4) {
         if (tot === 0) {
@@ -242,21 +264,21 @@ const playValid = (game, p, sel) => {
     return msg;
 }
 
-const loadPlay = (state) => {
-    let options = 'Pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
+const loadPlay = (p, state = 'reg') => {
+    let options = 'Player ' + p + ' pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
     // LATER: This will be vastly different in a graphical world
     if (state === 'xp') {
-        options = 'Pick your play:\n[XP] Extra Point\n[2P] Two Point Conversion\n';
+        options = 'Player ' + p + ' pick your play:\n[XP] Extra Point\n[2P] Two Point Conversion\n';
     } else if (state === 'kick') {
-        options = 'Pick your play:\n[RK] Regular Kick\n[SK] Squib Kick\n[OK] Onside Kick\n';
+        options = 'Player ' + p + ' pick your play:\n[RK] Regular Kick\n[SK] Squib Kick\n[OK] Onside Kick\n';
     } else if (state === 'rec') {
-        options = 'Pick your play:\n[RK] Regular Returnb\n[OR] Onside Return\n[TB] Touchback\n';
+        options = 'Player ' + p + ' pick your play:\n[RK] Regular Returnb\n[OR] Onside Return\n[TB] Touchback\n';
     }
 
     return options;
 }
 
-const set_status = (game, p1, p2) => {
+const setStatus = (game, p1, p2) => {
     let stat = 0;
     let ono = game.off_num;
 
@@ -329,8 +351,118 @@ const regPlay = (game, pl1, pl2) => {
 }
 
 const drawPlay = (game, plr, play) => {
+    console.log('drawPlay');
     const cardNum = "SRLRSPLPTP".indexOf(play) / 2;
     game.players[plr].decPlays(cardNum);
+    console.log(game.players[plr].plays);
+}
+
+// END OF PLAY - WE HAVE THE DATA, LET'S GO!!!
+const endPlay = (game) => {
+    const p1 = game.players[1].currentPlay;
+    const p2 = game.players[2].currentPlay;
+
+    if (game.status > 10 && game.status <= 14 || game.status === 17) {
+        calcDist(game, p1, p2);
+
+        console.log('Play over - ball is moving...');
+        reportPlay(game, p1, p2);
+
+        // if (!game.two_point && game.status < 15 || game.status > 16) {
+        //     saveDist(game.off_num)  // LATER: When we have stats
+        // }
+
+        if (game.two_point) {
+            game.spot = game.thisPlay.dist + game.spot;
+        }
+
+        // checkScore(game, game.thisPlay.bonus, game.thisPlay.dist);
+
+        console.log('Updating scoreboard...');
+        if (!game.isOT() && game.ot_poss < 0 && !game.two_point && game.status < 15 || game.status == 17) {
+            // updateDown(game);
+        }
+
+        if (!game.two_point) {
+            // timeChange(game);
+        }
+
+        alert('Teams huddling up...\nPress Enter...\n');
+
+        if (game.status > 0 && game.status < 10) {
+            game.status = 11;
+        }
+    }
+}
+
+const calcDist = (game, p1, p2) => {
+    console.log('Drawing cards...')
+
+    if (game.thisPlay.multiplier_card === 999) {
+        game.thisPlay.multiplier_card = game.decMults();
+    }
+
+    if (game.thisPlay.yard_card === 999) {
+        game.thisPlay.yard_card = game.decYards();
+    }
+
+    if (game.thisPlay.multiplier === 999) {
+        game.thisPlay.multiplier = calcTimes(game, p1, p2, game.thisPlay.multiplier_card.num);
+    }
+
+    if (game.thisPlay.dist === 999) {
+        game.thisPlay.dist = Math.round(game.thisPlay.yard_card * game.thisPlay.multiplier) + game.thisPlay.bonus;
+    }
+
+    // Check for touchdowns
+    if (game.spot + game.thisPlay.dist >= 100) {
+        game.thisPlay.bonus = game.thisPlay.dist;
+        game.thisPlay.dist = 100 - game.spot;
+        if (!game.two_point) {
+            game.status = 101;
+        }
+    }
+
+    // Check for safeties
+    if (game.spot + game.thisPlay.dist <= 0) {
+        game.thisPlay.bonus = game.thisPlay.dist;
+        game.thisPlay.dist = -game.spot;
+        if (!game.two_point) {
+            game.status = 102;
+        }
+    }
+}
+
+const calcTimes = (game, p1, p2, multIdx) => {
+    let p1Num = 'SRLRSPLPTP'.indexOf(p1);
+    let p2Num = 'SRLRSPLPTP'.indexOf(p2);
+    let match = 0;
+
+    if (p1Num === 4 || p2Num === 4) {
+        match = 1;
+    } else {
+        match = MATCHUP[game.off_num === 1 ? p1Num : p2Num][game.off_num === 1 ? p2Num : p1Num];
+    }
+
+    return MULTI[multIdx - 1][match - 1];
+}
+
+const reportPlay = (game, p1, p2) => {
+    const tmp = game.thisPlay.multiplier === 999 ? '/' : null;
+
+    alert('Multiplier Card: ' + game.thisPlay.multiplier_card.card + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (tmp ? tmp : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\n');
+}
+
+const checkScore = (game, bon, dst) => {
+
+}
+
+const updateDown = (game) => {
+
+}
+
+const timeChange = (game) => {
+
 }
 
 // THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
@@ -339,6 +471,8 @@ const playGame = (game) => {
     while (game.status !== 999) {
         playMechanism(game);
     }
+
+    console.log(game);
 
     // prePlay(game, game.status);
     // pickPlay(game);

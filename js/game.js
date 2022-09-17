@@ -138,6 +138,8 @@ export default class Game {
                 }
             }
         }
+
+        return card + 1;
     }
 
     // NEXT get, set, dec
