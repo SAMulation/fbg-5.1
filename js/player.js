@@ -45,7 +45,7 @@ export default class Player {
 
     fillPlays(option, qtr = 4) {
         if (option === 'a' || option === 'p') {
-            this.plays = [3, 3, 3, 3, 1];
+            this.plays = [0, 0, 1, 1, 0];  // FIX: Should be 3
             console.log('Refilling Play Cards');
         }
 
@@ -63,6 +63,8 @@ export default class Player {
         if (idx === 5) {  // HM
             this.hm--;
         } else {
+            this.plays[idx]--;
+
             if (this.plays[idx] <= 0) {
                 let refill = true;
                 // Check to see if the plays array is empty
