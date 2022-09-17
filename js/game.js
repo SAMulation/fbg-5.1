@@ -34,8 +34,8 @@ export default class Game {
         this.current_time = this.qtr_length;
         this.thisPlay = new Play();
         this.players = {1: new Player(this, team1), 2: new Player(this, team2)};  // Object {1: ..., 2: ...}
-        this.mults = mults;  // Move me
-        this.yards = yards;  // Me too
+        this.mults = mults; 
+        this.yards = yards;
 
         if (!this.mults) {
             this.fillMults();
@@ -76,6 +76,68 @@ export default class Game {
 
     fillMults() {
         this.mults = [4, 4, 4, 3];
+    }
+
+    decMults() {
+        let card = -1;
+      
+        while (card === -1) {
+            card = randInt(0, 3);
+            // Out of this card, try again
+            if (!this.mults[card]) {
+                card = -1;
+            } else {
+                this.mults[card]--;
+
+                // Check if mults is empty
+                if (this.mults[card] <= 0) {
+                    let refill = true;
+                    // Check to see if the plays array is empty
+                    this.mults.forEach(mult => {
+                        if (mult > 0) {
+                            refill = false;
+                        }
+                    });
+                    
+                    if (refill) {
+                        this.fillMults();
+                    }
+                }
+            }
+        }
+
+        const cards = ["King", "Queen", "Jack", "10"];
+
+        return {'card': cards[card], 'num': card + 1}
+    }
+
+    decYards() {
+        let card = -1;
+
+        while (card === -1) {
+            card = randInt(0,9);
+
+            if (!this.yards[card]) {
+                card = -1;
+            } else {
+                this.yards[card]--;
+
+                // Check if yards is empty
+                if (this.yards[card] <= 0) {
+                    let refill = true;
+                    // Check to see if the plays array is empty
+                    this.yards.forEach(yard => {
+                        if (yard > 0) {
+                            refill = false;
+                        }
+                    });
+                    
+                    if (refill) {
+                        this.fillYards();
+                    }
+                }
+            }
+        }
     }
 
     // NEXT get, set, dec
