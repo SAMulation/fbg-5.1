@@ -40,7 +40,7 @@ window.TEAMS = [
     {'name': 'Texans', 'city': 'Houston', 'abrv': 'HOU'},
     {'name': 'Titans', 'city': 'Tennessee', 'abrv': 'TEN'},
     {'name': 'Vikings', 'city': 'Minnesota', 'abrv': 'MIN'}
-]
+];
 
 // const LETTERS = 
 window.LETTERS = ["SR", "LR", "SP", "LP", "TP", "HM", "FG", "PUNT", "RET", "XP", "2PT"];
@@ -51,8 +51,8 @@ window.MATCHUP = [[5, 3, 3, 2],
                   [1, 2, 2, 4]];
 
 window.MULTI = [[4, 3, 2, 1.5, 1],
-                [3, 2, 1, 1, .5],
-                [2, 1, .5, 0, 0],
+                [3, 2, 1, 1, 0.5],
+                [2, 1, 0.5, 0, 0],
                 [0, 0, 0, -1, -1]];
 
 const site = new Site(document);
@@ -90,7 +90,7 @@ const playMechanism = (game) => {
         // lastChanceTO(stat, game.qtr, game.current_time, game.time_change);
         doPlay(game, stat, ono, p1, p2);
     }
-}
+};
 
 const prePlay = (game, stat) => {
     console.log('prePlay');
@@ -116,7 +116,7 @@ const prePlay = (game, stat) => {
     if ((game.qtr === 2 || game.qtr === 4) && game.current_time === 2) {
         two_min_check(game);
     }   
-}
+};
 
 const two_min_check = (game) => {
     let two_min = game.two_minute;
@@ -136,7 +136,7 @@ const two_min_check = (game) => {
 
     game.time_change = tim_chg;
     game.two_minute = two_min;
-}
+};
 
 const pickPlay = (game) => {
     console.log('pickPlay');
@@ -168,14 +168,14 @@ const pickPlay = (game) => {
         let stat = setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay);
         game.status = stat;
 
-        alert("Both teams are lining up for the snap...")
+        alert("Both teams are lining up for the snap...");
     
     // Exit out of the game
     } else {
         alert('Catch ya laterrrrr!');
         // console.log(game);
     }
-}
+};
 
 const playPages = (game, p) => {
     let selection = null;
@@ -213,7 +213,7 @@ const playPages = (game, p) => {
     } while (!test.includes(selection) && game.status !== 999);
     //console.log(selection);
     game.players[p].currentPlay = selection;
-}
+};
 
 const playValid = (game, p, sel) => {
     console.log('playValid');
@@ -263,7 +263,7 @@ const playValid = (game, p, sel) => {
     }
 
     return msg;
-}
+};
 
 const loadPlay = (p, state = 'reg') => {
     let options = game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + '\n';
@@ -279,7 +279,7 @@ const loadPlay = (p, state = 'reg') => {
     }
 
     return options;
-}
+};
 
 const ending = (num) => {
     let ending = 'th';
@@ -293,7 +293,7 @@ const ending = (num) => {
     }
 
     return ending;
-}
+};
 
 const downDist = (f, s) => {
     let ending = f - s;
@@ -305,14 +305,14 @@ const downDist = (f, s) => {
     }
 
     return ending;
-}
+};
 
 const printTime = (time) => {
     const min = Math.trunc(time);
-    const sec = (time - min === .5) ? '30' : '00';
+    const sec = (time - min === 0.5) ? '30' : '00';
 
     return min + ':' + sec;
-}
+};
 
 const printSpot = (game, s) => {
     let spot = '50';
@@ -326,7 +326,7 @@ const printSpot = (game, s) => {
     }
 
     return spot;
-}
+};
 
 const setStatus = (game, p1, p2) => {
     let stat = 0;
@@ -357,7 +357,7 @@ const setStatus = (game, p1, p2) => {
     }
 
     return stat;
-}
+};
 
 const doPlay = (game, stat, ono, p1, p2) => {
     // rplcpic boardtop
@@ -380,7 +380,7 @@ const doPlay = (game, stat, ono, p1, p2) => {
     } else if (stat === 17) {
         hailMary();
     }
-}
+};
 
 const regPlay = (game, pl1, pl2) => {
     // hno = game.home;  // Used for scoreboard updating
@@ -398,14 +398,14 @@ const regPlay = (game, pl1, pl2) => {
     }
 
     // alert(report);
-}
+};
 
 const drawPlay = (game, plr, play) => {
     console.log('drawPlay');
     const cardNum = "SRLRSPLPTP".indexOf(play) / 2;
     game.players[plr].decPlays(cardNum);
     console.log(game.players[plr].plays);
-}
+};
 
 // END OF PLAY - WE HAVE THE DATA, LET'S GO!!!
 const endPlay = (game) => {
@@ -444,10 +444,10 @@ const endPlay = (game) => {
         }
         console.log(game.status);
     }
-}
+};
 
 const calcDist = (game, p1, p2) => {
-    console.log('Drawing cards...')
+    console.log('Drawing cards...');
 
     if (game.thisPlay.multiplier_card === 999) {
         game.thisPlay.multiplier_card = game.decMults();
@@ -485,7 +485,7 @@ const calcDist = (game, p1, p2) => {
             game.status = 102;
         }
     }
-}
+};
 
 const calcTimes = (game, p1, p2, multIdx) => {
     let p1Num = 'SRLRSPLPTP'.indexOf(p1) / 2;
@@ -499,13 +499,13 @@ const calcTimes = (game, p1, p2, multIdx) => {
     }
 
     return MULTI[multIdx - 1][match - 1];
-}
+};
 
 const reportPlay = (game, p1, p2) => {
     const tmp = game.thisPlay.multiplier === 999 ? '/' : null;
 
     alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + game.thisPlay.multiplier_card.card + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (tmp ? tmp : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
-}
+};
 
 const checkScore = (game, bon, dst) => {
     const ono = game.off_num;
@@ -569,7 +569,7 @@ const checkScore = (game, bon, dst) => {
         alert('Congrats!\n\nYou scored a safety and broke the game. Come back later for more gameplay...\n');
         game.status = 999;
     }
-}
+};
 
 const scoreChange = (game, scrNo, pts) => {
     // This is going to include a lot of action
@@ -580,7 +580,7 @@ const scoreChange = (game, scrNo, pts) => {
 
     // Also add to the stats at this point
     // Add to the quarter score for the game recap
-}
+};
 
 const updateDown = (game) => {
     let coin;
@@ -632,19 +632,19 @@ const updateDown = (game) => {
     }
 
     if (game.down > 4) {
-        alert('Turnover on downs!!!')
+        alert('Turnover on downs!!!');
         changePoss(game, 'to');
 
         game.down = 1;
     }
 
     // print_down(game);
-}
+};
 
 const timeChange = (game) => {
     console.log('timeChange');
     if (game.qtr <= 4 && game.time_change === 0) {
-        game.current_time -= .5;
+        game.current_time -= 0.5;
         console.log(game.current_time);
         // Inc TOP for offense
         // print_time(game.current_time);
@@ -661,9 +661,9 @@ const timeChange = (game) => {
     // }
 
     if (game.qtr > 4 && game.ot_poss === 0) {
-        game.current_time = -.5;
+        game.current_time = -0.5;
     }
-}
+};
 
 const gameCtrl = (game) => {
     if (game.status === 0) {
@@ -692,7 +692,7 @@ const gameCtrl = (game) => {
             game.ot_poss = 2;
         }
     }
-}
+};
 
 const coinToss = (game) => {
     const awayName = game.players[game.away].team.name;
@@ -725,13 +725,13 @@ const coinToss = (game) => {
     result += 'It was ' + (coinFlip === 'H' ? 'heads' : 'tails') + '...';
     alert(result);
 
-    if (game.num_plr === 2 || coinFlip === coinPick && game.away === 1 || coinFlip !== coinPick && home === 1) {
+    if (game.num_plr === 2 || coinFlip === coinPick && game.away === 1 || coinFlip !== coinPick && game.home === 1) {
         result = (coinFlip === coinPick ? awayName :homeName) + ' choose, ';
         do {
             if (game.isOT()) {
-                result += 'Ball [1]st or Ball [2]nd?\n'
+                result += 'Ball [1]st or Ball [2]nd?\n';
             } else {
-                result += '[K]ick of [R]eceive?\n'
+                result += '[K]ick of [R]eceive?\n';
             }
 
             decPick = prompt(result);
@@ -765,7 +765,7 @@ const coinToss = (game) => {
         if (decPick === 'K') {
             result += ' will kick';
         } else {
-            result += ' will receive'
+            result += ' will receive';
         }
     }
 
@@ -787,11 +787,11 @@ const coinToss = (game) => {
         game.status = 11;
         game.current_time = 0;
     }
-}
+};
 
 const resetVar = (game) => {
 
-}
+};
 
 const resetTime = (game) => {
     const over = game.qtr >= 4 && game.players[1].score !== game.players[2].score;
@@ -803,11 +803,11 @@ const resetTime = (game) => {
             // LATER: Record quarter score here
         }
 
-        alert('Quarter end...')
+        alert('Quarter end...');
 
         // Used to check !over, but you should never get there
         if (!(game.qtr % 2) && !(game.qtr === 4 && game.game_type === 'otc')) {
-            alert('Halftime shuffle...')
+            alert('Halftime shuffle...');
             // LATER: Stat review statBoard(game);
         }
 
@@ -838,7 +838,7 @@ const resetTime = (game) => {
             }
         }
     }
-}
+};
 
 const changePoss = (game, mode) => {
     // Modes explained
@@ -903,7 +903,7 @@ const changePoss = (game, mode) => {
         game.fst_down = game.spot + 10;  // CHECK: I think this is needed
         updateDown(game);
     }
-}
+};
 
 const ot_poss_switch = (game) => {
     const qtrEven = !(game.qtr % 2);
@@ -916,13 +916,11 @@ const ot_poss_switch = (game) => {
     }
 
     return possSwitch;
-}
-
-
+};
 
 // THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
 const playGame = (game) => {
-    alert("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com")
+    alert("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com");
     // while (game.status !== 999) {
     //     playMechanism(game);
 
@@ -936,9 +934,9 @@ const playGame = (game) => {
 
     // prePlay(game, game.status);
     // pickPlay(game);
-}
+};
 
-const gameLoop = (game, test) => {
+const gameLoop = (game, test = 11) => {
     game.status = test;
     if (test === 0) {
         game.current_time = 0.5;
@@ -951,7 +949,7 @@ const gameLoop = (game, test) => {
                 // kickoff(game.status);
             }
 
-            if (game.status < 10 || game.two_point) {
+            if (game.status > 10 && game.status < 100 || game.two_point) {
                 playMechanism(game);
             }
 
@@ -968,7 +966,7 @@ const gameLoop = (game, test) => {
     if (game.status === 999) {
         game.status = 0;
     }
-}
+};
 
 // MISC FUNCTIONS
 // This is from mdn: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
@@ -977,11 +975,11 @@ const randInt = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
-}
+};
 
 const coinFlip = () => {
     return randInt(0,1);
-}
+};
 
 // SITE FUNCTIONS
 const setTeamLists = (lists) => {
@@ -1000,7 +998,7 @@ const setTeamLists = (lists) => {
         }
         list.selectedIndex = list.id === 'p1Team' ? 24 : 2;
     });
-}
+};
 
 const submitTeams = (submit) => {
     submit.addEventListener('submit', event => {
@@ -1021,10 +1019,10 @@ const submitTeams = (submit) => {
                 valid = false;
             } else {
                 console.log('P' + (t + 1) + ' picked: ' + TEAMS[value[t]].name);
-                value[t];  //It's off by one because of 'Please select...' option - not anymore
+                // console.log(value[t]);  //It's off by one because of 'Please select...' option - not anymore
             }
-            console.log("valid: " + valid)
-            console.log('add some message to user warning of invalid choices')
+            console.log("valid: " + valid);
+            console.log('add some message to user warning of invalid choices');
         }
 
         if (valid && value[0] !== 0 && value[1] !== 0) {
@@ -1042,17 +1040,17 @@ const submitTeams = (submit) => {
             document.querySelector('.playSubmit').disabled = true;
         }
     });
-}
+};
 
 const pressPlayButton = (button) => {
     button.addEventListener('pointerdown', event => {
         playGame(window.game);
-    })
-}
+    });
+};
 
 const initGame = (site) => {
     return new Game(TEAMS[site.team1], TEAMS[site.team2], site.gamtyp, site.numplr, 1, 2);
-}
+};
 
 
 // MAIN FUNCTION CALLS
