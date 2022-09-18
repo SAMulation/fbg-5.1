@@ -196,7 +196,8 @@ const playPages = (game, p) => {
 
     // Get user input
     do {
-        selection = prompt(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
+        // selection = prompt(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
+        selection = prompt(options);
         if (selection) {
             selection = selection.toUpperCase();
             errorMsg = playValid(game, p, selection);
