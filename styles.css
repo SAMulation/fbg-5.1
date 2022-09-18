@@ -96,9 +96,9 @@
         grid-row: auto !important;
     }
     
-    .page-sidebar {
+    /* .page-sidebar {
         display: none;
-    }
+    } */
   }
 
   h1 {
