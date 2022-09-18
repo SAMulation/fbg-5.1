@@ -265,17 +265,66 @@ const playValid = (game, p, sel) => {
 }
 
 const loadPlay = (p, state = 'reg') => {
-    let options = 'Player ' + p + ' pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
+    let options = game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + '\n';
+    options += game.down + ending(game.down) + ' & ' + downDist(game.fst_down, game.spot) + ' | ' + printTime(game.current_time) + ' | Ball on: ' + printSpot(game, game.spot) + '\n';
+    options += 'Player ' + p + ' pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
     // LATER: This will be vastly different in a graphical world
     if (state === 'xp') {
-        options = 'Player ' + p + ' pick your play:\n[XP] Extra Point\n[2P] Two Point Conversion\n';
+        options += 'Player ' + p + ' pick your play:\n[XP] Extra Point\n[2P] Two Point Conversion\n';
     } else if (state === 'kick') {
-        options = 'Player ' + p + ' pick your play:\n[RK] Regular Kick\n[SK] Squib Kick\n[OK] Onside Kick\n';
+        options += 'Player ' + p + ' pick your play:\n[RK] Regular Kick\n[SK] Squib Kick\n[OK] Onside Kick\n';
     } else if (state === 'rec') {
-        options = 'Player ' + p + ' pick your play:\n[RK] Regular Returnb\n[OR] Onside Return\n[TB] Touchback\n';
+        options += 'Player ' + p + ' pick your play:\n[RK] Regular Returnb\n[OR] Onside Return\n[TB] Touchback\n';
     }
 
     return options;
+}
+
+const ending = (num) => {
+    let ending = 'th';
+
+    if (num === 1) {
+        ending = 'st';
+    } else if (num === 2) {
+        ending = 'nd';
+    } else if (num === 3) {
+        ending = 'rd';
+    }
+
+    return ending;
+}
+
+const downDist = (f, s) => {
+    let ending = f - s;
+
+    if (f === 100) {
+        ending = 'G';
+    } else if (f === s) {
+        ending = 'IN';
+    }
+
+    return ending;
+}
+
+const printTime = (time) => {
+    const min = Math.trunc(time);
+    const sec = (time - min === .5) ? '30' : '00';
+
+    return min + ':' + sec;
+}
+
+const printSpot = (game, s) => {
+    let spot = '50';
+    // console.log(game.off_num);
+    // console.log(game.players[1].team.abrv);
+    // console.log(game.players[game.off_num].team.abrv);
+    if (s < 50) {
+        spot = game.players[game.off_num].team.abrv + ' ' + s;
+    } else if (s > 50) {
+        spot = game.players[game.def_num].team.abrv + ' ' + (100 - s);
+    }
+
+    return spot;
 }
 
 const setStatus = (game, p1, p2) => {
@@ -505,11 +554,13 @@ const checkScore = (game, bon, dst) => {
     }
 
     if (game.status === 101) {
-        touchdown(game);
+        // touchdown(game);
+        alert('Congrats!\n\nYou scored a touchdown and broke the game. Come back later for more gameplay...\n');
     }
     
     if (game.status === 102) {
-        safety(game);
+        // safety(game);
+        alert('Congrats!\n\nYou scored a safety and broke the game. Come back later for more gameplay...\n');
     }
 }
 
@@ -584,8 +635,10 @@ const updateDown = (game) => {
 }
 
 const timeChange = (game) => {
-    if (game.qtr <= 4 && game.current_time === 0) {
+    console.log('timeChange');
+    if (game.qtr <= 4 && game.time_change === 0) {
         game.current_time -= .5;
+        console.log(game.current_time);
         // Inc TOP for offense
         // print_time(game.current_time);
     }
