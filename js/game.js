@@ -22,7 +22,7 @@ export default class Game {
         this.ot_poss = -1;
         this.qtr = 1;
         this.qtr_length = 7;
-        this.rec_first = 1;
+        this.rec_first = 2;
         this.spot = 35;
         this.status = 11 ; // Defined elsewhere, diff nums for diff plays
         this.time_change = 0;  // Define later

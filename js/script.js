@@ -268,14 +268,14 @@ const playValid = (game, p, sel) => {
 const loadPlay = (p, state = 'reg') => {
     let options = game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + '\n';
     options += game.down + ending(game.down) + ' & ' + downDist(game.fst_down, game.spot) + ' | ' + printTime(game.current_time) + ' | Ball on: ' + printSpot(game, game.spot) + '\n';
-    options += 'Player ' + p + ' pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
+    options += game.players[p].team.name + ' pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
     // LATER: This will be vastly different in a graphical world
     if (state === 'xp') {
-        options += 'Player ' + p + ' pick your play:\n[XP] Extra Point\n[2P] Two Point Conversion\n';
+        options += game.players[p].team.name + ' pick your play:\n[XP] Extra Point\n[2P] Two Point Conversion\n';
     } else if (state === 'kick') {
-        options += 'Player ' + p + ' pick your play:\n[RK] Regular Kick\n[SK] Squib Kick\n[OK] Onside Kick\n';
+        options += game.players[p].team.name + ' pick your play:\n[RK] Regular Kick\n[SK] Squib Kick\n[OK] Onside Kick\n';
     } else if (state === 'rec') {
-        options += 'Player ' + p + ' pick your play:\n[RK] Regular Returnb\n[OR] Onside Return\n[TB] Touchback\n';
+        options += game.players[p].team.name + ' pick your play:\n[RK] Regular Returnb\n[OR] Onside Return\n[TB] Touchback\n';
     }
 
     return options;
