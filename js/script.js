@@ -454,15 +454,155 @@ const reportPlay = (game, p1, p2) => {
 }
 
 const checkScore = (game, bon, dst) => {
+    const ono = game.off_num;
+    const dno = game.def_num;
+    const oname = game.players[ono].team.name;
+    const dname = game.players[dno].team.name;
+    let good = false;
+    let coin;
 
+    // Two-Point Conversion
+    if (game.two_point) {
+        if (game.spot + game.thisPlay.dist >= 100 && !game.turnover) {
+            if (bon > dst) {
+                good = true;
+            } else if (bon === dst) {
+                coin = coinFlip();
+
+                if (coin) {
+                    good = true;
+                }
+            }
+
+            if (good) {
+                alert(oname + ' 2-point conversion good!');
+                scoreChange(game, ono, 2);
+            } else {
+                if (game.time_change < 2 || game.time_change > 3) {
+                    alert(oname + ' 2-point conversion no good!');
+                }
+            }
+        } else if (game.spot + dst <= 0 || game.spot + dst >= 100 && game.turnover) {
+            // dno = ono;
+            // dname = oname;
+
+            alert(dname + ' returned 2-pt!!!');
+            scoreChange(game, dno, 2);
+        } else {
+            if (game.time_change < 2 || game.time_change > 3) {
+                alert(oname + ' 2-point conversion no good!');
+            }
+        }
+
+        if (game.time_change < 2 || game.time_change > 3) {
+            game.two_point = false;
+            if (!game.isOT()) {
+                game.status = -3;
+            } else {
+                game.status = 11;
+            }
+        }
+    }
+
+    if (game.status === 101) {
+        touchdown(game);
+    }
+    
+    if (game.status === 102) {
+        safety(game);
+    }
+}
+
+const scoreChange = (game, scrNo, pts) => {
+    // This is going to include a lot of action
+    // that will update the scoreboard
+
+    // All that's needed for logic
+    game.players[scrNo].score += pts;
+
+    // Also add to the stats at this point
+    // Add to the quarter score for the game recap
 }
 
 const updateDown = (game) => {
+    let coin;
 
+    if (game.down !== 0) {
+        game.spot += game.thisPlay.dist;
+    }
+
+    // if (game.spt != 0 || game.status > 0 && game.status < 10) { // Update the spot }
+
+    // Sticks
+    if (game.spot === game.fst_down) {
+        alert('Sticks...');
+        coin = coinFlip();
+
+        if (!coin) {
+            alert('Almost!');
+        }
+    }
+
+    if (down === 0) {
+        coin = 1;
+    }
+
+    if (game.spot > game.fst_down || coin) {
+        if (game.down !== 0) {
+            alert('First down!');
+            // print_down(game);
+        }
+        game.down = 1;
+
+        if (game.spot > 90) {
+            game.fst_down = 100;
+        } else {
+            game.fst_down = game.spot + 10;
+        }
+
+        // print_down(game);
+
+        if (game.status > 10) {
+            // LATER: Inc player's first downs here
+        }
+
+        coin = 1;
+    }
+
+    if (!coin && game.time_change !== 2) {
+        game.down += 1;
+    }
+
+    if (game.down > 4) {
+        alert('Turnover on downs!!!')
+        change_poss(game, 'to');
+
+        game.down = 1;
+    }
+
+    // print_down(game);
 }
 
 const timeChange = (game) => {
+    if (game.qtr <= 4 && game.current_time === 0) {
+        game.current_time -= .5;
+        // Inc TOP for offense
+        // print_time(game.current_time);
+    }
 
+    // LATER: Add this for OT
+    // if (game.ot_poss < 0) {
+    //     if (game.isOT() && game.ot_poss_switch(qtr, ono, rec_first, ot_poss)) {
+    //         change_poss(game, 'ot');
+    //     } else {
+    //         game.ot_poss_switch2()
+    //         game.ot_poss = Math.abs(game.ot_poss) - 1;
+    //     }
+    // }
+
+    if (game.qtr > 4 && game.ot_poss === 0) {
+        game.current_time = -.5;
+    }
 }
 
 // THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
