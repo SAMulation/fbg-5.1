@@ -415,17 +415,18 @@ const samePlay = (game) => {
     multCard = game.decMults();
 
     if (multCard.card === 'King') {
-
+        bigPlay(game, coin ? game.off_num : game.def_num);
     } else if (multCard.card === 'Queen' && coin || multCard.card === 'Jack' && !coin) {
-
+        game.thisPlay.multiplier = 3;
     } else if (multCard.card === 'Queen' && !coin || multCard.card === 'Jack' && coin) {
-
+        game.thisPlay.multiplier = -3;
     } else {
         if (coin) {
-
-        } else {
-            
+            alert('Picked!');
+            changePoss('to');
         }
+        game.thisPlay.dist = 0;
+        game.thisPlay.yard_card = '/';
     }
 };
 
@@ -550,7 +551,38 @@ const punt = (game, ono, stat) => {
 };
 
 const hailMary = (game) => {
+    const die = rollDie();
+    let msg = null;
+    let dst = 0;
 
+    alert(game.players[game.off_num].team.name + ' hail mary!');
+
+    if (die === 1) {
+        msg = 'BIG SACK!';
+        dst = -10;
+    } else if (die === 2) {
+        dst = 20;
+    } else if (die === 3) {
+        dst = 0;
+    } else if (die === 4) {
+        dst = 40;
+    } else if (die === 5) {
+        msg = 'PICKED!';
+        changePoss('to');
+    } else {
+        dst = 101;
+    }
+
+    if (msg) {
+        alert(msg);
+    }
+
+    game.thisPlay.multiplier_card = '/';
+    game.thisPlay.yard_card = '/';
+    game.thisPlay.multiplier = '/';
+    game.thisPlay.dist = dst;
+
+    game.players[game.off_num].hm--;
 };
 
 // END OF PLAY - WE HAVE THE DATA, LET'S GO!!!
