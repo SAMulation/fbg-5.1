@@ -347,7 +347,7 @@ const regPlay = (game, pl1, pl2) => {
         }
     }
 
-    alert(report);
+    // alert(report);
 }
 
 const drawPlay = (game, plr, play) => {
@@ -376,15 +376,15 @@ const endPlay = (game) => {
             game.spot = game.thisPlay.dist + game.spot;
         }
 
-        // checkScore(game, game.thisPlay.bonus, game.thisPlay.dist);
+        checkScore(game, game.thisPlay.bonus, game.thisPlay.dist);
 
         console.log('Updating scoreboard...');
         if (!game.isOT() && game.ot_poss < 0 && !game.two_point && game.status < 15 || game.status == 17) {
-            // updateDown(game);
+            updateDown(game);
         }
 
         if (!game.two_point) {
-            // timeChange(game);
+            timeChange(game);
         }
 
         // alert('Teams huddling up...\nPress Enter...\n');
@@ -434,8 +434,8 @@ const calcDist = (game, p1, p2) => {
 }
 
 const calcTimes = (game, p1, p2, multIdx) => {
-    let p1Num = 'SRLRSPLPTP'.indexOf(p1);
-    let p2Num = 'SRLRSPLPTP'.indexOf(p2);
+    let p1Num = 'SRLRSPLPTP'.indexOf(p1) / 2;
+    let p2Num = 'SRLRSPLPTP'.indexOf(p2) / 2;
     let match = 0;
 
     if (p1Num === 4 || p2Num === 4) {
@@ -543,7 +543,7 @@ const updateDown = (game) => {
         }
     }
 
-    if (down === 0) {
+    if (game.down === 0) {
         coin = 1;
     }
 
