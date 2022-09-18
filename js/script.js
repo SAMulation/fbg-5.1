@@ -442,6 +442,7 @@ const endPlay = (game) => {
         if (game.status > 0 && game.status < 10) {
             game.status = 11;
         }
+        console.log(game.status);
     }
 }
 
@@ -464,6 +465,9 @@ const calcDist = (game, p1, p2) => {
         game.thisPlay.dist = Math.round(game.thisPlay.yard_card * game.thisPlay.multiplier) + game.thisPlay.bonus;
     }
 
+    // Test TDs
+    // game.spot = 1000;
+    
     // Check for touchdowns
     if (game.spot + game.thisPlay.dist >= 100) {
         game.thisPlay.bonus = game.thisPlay.dist;
@@ -557,11 +561,13 @@ const checkScore = (game, bon, dst) => {
     if (game.status === 101) {
         // touchdown(game);
         alert('Congrats!\n\nYou scored a touchdown and broke the game. Come back later for more gameplay...\n');
+        game.status = 999;
     }
     
     if (game.status === 102) {
         // safety(game);
         alert('Congrats!\n\nYou scored a safety and broke the game. Come back later for more gameplay...\n');
+        game.status = 999;
     }
 }
 
