@@ -467,7 +467,7 @@ const calcDist = (game, p1, p2) => {
 
     // Test TDs
     // game.spot = 1000;
-    
+
     // Check for touchdowns
     if (game.spot + game.thisPlay.dist >= 100) {
         game.thisPlay.bonus = game.thisPlay.dist;
@@ -633,7 +633,7 @@ const updateDown = (game) => {
 
     if (game.down > 4) {
         alert('Turnover on downs!!!')
-        change_poss(game, 'to');
+        changePoss(game, 'to');
 
         game.down = 1;
     }
@@ -653,7 +653,7 @@ const timeChange = (game) => {
     // LATER: Add this for OT
     // if (game.ot_poss < 0) {
     //     if (game.isOT() && game.ot_poss_switch(qtr, ono, rec_first, ot_poss)) {
-    //         change_poss(game, 'ot');
+    //         changePoss(game, 'ot');
     //     } else {
     //         game.ot_poss_switch2()
     //         game.ot_poss = Math.abs(game.ot_poss) - 1;
@@ -665,16 +665,272 @@ const timeChange = (game) => {
     }
 }
 
+const gameCtrl = (game) => {
+    if (game.status === 0) {
+        coinToss(game);
+
+        if (!game.isOT() || game.game_type === 'otc') {
+            resetVar(game);
+        }
+    } else {
+        // End of half
+        if (game.status === 0 || (!game.qtr % 2)) {
+            resetVar(game);
+        }
+
+        // End of odd quarter (1st, 3rd, OT)
+        if (game.qtr % 2) {
+            resetTime(game);
+        }
+    }
+
+    if (game.status < 900) {
+        // Set up OT Challenge
+        if (game.qtr === 5 && game.game_type === 'otc' && game.rec_first != game.off_num) {
+            changePoss(game, '');
+            // print_needle(-game.off_num);
+            game.ot_poss = 2;
+        }
+    }
+}
+
+const coinToss = (game) => {
+    const awayName = game.players[game.away].team.name;
+    const homeName = game.players[game.home].team.name;
+    let coinPick = null;
+    let result = '';
+    let coinFlip = null;
+    let decPick = null;
+    let rec_fst = 'away';
+
+    if (game.isReal(game.away)) {
+        do {
+            coinPick = prompt('Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n');
+            if (typeof(coinPick) === 'string') {
+                coinPick = coinPick.toUpperCase();
+            } else {
+                coinPick = null;
+            }
+        } while (coinPick !== 'H' && coinPick !== 'T');
+    } else {  // Computer picking
+        alert('Coin Toss\n' + awayName + ' choosing...\n');
+        coinPick = coinFlip() ? 'H' : 'T';
+    }
+
+    // Show result
+    result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '!\n';
+    result += 'Coin toss!!!\n\n\n\n\n';
+    // Some sort of graphic
+    coinFlip = coinFlip() ? 'H' : 'T';
+    result += 'It was ' + (coinFlip === 'H' ? 'heads' : 'tails') + '...';
+    alert(result);
+
+    if (game.num_plr === 2 || coinFlip === coinPick && game.away === 1 || coinFlip !== coinPick && home === 1) {
+        result = (coinFlip === coinPick ? awayName :homeName) + ' choose, ';
+        do {
+            if (game.isOT()) {
+                result += 'Ball [1]st or Ball [2]nd?\n'
+            } else {
+                result += '[K]ick of [R]eceive?\n'
+            }
+
+            decPick = prompt(result);
+            if (typeof(decPick) === 'string') {
+                // if (game.isOT() && (decPick === '1' || decPick === '2')) {
+                //     decPick = Number(decPick);
+                // } else { }
+                decPick = decPick.toUpperCase();
+            } else {
+                decPick = null;
+            }
+        } while ((!game.isOT() && decPick !== 'K' && decPick !== 'R') || (game.isOT() && decPick !== 1 && decPick !== 2));
+    } else {  // Computer choosing
+        alert((coinFlip === coinPick ? awayName :homeName) + ' choosing...');
+
+        decPick = randInt(1,2);
+        if (!game.isOT()) {
+            decPick = decPick === 1 ? 'K' : 'R';
+        }
+    }
+
+    result = (coinFlip === coinPick ? awayName : homeName) + ' ';
+
+    if (game.isOT()) {
+        if (decPick === '1') {
+            result += 'get ball 1st';
+        } else {
+            result += 'get ball 2nd';
+        }
+    } else {
+        if (decPick === 'K') {
+            result += ' will kick';
+        } else {
+            result += ' will receive'
+        }
+    }
+
+    result += '...\n';
+    alert(result);
+
+    if ((coinFlip === coinPick && (decPick === '2' || decPick === 'K')) || (coinPick !== coinFlip && (decPick === '1' || decPick === 'R'))) {
+        rec_fst = 'home';
+    }
+
+    game.rec_first = rec_fst === 'home' ? game.home : game.away;
+    game.def_num = game.rec_first;  // Because they're receiving first
+    game.off_num = game.opp(game.def_num);  // Because they're kicking
+
+    if (game.isOT()) {
+        if (game.game_type !== 'otc') {
+            // Might need this for graphic resetting later
+        }
+        game.status = 11;
+        game.current_time = 0;
+    }
+}
+
+const resetVar = (game) => {
+
+}
+
+const resetTime = (game) => {
+    const over = game.qtr >= 4 && game.players[1].score !== game.players[2].score;
+
+    if (over) {
+        end_game(game);
+    } else {
+        if (game.qtr !== 0 && !(game.qtr === 4 && game.game_type === 'otc')) {
+            // LATER: Record quarter score here
+        }
+
+        alert('Quarter end...')
+
+        // Used to check !over, but you should never get there
+        if (!(game.qtr % 2) && !(game.qtr === 4 && game.game_type === 'otc')) {
+            alert('Halftime shuffle...')
+            // LATER: Stat review statBoard(game);
+        }
+
+        // Get ready for OT or reset clock for next qtr
+        if (game.qtr >= 4) {
+            game.current_time = 0;
+            game.ot_poss = 2;
+            game.spot = 75;
+            game.fst_down = 85;
+            // moveBall('s');
+            // printDown(game);
+        } else {
+            game.current_time = game.qtr_length;
+        }
+
+        game.qtr++;
+        // printTime(game);
+
+        // LATER: Set qtr score
+        // Could update the spot and/or print new qtr
+
+        if (game.isOT() && ot_qtr_switch(game)) {
+            changePoss(game, 'nop');
+            // print_needle(-game.off_num);
+            // First OT needs a little help
+            if (game.ot_poss == -2 && game.qtr === 5) {
+                game.ot_poss = 2;
+            }
+        }
+    }
+}
+
+const changePoss = (game, mode) => {
+    // Modes explained
+    // '' = just change poss
+    // 'k' = kick (like a kickoff)
+    // 'nop' = no ot poss, just change (but in OT)
+    // 'ot' = set up OT
+    // 'to' = turnover
+    // 'pnt' = punt
+    // 'fg' = missed field goal
+
+
+    if (mode !== '' && mode !== 'k' && mode !== 'nop') {
+        // moveBall('c');  // Which cleared the ball
+    }
+
+    if (mode !== 'nop' && mode !== 'ot' && game.isOT() && !game.two_point && game.ot_poss > 0) {
+        game.ot_poss = -game.ot_poss;  // This indicates that the ot poss just ended, handle appropriately
+    }
+
+    if (mode ==='to') {
+        game.spot = 100 - game.spot;  // Switch side of field
+        //addRecap(game, teamName + ' turnover!') // or however
+        //game.players[game.off_num].stats.tos++;  // Inc turnovers in Stats
+        game.turnover = true;
+    } else if (mode === 'ot') {
+        // Probably need a visual reset here
+        game.spot = 75;
+        game.ot_poss = Math.abs(game.ot_poss) - 1;
+    } else if (mode === 'pnt') {
+        game.spot = 100 - game.spot;  // Switch side of field
+    } else if (mode === 'fg') {
+        if (!game.isOT()) {
+            if (game.spot + 7 <= 20) {  // By an obscure NFL rule, essentially a touchback
+                game.spot = 20;
+            } else {  // Take over at spot of kick
+            game.spot = 100 - game.spot + 7;
+            }
+        }
+    }
+
+    if (mode != '' && mode !== 'k' && mode !== 'nop') {
+        // moveBall('s');  // Which showed ball
+    }
+
+    // This should never happen, but it's making sure the possessions don't equal each other
+    // We assume to offensive number is correct
+    if (game.off_num === game.def_num) {
+        game.def_num = game.opp(game.off_num);
+    }
+
+    // Actually change possession
+    const tmp = game.off_num;
+    game.off_num = game.def_num;
+    game.def_num = tmp;
+    // printNeedle(game.off_num);
+
+    if (game.status >= 11 && game.status <= 17 && game.status !== 16) {
+        if (mode !== 'ot') {
+            // printFirst(game);  // These are the first down markers
+        }
+        game.fst_down = game.spot + 10;  // CHECK: I think this is needed
+        updateDown(game);
+    }
+}
+
+const ot_poss_switch = (game) => {
+    const qtrEven = !(game.qtr % 2);
+    const offEqRec = game.off_num === game.rec_first;
+    const otp = game.ot_poss;
+    let possSwitch = false;
+
+    if (!qtrEven && offEqRec && otp === -2 || !qtrEven && !offEqRec && otp === -1 || qtrEven && !offEqRec && otp === -2 || qtrEven && offEqRec && otp === -1) {
+        possSwitch = true;
+    }
+
+    return possSwitch;
+}
+
+
+
 // THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
 const playGame = (game) => {
     alert("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com")
-    while (game.status !== 999) {
-        playMechanism(game);
+    // while (game.status !== 999) {
+    //     playMechanism(game);
 
-        if (game.status !== 999) {
-            endPlay(game);
-        }
-    }
+    //     if (game.status !== 999) {
+    //         endPlay(game);
+    //     }
+    // }
+    gameLoop(game);
 
     console.log(game);
 
