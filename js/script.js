@@ -370,15 +370,15 @@ const doPlay = (game, stat, ono, p1, p2) => {
     stat = game.status;
 
     if (stat === 14) {
-        samePlay();        
+        samePlay(game);        
     } else if (stat >= 12 && stat <= 13) {
-        trickPlay(stat);
+        trickPlay(game);
     } else if (stat === 15) {
-        fieldGoal(ono);
+        fieldGoal(game, ono);
     } else if (stat === 16) {
-        punt(ono, 16);
+        punt(game, ono, 16);
     } else if (stat === 17) {
-        hailMary();
+        hailMary(game);
     }
 };
 
@@ -405,6 +405,152 @@ const drawPlay = (game, plr, play) => {
     const cardNum = "SRLRSPLPTP".indexOf(play) / 2;
     game.players[plr].decPlays(cardNum);
     console.log(game.players[plr].plays);
+};
+
+const samePlay = (game) => {
+    const coin = coinFlip();
+    let multCard = null;
+
+    alert('Same play!');
+    multCard = game.decMults();
+
+    if (multCard.card === 'King') {
+
+    } else if (multCard.card === 'Queen' && coin || multCard.card === 'Jack' && !coin) {
+
+    } else if (multCard.card === 'Queen' && !coin || multCard.card === 'Jack' && coin) {
+
+    } else {
+        if (coin) {
+
+        } else {
+            
+        }
+    }
+};
+
+const returnTime = (last) => {
+    game.players[last].timeouts++;
+    console.log('Timeout returned to ' + game.players[last].team.name + '...');
+    // LATER: Graphically show timeout returning on scoreboard
+}
+
+const bigPlay = (game, num) => {
+    const die = rollDie();
+
+    // Offensive Big Play
+    if (game.off_num === num) {
+        if (die >= 1 && die <=3) {
+            game.thisPlay.dist = 25;
+        } else if (die === 6) {
+            game.thisPlay.dist = 101;  // Touchdown
+        } else {  // die === 4 && die === 5
+            if ((100 - game.spot) / 2 > 40) {  // Half the field or 40, whichever is more
+                game.thisPlay.dist = Math.round((100 - game.spot) / 2);
+            } else {
+                game.thisPlay.dist = 40;
+            }
+        }
+    // Defense
+    } else {
+        if (die >= 1 && die <=3) {
+            // If timeout called, return
+            if (game.time_change === 4) {
+                returnTime(game.last_call_to);
+            }
+
+            game.time_change = 2;
+
+            if (game.spot - 10 < 1) {
+                game.thisPlay.dist = -Math.trunc(game.spot / 2);  // Half the distance to the goal
+            } else {
+                game.thisPlay.dist = -10;  // 10-yard penalty on off
+            }
+            game.thisPlay.dist = 25;
+        } else {
+            if (die === 6) {
+                alert('FUMBLE!!!');
+                game.thisPlay.dist = 101;  // Touchdown
+            } else {  // die === 4 && die === 5
+                alert('FUMBLE!!');
+                if ((100 - game.spot) / 2 > 25) {  // Half the field or 25, whichever is more
+                    game.thisPlay.dist = Math.round((100 - game.spot) / 2);
+                } else {
+                    game.thisPlay.dist = 25;
+                }
+            }
+
+            changePoss(game, 'to');
+        }
+    }
+
+    // Prevent calculations
+    game.thisPlay.multiplier_card = '/';
+    game.thisPlay.yard_card = '/';
+    game.thisPlay.multiplier = '/';
+}
+
+const trickPlay = (game) => {
+    const die = rollDie();
+    alert((game.status === 12 ? game.players[game.home].team.name : game.players[game.away].team.name) + ' trick play!');
+
+    if (die === 2) {
+        // If timeout called, return
+        if (game.time_change === 4) {
+            returnTime(game.last_call_to);
+        }
+        game.time_change = 2;
+
+        // Offense Trick Play
+        if (game.status === 12) {
+            if (game.spot + 15 > 99) {
+                game.thisPlay.dist = Math.trunc((100 - game.spot) / 2);  // Half the distance to the goal
+            } else {
+                game.thisPlay.dist = 15;  // 15-yard penalty on def
+            }
+        // Defense
+        } else {
+            if (game.spot - 15 < 1) {
+                game.thisPlay.dist = -Math.trunc(game.spot / 2);  // Half the distance to the goal
+            } else {
+                game.thisPlay.dist = -15;  // 15-yard penalty on off
+            }
+        }
+
+        // Prevent calcuations
+        game.thisPlay.multiplier_card = '/';
+        game.thisPlay.yard_card = '/';
+    } else if (die === 3) {
+        game.thisPlay.multiplier_card = '/';
+        game.thisPlay.multiplier = -3;
+    } else if (die === 4) {
+        game.thisPlay.multiplier_card = '/';
+        game.thisPlay.multiplier = 4;
+    } else if (die === 5) {
+        bigPlay(game, game.status === 12 ? game.off_num : game.def_num);
+    // die === 1 && die === 6
+    } else {
+        if (game.status === 12) {
+            game.thisPlay.bonus = 5;
+        } else {
+            game.thisPlay.bonus = -5;
+        }
+
+        // Place play based on die roll
+        game.players[(game.status === 12 ? game.off_num : game.def_num)].currentPlay = die === 1 ? 'LP' : 'LR';
+    }
+};
+
+const fieldGoal = (game, ono) => {
+
+};
+
+const punt = (game, ono, stat) => {
+
+};
+
+const hailMary = (game) => {
+
 };
 
 // END OF PLAY - WE HAVE THE DATA, LET'S GO!!!
@@ -978,7 +1124,11 @@ const randInt = (min, max) => {
 };
 
 const coinFlip = () => {
-    return randInt(0,1);
+    return randInt(0, 1);
+};
+
+const rollDie = () => {
+    return randInt(1, 6);
 };
 
 // SITE FUNCTIONS
