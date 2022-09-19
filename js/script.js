@@ -377,8 +377,13 @@ const playPages = (game, p) => {
                 selection = null;
             }
         } else {
-            selection = 'EXIT';
-            game.status = 999;
+            selection = confirm('Are you sure you want to exit?');
+            if (selection) {
+                selection = 'EXIT';
+                game.status = 999;
+            } else {
+                selection = null;
+            }
         }
         console.log(selection);
     } while (!test.includes(selection) && game.status !== 999);
