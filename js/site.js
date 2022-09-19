@@ -6,6 +6,6 @@ export default class Site {
         this.qtrlen = '';
         // LATER: These won't autofill
         this.gamtyp = 'reg';
-        this.numplr = 2;
+        this.numplr = 1;
     }
 }
