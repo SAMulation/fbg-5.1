@@ -75,7 +75,6 @@ window.game = game;
 
 // PLAY MECHANISM
 const playMechanism = (game) => {
-    // stat,p1,p2,spt,fdn,ono
     let stat, ono, p1, p2;
 
     prePlay(game, 11);
@@ -101,7 +100,7 @@ const prePlay = (game, stat) => {
     game.thisPlay.dist = 999;
     game.thisPlay.bonus = 0;
 
-    if (!(game.two_point && game.time_change === 4)) {
+    if (!game.two_point || game.time_change !== 4) {
         game.time_change = 0;
     }
 
@@ -144,11 +143,11 @@ const pickPlay = (game) => {
         game.players[p].currentPlay = '';
 
         // Computer Stuff
-        if (game.status !== 999 && p === 2 && !(game.isReal(2))) {
+        if (game.status !== 999 && p === 2 && !game.isReal(2)) {
             // This is where the computer can call timeout or pick special play
             alert(game.players[2].team.name + ' are picking their play...');
             // # LATER Print that computer is picking play
-            if (game.time_change == 0) {
+            if (game.time_change === 0) {
                 cpuTime(game);
             }
             
@@ -183,7 +182,7 @@ const cpuTime = (game) => {
     const toCount = game.players[2].timeouts;
     const ono = game.off_num;
 
-    if (toCount > 0) {}
+    if (toCount > 0) {
         const qtr = game.qtr;
         const ctim = game.current_time;
         const spt = game.spot;
@@ -213,6 +212,7 @@ const cpuTime = (game) => {
             game.callTime(2);
             // print_timeout()
         }
+    }
 };
 
 const cpuPlay = (game) => {
@@ -394,7 +394,7 @@ const playPages = (game, p) => {
 const playValid = (game, p, sel) => {
     console.log('playValid');
     let msg = null;
-    const num = "SRLRSPLPTP".indexOf(sel) / 2;
+    const num = "SRLRSPLPTPHMFGPT".indexOf(sel) / 2;
     console.log(num);
     let tot = 0;
 
@@ -408,7 +408,7 @@ const playValid = (game, p, sel) => {
 
     console.log(tot);
 
-    if (num >= 0 && num <= 4) {
+    if (num >= 0 && num <= 5) {  // LATER: Check hail mary
         if (tot === 0) {
             msg = 'No more ' + sel + ' left!';
         }
@@ -486,6 +486,7 @@ const downDist = (f, s) => {
 const printTime = (time) => {
     const min = Math.trunc(time);
     const sec = (time - min === 0.5) ? '30' : '00';
+    // HW: How would you do other times?
 
     return min + ':' + sec;
 };
@@ -578,7 +579,7 @@ const regPlay = (game, pl1, pl2) => {
 
 const drawPlay = (game, plr, play) => {
     console.log('drawPlay');
-    const cardNum = "SRLRSPLPTP".indexOf(play) / 2;
+    const cardNum = "SRLRSPLPTPHM".indexOf(play) / 2;
     game.players[plr].decPlays(cardNum);
     console.log(game.players[plr].plays);
 };
@@ -643,7 +644,6 @@ const bigPlay = (game, num) => {
             } else {
                 game.thisPlay.dist = -10;  // 10-yard penalty on off
             }
-            game.thisPlay.dist = 25;
         } else {
             if (die === 6) {
                 alert('FUMBLE!!!');
@@ -656,7 +656,6 @@ const bigPlay = (game, num) => {
                     game.thisPlay.dist = 25;
                 }
             }
-
             changePoss(game, 'to');
         }
     }
@@ -719,11 +718,174 @@ const trickPlay = (game) => {
 };
 
 const fieldGoal = (game, ono) => {
+    const name = game.players[game.off_num].team.name;
+    let make = true;
+    let spt = 100 - game.spot;
+    let fdst = spt + 17;
+    const die = rollDie();
+    
+    alert(name + ' attempting a ' + fdst + '-yard field goal...');
+    
+    // Ice kicker
+    if (game.time_change === 4 && game.last_call_to !== game.off_num) {
+      die++;
+     console.log('Kicker iced!');
+    }
 
+    if (fdst > 65) {
+        const tmp = randInt(1, 1000);
+        make = tmp === fdst;  // 1 in 1000 chance you get fdst
+    } else if ((fdst >= 60 && die < 6) || (fdst >= 50 && die < 5) || (fdst >= 40 && die < 4) || (fdst >= 30 && die < 3) || (fdst >= 20 && die < 2)) {
+        make = false;
+    }
+
+    // LATER: Field goal graphics will go here
+
+    if (make) {
+        alert(name + ' field goal is good!');
+        scoreChange(ono, 3);
+        if (game.isOT()) {
+            // Maybe the graphics are different here
+        } else {
+            game.status = -3;
+        }
+    } else {
+        alert(name + ' field goal is no good...');
+        if (!game.isOT()) {
+            changePoss('fg');
+        }
+    }
+
+    // LATER: addRecap()
+    // addRecap(..., fdst + '-yd FG ' + (make ? 'good' : 'missed'));
+
+    if (game.isOT()) {
+        game.ot_poss = -Math.abs(game.ot_poss);
+    }
 };
 
 const punt = (game, ono, stat) => {
+    const oName = game.players[game.off_num].team.name;
+    const dName = game.players[game.def_num].team.name;
+    let block = false;
+    let touchback = false;
+    let possession = true;
+    let kickDist = 0;
+    let retDist = 0;
 
+    // Safety Kick
+    if (game.status === -4) {
+        // Probably reset graphics
+        game.spot = 35;
+        // moveBall('s');
+    // Punt
+    } else {
+        // Add Recap for punt, maybe remove first down sticks
+    }
+
+    // printDown('PUNT');
+    alert(oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...');
+
+    // Check block (not on Safety Kick)
+    if (game.status !== -4 && rollDie() === 6) {
+        if (rollDie() === 6) {  // 1 in 36 chance, must roll TWO sixes in a row
+            block = true;
+        }
+    }
+
+    // Get yard card
+    if (!block) {
+        // Yard card times 10 and, if heads, add 20
+        kdst = 10 * game.decYards() / 2 + 20 * coinFlip();
+        
+        // Check for touchbacks
+        if (game.spot + kdst > 100) {
+            touchback = true;
+        }
+    }
+
+    alert('The punt is up...');
+
+    if (touchback) {
+        alert('Deep kick!');
+        // moveBall('c');
+    } else if (block) {
+        alert(dName + ' blocked the punt!!!');
+        // addRecap( blocked punt )
+    // Regular punt/safety kick 
+    } else {
+        game.thisPlay.dist = kdst;
+        // moveBall('k');
+    }
+
+    game.spot += kdst;
+
+    // Check muff, but not on safety kick
+    if (!touchback && !block && game.status !== -4 && rollDie() === 6) {
+        if (rollDie() === 6) {
+            possession = false;
+        }
+    }
+
+    if (possession) {
+        if (touchback) {
+            changePoss('k');
+        } else {
+            changePoss('pnt');
+        }
+    } else {
+        alert(dName + ' muffed the kick!\n' + oName + ' recovers the ball...');
+        // addRecap( muffed punt )
+        // record turnover to def_num
+    }
+
+    // Return
+    if (possession && !touchback && !block) {
+        const mlt = game.decMults().card;
+        const yrd = game.decYards();
+
+        if (mlt === 'King') {
+            mlt = 7;
+        } else if (mlt === 'Queen') {
+            mlt = 4;
+        } else if (mlt === 'Jack') {
+            mlt = 1;
+        } else {
+            mlt = -0.5;
+        }
+
+        retDist = Math.round(mlt * yrd);
+
+        let msg = 'The return:\n';
+        if (rdst === 0) {
+            msg += 'No return.';
+        } else {
+            if (game.spot + retDist >= 100) {
+                game.status = 101;
+                // addRecap( punt ret TD )
+                retDist = 100 - game.spot;
+            } else if (game.spot + retDist <= 0) {
+                game.status = 102;
+                // addRecap( punt ret safety )
+                retDist = -game.spot;
+            }
+
+            game.thisPlay.dist = retDist;
+            // moveBall('k');
+            game.spot += retDist;
+
+            msg += dName + ' returns for ' + retDist + ' yards.';
+        }
+    } else if (touchback) {
+        alert(dName + ' takes a touchback...');
+        game.spot = 20;
+        // moveBall('s')  // Maybe
+    }
+
+    // If you didn't score, post-punt
+    if (game.status === -4 || game.status === 16) {
+        game.status = 6;
+    }
 };
 
 const hailMary = (game) => {
@@ -766,7 +928,7 @@ const endPlay = (game) => {
     const p1 = game.players[1].currentPlay;
     const p2 = game.players[2].currentPlay;
 
-    if (game.status > 10 && game.status <= 14 || game.status === 17) {
+    if ((game.status > 10 && game.status <= 14) || game.status === 17) {
         calcDist(game, p1, p2);
 
         console.log('Play over - ball is moving...');
@@ -1294,7 +1456,7 @@ const playGame = (game) => {
 const gameLoop = (game, test = 11) => {
     game.status = test;
     if (test === 0) {
-        game.current_time = 0.5;
+        game.current_time = -0.5;  // LATER: Remember to check
     }
 
     while (game.status < 900) {
@@ -1302,9 +1464,7 @@ const gameLoop = (game, test = 11) => {
             //game.save('as-' + datetime.now().strftime("%m.%d.%Y-%H.%M.%S"))
             if (game.status < 0) {
                 // kickoff(game.status);
-            }
-
-            if (game.status > 10 && game.status < 100 || game.two_point) {
+            } else if (game.status > 10 && game.status < 100 || game.two_point) {
                 playMechanism(game);
             }
 
