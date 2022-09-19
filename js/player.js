@@ -65,19 +65,26 @@ export default class Player {
         } else {
             this.plays[idx]--;
 
-            if (this.plays[idx] <= 0) {
-                let refill = true;
-                // Check to see if the plays array is empty
-                this.plays.forEach(play => {
-                    if (play > 0) {
-                        refill = false;
-                    }
-                });
+            // if (this.plays[idx] <= 0) {
+
+                // const refill = this.plays.every(play => {
+                //     return play <= 0;
+                // });
                 
-                if (refill) {
-                    this.fillPlays('p');
-                }
+                // // Check to see if the plays array is empty
+                // this.plays.forEach(play => {
+                //     if (play > 0) {
+                //         refill = false;
+                //     }
+                // });
+                
+                // if (refill) {
+                //     this.fillPlays('p');
+                // }
+            if (this.plays.every(play => play <= 0)) {
+                this.fillPlays('p');
             }
+            // }
         }
     }
 
