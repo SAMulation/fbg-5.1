@@ -148,13 +148,14 @@ export default class Game {
         return card + 1;
     }
 
-    // NEXT get, set, dec
 
     fillYards() {
         this.yards = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     }
 
-        // NEXT get, set, dec
+    callTime(p) {
+        this.players[p].timeouts--;
+    }
 }
 
 // LATER

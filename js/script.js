@@ -177,6 +177,162 @@ const pickPlay = (game) => {
     }
 };
 
+const cpu_time = (game) => {
+    const toCount = game.players[2].timeouts;
+    const ono = game.off_num;
+
+    if (toCount > 0) {}
+        const qtr = game.qtr;
+        const ctim = game.current_time;
+        const spt = game.spot;
+        const p1s = game.players[1].score;
+        const p2s = game.players[2].score;
+        let endHalf = false;
+        let lastMin = false;
+        let ballBack = false;
+        let kick = false;
+
+        // End half and losing
+        endHalf = ((ono == 2 && qtr == 2 || qtr == 4) && p2s <= p1s && ctim <= 1 && game.down != 4);
+
+        // Last minute with fav||able spot
+        if (!endHalf) {
+            lastMin = ((ono == 1 && spt < 50 || ono == 2 && spt >= 50) && qtr == 2 && ctim <= 1);
+        }
+        // Chance to get the ball back
+        if (!endHalf && !lastMin) {
+            ballBack = ((qtr == 2 || qtr ==4) && ctim == 0 && ono == 1 && game.players[1].timeouts == 0 && game.down == 4);
+        }
+        // Timeout on kickoff
+        if (!endHalf && !lastMin && !ballBack) {
+            kick = (qtr == 4 && ctim <= .5 && game.status == -3 && p2s < p1s);
+        }
+        if (endHalf || lastMin || ballBack || kick) {
+            game.callTime(2);
+            // print_timeout()
+        }
+};
+
+const cpu_play = (game) => {
+
+
+    if (game.off_num === 2) {
+        const qtr = game.qtr;
+        const curtim = game.current_time;
+        const toCount = game.players[2].timeouts;
+        const tchg = game.time_change;
+        const qlen = game.qtr_length;
+        const spt = game.spot;
+        const hm = game.players[2].hm;
+        const dwn = game.down;
+        const fdn = game.fst_down;
+        const diff = game.players[1].score - game.players[2].score;
+        let scoreBlock = 0;
+        let timeBlock = 0;
+        let decision = null;
+
+        // Time block
+        if (curtim === 0 && (qtr === 2 || qtr === 4) && toCount === 0 && tchg !== 4) {
+            timeBlock = 1;  // Last play
+        } else if (curtim <= 0.5 && qtr === 4) {
+            timeBlock = 2;  // Late game
+        } else if (qlen <= 2 && qtr >= 3 && qtr <= 4 || curtim <= 4 && qtr === 4) {
+            timeBlock = 3;  // Some left
+        } else if (qlen <= 4 && qtr >= 3 && qtr <= 4 || curtim <= 8 && qtr === 4) {
+            timeBlock = 4;  // Lots left
+        }
+
+        // Score Block
+        if (diff >= 1) {
+            if (diff <= 3) {
+                scoreBlock = 1;  // Down a FG
+            } else if (diff <= 8) {
+                scoreBlock = 2;  // Down a possession
+            } else if (diff <= 11) {
+                scoreBlock = 3;  // Down a poss + FG
+            } else {
+                scoreBlock = 4;  // Down 2+ TDs
+            }
+        }
+
+        // Put it all together
+        // Half over, kick a FG
+        if (spt >= 60 && (timeBlock === 1 && qtr ===2 || scoreBlock === 0 && timeBlock === 1 && qtr === 4)) {
+            dec = 'FG';
+        }
+
+        // Hail mary
+        if (!dec && hm && (timeBlock === 1 && scoreBlock > 1 || timeBlock === 2 && scoreBlock === 1 && spt < 70 || timeBlock === 2 && scoreBlock > 1)) {
+            dec = 'HM';
+        }
+
+        // Gotta go for it
+        if (!dec && timeBlock === 1 && scoreBlock === 1) {
+            if (spt >= 60) {
+                dec = 'FG';  // To win or tie
+            } else if (hm) {
+                dec = 'HM';
+            }
+        }
+
+        // OT go for it
+        if (!dec && qtr > 4 && scoreBlock === 2 && dwn === 4) {
+            if (hm && fdn - spt > 10) {
+                dec = 'HM';
+            } else {
+                dec = 'GO';  // Cuz there are no punts
+            }
+        }
+
+        // 4th down, dire
+        if (!dec && dwn === 4 && (timeBlock >= 1 && timeBlock <= 2 && scoreBlock === 1 || timeBlock >= 3 && scoreBlock === 3)) {
+            if (spt >= 60){
+                dec = 'FG';
+            } else {
+                if (hm && fdn - spt > 10) {
+                    dec = 'HM';
+                } else {
+                    dec = 'GO';
+                }
+            }
+        }
+
+        // 4th down, go
+        if (!dec && dwn === 4 && (timeBlock === 3 && scoreBlock >= 1 && scoreBlock <=4 || timeBlock === 4 && scoreBlock === 4)) {
+            if (hm && fdn - spt > 10) {
+                dec = 'HM';
+            } else {
+                dec = 'GO';
+            }
+        }
+
+        // 4th down, regular choices
+        if (!dec && dwn === 4) {
+            if (coinFlip() && (spt >= 98 || spt >= 50 && spt <= 70) && fdn - spt <= 3) {
+                dec = 'GO';
+            }
+
+            // Not going for it, so...
+            if (!dec) {
+                if (spt >= 60) {
+                    dec = 'FG';
+                } else {
+                    dec = 'PT';
+                }
+            }
+        }
+    
+        // Set the play
+        if (!(!dec || dec === 'GO' || game.two_point)) {
+            game.players[2].currentPlay = dec;
+        }    
+    }
+};
+
+const cpu_pages = (game, p) => {
+
+};
+
 const playPages = (game, p) => {
     let selection = null;
     let test = 'SRLRSPLPTPHMFGPT';
