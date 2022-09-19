@@ -144,20 +144,22 @@ const pickPlay = (game) => {
         game.players[p].currentPlay = '';
 
         // Computer Stuff
-        if (game.status !== 999 && !(game.isReal(2))) {
+        if (game.status !== 999 && p === 2 && !(game.isReal(2))) {
             // This is where the computer can call timeout or pick special play
+            alert(game.players[2].team.name + ' are picking their play...');
             // # LATER Print that computer is picking play
-            // if game.get("time_change") == 0:
-            //     pass
-            //     # LATER cpu_time(game, plrs)
-            // # LATER cpu_play(game, plrs)   
+            if (game.time_change == 0) {
+                cpuTime(game);
+            }
+            
+            cpuPlay(game);   
         }
 
         while (game.players[p].currentPlay === '' && game.status !== 999) {
             if (game.isReal(p)) {
                 playPages(game, p);
             } else {
-                //  cpu_pages(game, p)  // It used to say 'plrs' for second param investigate
+                cpuPages(game);  // It used to say 'plrs' for second param investigate
             }
         }
         
@@ -177,7 +179,7 @@ const pickPlay = (game) => {
     }
 };
 
-const cpu_time = (game) => {
+const cpuTime = (game) => {
     const toCount = game.players[2].timeouts;
     const ono = game.off_num;
 
@@ -213,9 +215,7 @@ const cpu_time = (game) => {
         }
 };
 
-const cpu_play = (game) => {
-
-
+const cpuPlay = (game) => {
     if (game.off_num === 2) {
         const qtr = game.qtr;
         const curtim = game.current_time;
@@ -329,8 +329,23 @@ const cpu_play = (game) => {
     }
 };
 
-const cpu_pages = (game, p) => {
+const cpuPages = (game) => {
+    let total = 0;
+    let play = -1;
 
+    while (total === 0) {
+        play = randInt(0, 4);
+        
+        // Make it harder to pick Trick Play
+        if (play === 4) {
+            play = randInt(0, 4);
+        }
+
+        total = game.players[2].plays[play];
+    }
+
+    console.log("SRLRSPLPTP".substring(2 * play, 2 * play + 2));
+    game.players[2].currentPlay = "SRLRSPLPTP".substring(2 * play, 2 * play + 2);
 };
 
 const playPages = (game, p) => {
@@ -649,7 +664,7 @@ const bigPlay = (game, num) => {
 
 const trickPlay = (game) => {
     const die = rollDie();
-    alert((game.status === 12 ? game.players[game.home].team.name : game.players[game.away].team.name) + ' trick play!');
+    alert((game.status === 12 ? game.players[game.off_num].team.name : game.players[game.def_num].team.name) + ' trick play!');
 
     if (die === 2) {
         // If timeout called, return
@@ -836,9 +851,10 @@ const calcTimes = (game, p1, p2, multIdx) => {
 };
 
 const reportPlay = (game, p1, p2) => {
-    const tmp = game.thisPlay.multiplier === 999 ? '/' : null;
+    const times = game.thisPlay.multiplier === 999 ? '/' : null;
+    const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card;
 
-    alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + game.thisPlay.multiplier_card.card + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (tmp ? tmp : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
+    alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
 };
 
 const checkScore = (game, bon, dst) => {
