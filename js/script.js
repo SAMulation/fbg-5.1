@@ -215,6 +215,36 @@ const cpuTime = (game) => {
     }
 };
 
+const timeout = (game, p) => {
+    const tChg = game.time_change;
+    const toCount = game.players[p].timeouts;
+    let msg = '';
+
+    // 9 = Two-min call
+    if (tChg === 9) {
+        msg = 'Timeout not called, two minute warning...';
+    } else if (game.two_point) {
+        msg = 'Timeout not called, two-point conversion...';
+    // 4 = Timeout called
+    } else if (tChg !== 4) {
+        // Call timeout
+        if (toCount > 0) {
+            game.callTime(p);
+            game.last_call_to = p;
+            game.time_change = 4;
+            msg = 'Timeout called by ' + game.players[p].team.name;
+            // LATER: Print timeout change
+        // No timeouts left
+        } else {
+            msg = 'Timeout not called, no timeouts...';
+        }
+    } else {
+        msg = "Timeout not called, one's been called...";
+    }
+
+    alert(msg);
+};
+
 const cpuPlay = (game) => {
     if (game.off_num === 2) {
         const qtr = game.qtr;
@@ -1099,6 +1129,40 @@ const scoreChange = (game, scrNo, pts) => {
     // Add to the quarter score for the game recap
 };
 
+const safety = (game) => {
+    alert(game.players[game.def_num].team.name + ' forced a safety!!');
+    scoreChange(game.def_num, 2);
+    if (game.isOT()) {
+        game.ot_poss = 0;
+    } else {
+        game.status = -4;
+    }
+    // addRecap( safety )
+};
+
+const touchdown = (game) => {
+    alert(game.players[game.off_num].team.name + ' scored a touchdown!!!');
+    scoreChange(game.off_num, 6);
+
+    // addRecap ( touchdown )
+
+    if (patNec(game)) {
+        pat(game);
+    }
+
+    if (game.isOT()) {
+        game.ot_poss = -game.ot_poss;
+    }
+};
+
+const patNec = (game) => {
+
+};
+
+const pat = (game) => {
+
+};
+
 const updateDown = (game) => {
     let coin;
 
@@ -1482,6 +1546,65 @@ const gameLoop = (game, test = 11) => {
         game.status = 0;
     }
 };
+
+const kickoff = (game) => {
+    const oNum = game.off_num;
+    const dNum = game.def_num;
+    game.down = 0;
+    game.fst_down = 0;
+
+    prePlay(game, 3);  // NOW: Check on this
+
+    if (game.status === -4) {
+        punt(game, oNum, -4);  // Safety Kick
+    // Regular old kickoff
+    } else {
+        // Reset board
+        game.spot = 65;
+        game.thisPlay.dist = 0;
+        // moveBall('s');
+        
+        kickPage(game, oNum);
+        if (game.status !== 999) {
+            returnPage(game, dNum);
+        }
+        if (game.status !== 999) {
+            kickDec(game);
+        }
+    }
+}
+
+const kickPage = (game, oNum) => {
+    const oName = game.players[oNum].team.name;
+    //printDown('KICK');
+    let kckDec = null;
+
+    if (game.isReal(oNum)) {
+        // This is where the play selection occurs
+
+        // kckDec = SOMETHING;
+        
+    // Computer picks kickoff
+    } else {
+        alert(oName + ' selecting kickoff type...');
+        cpuTime(game);
+        
+        const qtr = game.qtr;
+        const ctim = game.current_time;
+        const p2s = game.players[2].score;
+        const p1s = game.players[1].score;
+
+        if ((qtr === 4 && ctim <=3 && p2s < p1s) || ((qtr === 3 && ctim <=7 || qtr === 4) && p1s - p2s > 8)) {
+            kckDec = 'OK';
+        } else if ((qtr === 2 || qtr === 4) && ctim <= 1 && p2s > p1s) {
+            kckDec = 'SK';
+        } else {
+            kckDec = 'RK';
+        }
+    }
+
+    game.players[oNum].currentPlay = kckDec;
+}
 
 const kickDec = (game) => {
     const oName = game.players[game.off_num].team.name;
