@@ -1483,6 +1483,137 @@ const gameLoop = (game, test = 11) => {
     }
 };
 
+const kickDec = (game) => {
+    const oName = game.players[game.off_num].team.name;
+    const dName = game.players[game.def_num].team.name;
+    const kickType = game.players[game.off_num].currentPlay;
+    const retType = game.players[game.def_num].currentPlay;
+    let touchback = false;
+    let possession = true;
+    let tmp = null;
+    let kickDist = 0;
+    let mltCard = '';
+    let yard = 0;
+    let multiplier = -1;
+    // alert('Teams are lining up for the kick...);
+
+    if (kickType === 'RK') {
+        if (retType === 'RR') {
+            tmp = rollDie();
+            kickDist = 5 * tmp - 65;
+            mltCard = game.decMults().card;
+            yard = game.decYards();
+
+            if (mltCard === 'King') {
+                multiplier = 10;
+            } else if (mltCard === 'Queen') {
+                multiplier = 5;
+            } else if (mltCard === 'Jack') {
+                multiplier = 0;
+            }
+
+            retDist = multiplier * yard;
+        // Touchback
+        } else {
+            touchback = true;
+        }
+    } else if (kickType === 'OK') {
+        alert(oName + ' onside kick!!!');
+        let odds = 6;
+        if (retType === 'RK') {
+            odds = 12;
+        }
+
+        tmp = randInt(1,odds);
+        const okResult = tmp === 1;  // 1 in 'odds' odds of getting OK
+        kickDist = -10 - tmp;
+        retDist = tmp;
+    // Squib Kick
+    } else {
+        tmp = rollDie();
+        kickDist = -15 - 5 * tmp;
+        if (retType === 'RR') {
+            tmp = rollDie() + rollDie();
+            retDist = tmp;
+        } else {
+            retDist = 0;
+        }
+    }
+
+    alert('The kick is up...');
+
+    if (touchback) {
+        alert('Deep kick!');
+        // moveBall('c');
+    } else {
+        alert(oName + ' kicks...');
+        game.thisPlay.dist = kickDist;
+        // moveBall('k');
+        game.spot += kickDist;
+    }
+
+    if (kickType === 'OK') {
+        if (okResult) {
+            alert(oName + ' recovers!');
+            possession = false;
+            retDist = -retDist;
+        } else {
+            alert(dName + ' recovers!');
+        }
+    }
+
+    if (possession) {
+        changePoss('k');
+    }
+
+    if (!touchback) {
+        let msg = 'The return...\n';
+        if (retDist === 0) {
+            msg += 'No return\n';
+        } else {
+            tmp = game.spot;  // Nec?
+        
+            if (possession) {
+                msg += dName + ' returns...\n';
+            } else {
+                msg += oName + ' returns...\n';
+            }
+
+            if (game.spot + retDist >= 100) {
+                game.status = 101;
+                // addRecap( kick return TD )
+                retDist = 100 - game.spot;
+            } else if (game.spot + retDist <= 0) {
+                game.status = 102;
+                retDist = -game.spot;
+            }
+
+            game.thisPlay.dist = retDist;
+            // moveBall('k');
+            game.spot += retDist;
+            msg += (retDist > 0 ? '+' : '-') + Math.abs(retDist) + '-yard return!';
+        }
+    } else {
+        msg += 'Touchback...';
+        game.spot = 25;
+        // moveBall('s');
+        // Return Timeout
+        if (game.time_change === 4) {
+            returnTime(last_call_to);
+        }
+        if (game.two_min) {
+            game.two_min = false;
+        }
+        // LATER: Change to 'tb' or something better
+        game.time_change = 1;
+    }
+    alert(msg);
+
+    if (game.status < 0) {
+        game.status = Math.abs(game.status);  // Make status positive (no more kicking)
+    }
+}
+
 // MISC FUNCTIONS
 // This is from mdn: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 // Refactored to be an arrow function for consistency and renamed for convenience
