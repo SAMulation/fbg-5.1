@@ -388,6 +388,41 @@ const cpuPages = (game, state = 'reg') => {
         }
 
         game.players[2].currentPlay = selection;
+    } else if (state === 'kick') {
+        alert(game.players[2].team.name + ' selecting kickoff type...');
+        cpuTime(game);
+        
+        const qtr = game.qtr;
+        const ctim = game.current_time;
+        const p2s = game.players[2].score;
+        const p1s = game.players[1].score;
+        let kckDec = 'RK';
+
+        if ((qtr === 4 && ctim <=3 && p2s < p1s) || ((qtr === 3 && ctim <=7 || qtr === 4) && p1s - p2s > 8)) {
+            kckDec = 'OK';
+        } else if ((qtr === 2 || qtr === 4) && ctim <= 1 && p2s > p1s) {
+            kckDec = 'SK';
+        }
+
+        game.players[2].currentPlay = kckDec;
+    } else if (state === 'ret') {
+        alert(game.players[2].team.name + ' selecting return type...');
+        cpuTime(game);
+        
+        const qtr = game.qtr;
+        const ctim = game.current_time;
+        const p2s = game.players[2].score;
+        const p1s = game.players[1].score;
+        let retDec = 'RR';
+
+        // Very late game and P1 losing -OR- later game and P1 losing badly
+        if ((qtr === 4 && ctim <= 3 && p1s < p2s) || ((qtr === 3 && ctim <=7 || qtr === 4) && p2s - p1s > 8)) {
+            retDec = 'OR';
+        } else if (coinFlip()) {
+            retDec = 'TB';
+        }
+
+        game.players[2].currentPlay = retDec;
     }
 
 };
@@ -1192,7 +1227,7 @@ const pat = (game) => {
             cpuPages(game, 'xp');
         }
 
-        selection = game.oNum.currentPlay;
+        selection = game.players[oNum].currentPlay;
     }
 
     if (selection == '2P') {
@@ -1544,6 +1579,19 @@ const resetTime = (game) => {
     }
 };
 
+const endGame = (game, winner) => {
+    const wName = game.players[winner].team.name;
+
+    // printQtr('FINAL');
+    // display game over
+    // statBoard()
+    // record final qtr scores
+    alert(wName + ' wins the game ' + game.players[winner].score + ' - ' + game.players[game.opp(winner)].score + '!!!');
+    game.status = 900 + winner;
+    // fireworks();
+    // storeStats(winner, false);
+};
+
 const changePoss = (game, mode) => {
     // Modes explained
     // '' = just change poss
@@ -1688,6 +1736,7 @@ const kickoff = (game) => {
         // moveBall('s');
         
         kickPage(game, oNum);
+
         if (game.status !== 999) {
             returnPage(game, dNum);
         }
@@ -1698,35 +1747,27 @@ const kickoff = (game) => {
 }
 
 const kickPage = (game, oNum) => {
-    const oName = game.players[oNum].team.name;
-    //printDown('KICK');
-    let kckDec = null;
+    // const oName = game.players[oNum].team.name;
+    // printDown('KICK');
+    // let kckDec = null;
 
     if (game.isReal(oNum)) {
-        // This is where the play selection occurs
-
-        // kckDec = SOMETHING;
-        
-    // Computer picks kickoff
+        playPages(game, oNum, 'kick');
     } else {
-        alert(oName + ' selecting kickoff type...');
-        cpuTime(game);
-        
-        const qtr = game.qtr;
-        const ctim = game.current_time;
-        const p2s = game.players[2].score;
-        const p1s = game.players[1].score;
-
-        if ((qtr === 4 && ctim <=3 && p2s < p1s) || ((qtr === 3 && ctim <=7 || qtr === 4) && p1s - p2s > 8)) {
-            kckDec = 'OK';
-        } else if ((qtr === 2 || qtr === 4) && ctim <= 1 && p2s > p1s) {
-            kckDec = 'SK';
-        } else {
-            kckDec = 'RK';
-        }
+        cpuPages(game, 'kick');
     }
 
-    game.players[oNum].currentPlay = kckDec;
+    // game.players[oNum].currentPlay = kckDec;
+}
+
+const returnPage = (game, dNum) => {
+    // const dName = game.players[dNum].team.name;
+
+    if (game.isReal(oNum)) {
+        playPages(game, dNum, 'ret');
+    } else {
+        cpuPages(game, 'ret');
+    }
 }
 
 const kickDec = (game) => {
