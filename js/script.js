@@ -259,7 +259,7 @@ const cpuPlay = (game) => {
         const diff = game.players[1].score - game.players[2].score;
         let scoreBlock = 0;
         let timeBlock = 0;
-        let decision = null;
+        let dec = null;
 
         // Time block
         if (curtim === 0 && (qtr === 2 || qtr === 4) && toCount === 0 && tchg !== 4) {
@@ -435,7 +435,7 @@ const playPages = (game, p, state = 'reg') => {
         test = 'XP2P';
     } else if (state === 'kick') {
         test = 'RKSKOK';
-    } else if (state === 'rec') {
+    } else if (state === 'ret') {
         test = 'RRORTB';
     }
 
@@ -522,15 +522,16 @@ const playValid = (game, p, sel) => {
 
 const loadPlay = (p, state = 'reg') => {
     let options = game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + '\n';
-    options += game.down + ending(game.down) + ' & ' + downDist(game.fst_down, game.spot) + ' | ' + printTime(game.current_time) + ' | Ball on: ' + printSpot(game, game.spot) + '\n';
-    options += game.players[p].team.name + ' pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
     // LATER: This will be vastly different in a graphical world
-    if (state === 'xp') {
+    if (state === 'reg') {
+        options += game.down + ending(game.down) + ' & ' + downDist(game.fst_down, game.spot) + ' | ' + printTime(game.current_time) + ' | Ball on: ' + printSpot(game, game.spot) + '\n';
+        options += game.players[p].team.name + ' pick your play:\n[SR] Short Run   [LR] Long Run   [SP] Short Pass\n[LP] Long Pass   [TP] Trick Play   [HM] Hail Mary\n[FG] Field Goal   [PT] Punt\n';
+    } else if (state === 'xp') {
         options += game.players[p].team.name + ' pick your play:\n[XP] Extra Point\n[2P] Two Point Conversion\n';
     } else if (state === 'kick') {
         options += game.players[p].team.name + ' pick your play:\n[RK] Regular Kick\n[SK] Squib Kick\n[OK] Onside Kick\n';
-    } else if (state === 'rec') {
-        options += game.players[p].team.name + ' pick your play:\n[RK] Regular Returnb\n[OR] Onside Return\n[TB] Touchback\n';
+    } else if (state === 'ret') {
+        options += game.players[p].team.name + ' pick your play:\n[RR] Regular Return\n[OR] Onside Return\n[TB] Touchback\n';
     }
 
     return options;
@@ -679,7 +680,7 @@ const samePlay = (game) => {
     } else {
         if (coin) {
             alert('Picked!');
-            changePoss('to');
+            changePoss(game, 'to');
         }
         game.thisPlay.dist = 0;
         game.thisPlay.yard_card = '/';
@@ -822,7 +823,7 @@ const fieldGoal = (game, ono) => {
 
     if (make) {
         alert(name + ' field goal is good!');
-        scoreChange(ono, 3);
+        scoreChange(game, ono, 3);
         if (game.isOT()) {
             // Maybe the graphics are different here
         } else {
@@ -831,7 +832,7 @@ const fieldGoal = (game, ono) => {
     } else {
         alert(name + ' field goal is no good...');
         if (!game.isOT()) {
-            changePoss('fg');
+            changePoss(game, 'fg');
         }
     }
 
@@ -908,9 +909,9 @@ const punt = (game, ono, stat) => {
 
     if (possession) {
         if (touchback) {
-            changePoss('k');
+            changePoss(game, 'k');
         } else {
-            changePoss('pnt');
+            changePoss(game, 'pnt');
         }
     } else {
         alert(dName + ' muffed the kick!\n' + oName + ' recovers the ball...');
@@ -985,7 +986,7 @@ const hailMary = (game) => {
         dst = 40;
     } else if (die === 5) {
         msg = 'PICKED!';
-        changePoss('to');
+        changePoss(game, 'to');
     } else {
         dst = 101;
     }
@@ -1007,7 +1008,7 @@ const endPlay = (game) => {
     const p1 = game.players[1].currentPlay;
     const p2 = game.players[2].currentPlay;
 
-    if ((game.status > 10 && game.status <= 14) || game.status === 17) {
+     if ((game.status > 10 && game.status <= 14) || game.status === 17) {
         calcDist(game, p1, p2);
 
         console.log('Play over - ball is moving...');
@@ -1020,6 +1021,7 @@ const endPlay = (game) => {
         if (game.two_point) {
             game.spot = game.thisPlay.dist + game.spot;
         }
+    }
 
         checkScore(game, game.thisPlay.bonus, game.thisPlay.dist);
 
@@ -1038,7 +1040,7 @@ const endPlay = (game) => {
             game.status = 11;
         }
         console.log(game.status);
-    }
+   // }
 };
 
 const calcDist = (game, p1, p2) => {
@@ -1155,15 +1157,15 @@ const checkScore = (game, bon, dst) => {
     }
 
     if (game.status === 101) {
-        // touchdown(game);
-        alert('Congrats!\n\nYou scored a touchdown and broke the game. Come back later for more gameplay...\n');
-        game.status = 999;
+        touchdown(game);
+        // alert('Congrats!\n\nYou scored a touchdown and broke the game. Come back later for more gameplay...\n');
+        //game.status = 101;
     }
     
     if (game.status === 102) {
-        // safety(game);
-        alert('Congrats!\n\nYou scored a safety and broke the game. Come back later for more gameplay...\n');
-        game.status = 999;
+        safety(game);
+        // alert('Congrats!\n\nYou scored a safety and broke the game. Come back later for more gameplay...\n');
+        //game.status = 102;
     }
 };
 
@@ -1180,7 +1182,7 @@ const scoreChange = (game, scrNo, pts) => {
 
 const safety = (game) => {
     alert(game.players[game.def_num].team.name + ' forced a safety!!');
-    scoreChange(game.def_num, 2);
+    scoreChange(game, game.def_num, 2);
     if (game.isOT()) {
         game.ot_poss = 0;
     } else {
@@ -1191,7 +1193,7 @@ const safety = (game) => {
 
 const touchdown = (game) => {
     alert(game.players[game.off_num].team.name + ' scored a touchdown!!!');
-    scoreChange(game.off_num, 6);
+    scoreChange(game, game.off_num, 6);
 
     // addRecap ( touchdown )
 
@@ -1245,7 +1247,7 @@ const pat = (game) => {
 
         if (die !== 6) {
             alert(oName + ' XP good!');
-            scoreChange(oNum, 1);
+            scoreChange(game, oNum, 1);
         } else {
             alert(oName + ' XP no good...');
             // Might need some graphics here
@@ -1370,7 +1372,7 @@ const gameCtrl = (game) => {
     if (game.status < 900) {
         // Set up OT Challenge
         if (game.qtr === 5 && game.game_type === 'otc' && game.rec_first != game.off_num) {
-            changePoss(game, '');
+            changePoss(game);
             // print_needle(-game.off_num);
             game.ot_poss = 2;
         }
@@ -1382,7 +1384,7 @@ const coinToss = (game) => {
     const homeName = game.players[game.home].team.name;
     let coinPick = null;
     let result = '';
-    let coinFlip = null;
+    let actFlip = null;
     let decPick = null;
     let rec_fst = 'away';
 
@@ -1404,12 +1406,12 @@ const coinToss = (game) => {
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '!\n';
     result += 'Coin toss!!!\n\n\n\n\n';
     // Some sort of graphic
-    coinFlip = coinFlip() ? 'H' : 'T';
-    result += 'It was ' + (coinFlip === 'H' ? 'heads' : 'tails') + '...';
+    actFlip = coinFlip() ? 'H' : 'T';
+    result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '...';
     alert(result);
 
-    if (game.num_plr === 2 || coinFlip === coinPick && game.away === 1 || coinFlip !== coinPick && game.home === 1) {
-        result = (coinFlip === coinPick ? awayName :homeName) + ' choose, ';
+    if (game.num_plr === 2 || actFlip === coinPick && game.away === 1 || actFlip !== coinPick && game.home === 1) {
+        result = (actFlip === coinPick ? awayName :homeName) + ' choose, ';
         do {
             if (game.isOT()) {
                 result += 'Ball [1]st or Ball [2]nd?\n';
@@ -1428,7 +1430,7 @@ const coinToss = (game) => {
             }
         } while ((!game.isOT() && decPick !== 'K' && decPick !== 'R') || (game.isOT() && decPick !== 1 && decPick !== 2));
     } else {  // Computer choosing
-        alert((coinFlip === coinPick ? awayName :homeName) + ' choosing...');
+        alert((actFlip === coinPick ? awayName :homeName) + ' choosing...');
 
         decPick = randInt(1,2);
         if (!game.isOT()) {
@@ -1436,7 +1438,7 @@ const coinToss = (game) => {
         }
     }
 
-    result = (coinFlip === coinPick ? awayName : homeName) + ' ';
+    result = (actFlip === coinPick ? awayName : homeName) + ' ';
 
     if (game.isOT()) {
         if (decPick === '1') {
@@ -1455,7 +1457,7 @@ const coinToss = (game) => {
     result += '...\n';
     alert(result);
 
-    if ((coinFlip === coinPick && (decPick === '2' || decPick === 'K')) || (coinPick !== coinFlip && (decPick === '1' || decPick === 'R'))) {
+    if ((actFlip === coinPick && (decPick === '2' || decPick === 'K')) || (coinPick !== actFlip && (decPick === '1' || decPick === 'R'))) {
         rec_fst = 'home';
     }
 
@@ -1476,7 +1478,7 @@ const resetVar = (game) => {
     if (game.qtr === 0 || (game.qtr === 4 && game.game_type === 'otc')) {
         // displayBoard()
         // printNames()
-        for (let p = 0; p < 2; p++) {
+        for (let p = 1; p <= 2; p++) {
             game.players[p].score = 0;
             // printScore(p);
             // game.players[p].stats.totalYards = 0;
@@ -1509,9 +1511,12 @@ const resetVar = (game) => {
 
     if (game.qtr <= 3) {
         game.status = -1;
+        // BAND-AID
+        // game.qtr = 1;
+        // updateDown(game);
     }
 
-    if (qtr === 4 && game.game_type != 'otc' && game.players[1].score === game.players[2].score) {
+    if (game.qtr === 4 && game.game_type != 'otc' && game.players[1].score === game.players[2].score) {
         coinToss(game);
     }
 
@@ -1523,7 +1528,7 @@ const resetVar = (game) => {
         }
 
         if (game.qtr === 3 && game.off_num !== game.rec_first) {
-            changePoss('');
+            changePoss(game);
         }
         // printNeedle(-game.off_num);
 
@@ -1592,7 +1597,7 @@ const endGame = (game, winner) => {
     // storeStats(winner, false);
 };
 
-const changePoss = (game, mode) => {
+const changePoss = (game, mode = '') => {
     // Modes explained
     // '' = just change poss
     // 'k' = kick (like a kickoff)
@@ -1680,7 +1685,7 @@ const playGame = (game) => {
     //         endPlay(game);
     //     }
     // }
-    gameLoop(game);
+    gameLoop(game, 0);
 
     console.log(game);
 
@@ -1698,7 +1703,8 @@ const gameLoop = (game, test = 11) => {
         while (game.current_time >= 0 && game.status != 999) {
             //game.save('as-' + datetime.now().strftime("%m.%d.%Y-%H.%M.%S"))
             if (game.status < 0) {
-                // kickoff(game.status);
+                kickoff(game);
+
             } else if (game.status > 10 && game.status < 100 || game.two_point) {
                 playMechanism(game);
             }
@@ -1763,7 +1769,7 @@ const kickPage = (game, oNum) => {
 const returnPage = (game, dNum) => {
     // const dName = game.players[dNum].team.name;
 
-    if (game.isReal(oNum)) {
+    if (game.isReal(dNum)) {
         playPages(game, dNum, 'ret');
     } else {
         cpuPages(game, 'ret');
@@ -1782,6 +1788,7 @@ const kickDec = (game) => {
     let mltCard = '';
     let yard = 0;
     let multiplier = -1;
+    let retDist = 0;
     // alert('Teams are lining up for the kick...);
 
     if (kickType === 'RK') {
@@ -1850,11 +1857,11 @@ const kickDec = (game) => {
     }
 
     if (possession) {
-        changePoss('k');
+        changePoss(game, 'k');
     }
 
+    let msg = 'The return...\n';
     if (!touchback) {
-        let msg = 'The return...\n';
         if (retDist === 0) {
             msg += 'No return\n';
         } else {
