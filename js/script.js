@@ -359,39 +359,53 @@ const cpuPlay = (game) => {
     }
 };
 
-const cpuPages = (game) => {
-    let total = 0;
-    let play = -1;
-
-    while (total === 0) {
-        play = randInt(0, 4);
-        
-        // Make it harder to pick Trick Play
-        if (play === 4) {
+const cpuPages = (game, state = 'reg') => {
+    if (state === 'reg') {
+        let total = 0;
+        let play = -1;
+    
+        while (total === 0) {
             play = randInt(0, 4);
+            
+            // Make it harder to pick Trick Play
+            if (play === 4) {
+                play = randInt(0, 4);
+            }
+    
+            total = game.players[2].plays[play];
+        }
+    
+        console.log("SRLRSPLPTP".substring(2 * play, 2 * play + 2));
+        game.players[2].currentPlay = "SRLRSPLPTP".substring(2 * play, 2 * play + 2);
+    } else if (state === 'xp') {
+        alert(game.players[2].team.name + ' selecting PAT type...\n');
+        let selection = 'XP';
+
+        const diff = game.players[1].score - game.players[2].score;
+
+        if (diff === -5 || diff === -1 || diff === 2 || diff === 5 || diff === 9 || diff === 10 || diff === 13 || diff === 17 || diff === 18) {
+            selection = '2P';
         }
 
-        total = game.players[2].plays[play];
+        game.players[2].currentPlay = selection;
     }
 
-    console.log("SRLRSPLPTP".substring(2 * play, 2 * play + 2));
-    game.players[2].currentPlay = "SRLRSPLPTP".substring(2 * play, 2 * play + 2);
 };
 
-const playPages = (game, p) => {
+const playPages = (game, p, state = 'reg') => {
     let selection = null;
     let test = 'SRLRSPLPTPHMFGPT';
     // LATER: Use status to change validity based on play type
-    // if (state === 'xp') {
-    //     test = 'XP2P';
-    // } else if (state === 'kick') {
-    //     test = 'RKSKOK';
-    // } else if (state === 'rec') {
-    //     test = 'RRORTB';
-    // }
+    if (state === 'xp') {
+        test = 'XP2P';
+    } else if (state === 'kick') {
+        test = 'RKSKOK';
+    } else if (state === 'rec') {
+        test = 'RRORTB';
+    }
 
     // Get message to display
-    const options = loadPlay(p);
+    const options = loadPlay(p, state);
     // const options = loadPlay(state);  // LATER
     let errorMsg = null;
 
@@ -1155,11 +1169,64 @@ const touchdown = (game) => {
     }
 };
 
+// QUESTION FOR DANIEL
 const patNec = (game) => {
+    const endGameNoTO = game.qtr === 4 && game.current_time === 0 && game.time_change !== 4;
+    const endOT = game.isOT() && (game.ot_poss === 1 || (game.ot_poss === 2 && game.turnover));
+    const scoreDiff = game.players[game.off_num].score > game.players[game.def_num].score || game.players[game.def_num].score - game.players[game.off_num].score > 2;
 
+    return !((endGameNoTO || endOT) && scoreDiff);
+    // return !(endGameNoTO || endOT) || !scoreDiff;
+    // return !endGameNoTO && !endOT || !scoreDiff;
 };
 
 const pat = (game) => {
+    const oNum = game.off_num;
+    const oName = game.players[oNum].team.name;
+    let selection = '2P';  // Default in 3OT+
+
+    if (game.qtr < 7) {  // Must go for 2 in 3OT+
+        if (game.isReal(oNum)) {
+            playPages(game, oNum, 'xp');
+        } else {
+            cpuPages(game, 'xp');
+        }
+
+        selection = game.oNum.currentPlay;
+    }
+
+    if (selection == '2P') {
+        // printDown('2PT');
+        game.spot = 98;
+        // moveBall('s');
+        if (game.time_change !== 4) {
+            game.time_change = 7;  // Two-point
+        }
+        game.two_point = true;
+    } else {
+        // printDown('XP');
+        const die = rollDie();
+        // printFG(die !== 6);
+
+        if (die !== 6) {
+            alert(oName + ' XP good!');
+            scoreChange(oNum, 1);
+        } else {
+            alert(oName + ' XP no good...');
+            // Might need some graphics here
+        }
+
+        // addRecap( xp [no] good );
+
+        if (!game.isOT()) {
+            game.status = -3;  // Get ready for kickoff
+        } else {
+            game.status = 11;  // Get ready for next OT play
+        }
+    }
+
+
+
 
 };
 
@@ -1371,6 +1438,62 @@ const coinToss = (game) => {
 };
 
 const resetVar = (game) => {
+    if (game.qtr === 0 || (game.qtr === 4 && game.game_type === 'otc')) {
+        // displayBoard()
+        // printNames()
+        for (let p = 0; p < 2; p++) {
+            game.players[p].score = 0;
+            // printScore(p);
+            // game.players[p].stats.totalYards = 0;
+            // game.players[p].stats.passYards = 0;
+            // game.players[p].stats.runYards = 0;
+            // game.players[p].stats.timePoss = 0;
+            // game.players[p].stats.firstDowns = 0;
+            // game.players[p].stats.turnovers = 0;
+            // game.players[p].stats.qtrScore = 0;
+        }
+        // Add initial entry to addRecap( initial );
+        // Make a spot to store the scores for each qtr
+
+        // OT Challenge Stuff
+        if (game.qtr === 4) {
+            game.down = 0;
+            updateDown(game);  // Forces game to set itself up
+        }
+    }
+
+    // Need the equivalent of fillBoard to add all cards
+
+    let to = 3;
+    if (game.qtr >= 4) {
+        to = 1;
+    }
+    game.players[1].timeouts = to;
+    game.players[2].timeouts = to;
+    // printTO();
+
+    if (game.qtr <= 3) {
+        game.status = -1;
+    }
+
+    if (qtr === 4 && game.game_type != 'otc' && game.players[1].score === game.players[2].score) {
+        coinToss(game);
+    }
+
+    resetTime(game);
+
+    if (!game.over) {
+        if (!game.isOT()) {
+            // printTime();
+        }
+
+        if (game.qtr === 3 && game.off_num !== game.rec_first) {
+            changePoss('');
+        }
+        // printNeedle(-game.off_num);
+
+        // Make sure plays are set right for OT challenge, esp hail marys
+    }
 
 };
 

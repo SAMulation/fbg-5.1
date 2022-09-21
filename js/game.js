@@ -20,6 +20,7 @@ export default class Game {
         this.fst_down = 45;
         this.last_call_to = 0;
         this.ot_poss = -1;
+        this.over = false;
         this.qtr = 1;
         this.qtr_length = 7;
         this.rec_first = 2;
