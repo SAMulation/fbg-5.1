@@ -3,6 +3,7 @@ import Team from './team.js';
 // import Play from './play.js';
 import Game from './game.js';
 import Site from './site.js';
+import Run from './run.js';
 
 
 // GLOBAL VARIABLES
@@ -1261,10 +1262,6 @@ const pat = (game) => {
             game.status = 11;  // Get ready for next OT play
         }
     }
-
-
-
-
 };
 
 const updateDown = (game) => {
@@ -1336,14 +1333,14 @@ const timeChange = (game) => {
     }
 
     // LATER: Add this for OT
-    // if (game.ot_poss < 0) {
-    //     if (game.isOT() && game.ot_poss_switch(qtr, ono, rec_first, ot_poss)) {
-    //         changePoss(game, 'ot');
-    //     } else {
-    //         game.ot_poss_switch2()
-    //         game.ot_poss = Math.abs(game.ot_poss) - 1;
-    //     }
-    // }
+    if (game.ot_poss < 0) {
+        if (game.isOT() && game.ot_poss_switch(qtr, ono, rec_first, ot_poss)) {
+            changePoss(game, 'ot');
+        } else {
+            game.ot_poss_switch2()
+            game.ot_poss = Math.abs(game.ot_poss) - 1;
+        }
+    }
 
     if (game.qtr > 4 && game.ot_poss === 0) {
         game.current_time = -0.5;
@@ -1685,7 +1682,11 @@ const playGame = (game) => {
     //         endPlay(game);
     //     }
     // }
-    gameLoop(game, 0);
+    
+    // OLD
+    // gameLoop(game, 0);
+
+    game.runIt;
 
     console.log(game);
 
@@ -1750,7 +1751,7 @@ const kickoff = (game) => {
             kickDec(game);
         }
     }
-}
+};
 
 const kickPage = (game, oNum) => {
     // const oName = game.players[oNum].team.name;
@@ -1906,7 +1907,7 @@ const kickDec = (game) => {
     if (game.status < 0) {
         game.status = Math.abs(game.status);  // Make status positive (no more kicking)
     }
-}
+};
 
 // MISC FUNCTIONS
 // This is from mdn: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
