@@ -87,7 +87,7 @@ const playGame = (game) => {
     // OLD
     // gameLoop(game, 0);
 
-    game.runIt;
+    game.runIt();
 
     console.log(game);
 

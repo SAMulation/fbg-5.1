@@ -4,7 +4,6 @@ export default class Run {
     constructor(game) {
         // Pointer to game object
         this.game = game; 
-        this.util = new Utils();
     }
 
     playGame() {
@@ -181,7 +180,7 @@ export default class Run {
     
         if (kickType === 'RK') {
             if (retType === 'RR') {
-                tmp = this.util.rollDie();
+                tmp = Utils.rollDie();
                 kickDist = 5 * tmp - 65;
                 mltCard = game.decMults().card;
                 yard = game.decYards();
@@ -206,16 +205,16 @@ export default class Run {
                 odds = 12;
             }
     
-            tmp = this.util.randInt(1,odds);
+            tmp = Utils.randInt(1,odds);
             okResult = tmp === 1;  // 1 in 'odds' odds of getting OK
             kickDist = -10 - tmp;
             retDist = tmp;
         // Squib Kick
         } else {
-            tmp = this.util.rollDie();
+            tmp = Utils.rollDie();
             kickDist = -15 - 5 * tmp;
             if (retType === 'RR') {
-                tmp = this.util.rollDie() + this.util.rollDie();
+                tmp = Utils.rollDie() + Utils.rollDie();
                 retDist = tmp;
             } else {
                 retDist = 0;
@@ -560,7 +559,7 @@ export default class Run {
     
             // 4th down, regular choices
             if (!dec && dwn === 4) {
-                if (this.util.coinFlip() && (spt >= 98 || spt >= 50 && spt <= 70) && fdn - spt <= 3) {
+                if (Utils.coinFlip() && (spt >= 98 || spt >= 50 && spt <= 70) && fdn - spt <= 3) {
                     dec = 'GO';
                 }
     
@@ -587,11 +586,11 @@ export default class Run {
             let play = -1;
         
             while (total === 0) {
-                play = this.util.randInt(0, 4);
+                play = Utils.randInt(0, 4);
                 
                 // Make it harder to pick Trick Play
                 if (play === 4) {
-                    play = this.util.randInt(0, 4);
+                    play = Utils.randInt(0, 4);
                 }
         
                 total = game.players[2].plays[play];
@@ -640,7 +639,7 @@ export default class Run {
             // Very late game and P1 losing -OR- later game and P1 losing badly
             if ((qtr === 4 && ctim <= 3 && p1s < p2s) || ((qtr === 3 && ctim <=7 || qtr === 4) && p2s - p1s > 8)) {
                 retDec = 'OR';
-            } else if (this.util.coinFlip()) {
+            } else if (Utils.coinFlip()) {
                 retDec = 'TB';
             }
     
@@ -870,7 +869,7 @@ export default class Run {
     
         // If both players picked the same play, 50/50 chance of Same Play Mechanism
         if (pl1 === pl2) {
-            if (pl1 === 'TP' || this.util.coinFlip()) {
+            if (pl1 === 'TP' || Utils.coinFlip()) {
                 // 14 = Same Play
                 game.status = 14;
             }
@@ -887,7 +886,7 @@ export default class Run {
     };
     
     samePlay(game) {
-        const coin = this.util.coinFlip();
+        const coin = Utils.coinFlip();
         let multCard = null;
     
         alert('Same play!');
@@ -916,7 +915,7 @@ export default class Run {
     }
     
     bigPlay(game, num) {
-        const die = this.util.rollDie();
+        const die = Utils.rollDie();
     
         // Offensive Big Play
         if (game.off_num === num) {
@@ -969,7 +968,7 @@ export default class Run {
     }
     
     trickPlay(game) {
-        const die = this.util.rollDie();
+        const die = Utils.rollDie();
         alert((game.status === 12 ? game.players[game.off_num].team.name : game.players[game.def_num].team.name) + ' trick play!');
     
         if (die === 2) {
@@ -1024,7 +1023,7 @@ export default class Run {
         let make = true;
         let spt = 100 - game.spot;
         let fdst = spt + 17;
-        const die = this.util.rollDie();
+        const die = Utils.rollDie();
         
         alert(name + ' attempting a ' + fdst + '-yard field goal...');
         
@@ -1035,7 +1034,7 @@ export default class Run {
         }
     
         if (fdst > 65) {
-            const tmp = this.util.randInt(1, 1000);
+            const tmp = Utils.randInt(1, 1000);
             make = tmp === fdst;  // 1 in 1000 chance you get fdst
         } else if ((fdst >= 60 && die < 6) || (fdst >= 50 && die < 5) || (fdst >= 40 && die < 4) || (fdst >= 30 && die < 3) || (fdst >= 20 && die < 2)) {
             make = false;
@@ -1089,8 +1088,8 @@ export default class Run {
         alert(oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...');
     
         // Check block (not on Safety Kick)
-        if (game.status !== -4 && this.util.rollDie() === 6) {
-            if (this.util.rollDie() === 6) {  // 1 in 36 chance, must roll TWO sixes in a row
+        if (game.status !== -4 && Utils.rollDie() === 6) {
+            if (Utils.rollDie() === 6) {  // 1 in 36 chance, must roll TWO sixes in a row
                 block = true;
             }
         }
@@ -1123,8 +1122,8 @@ export default class Run {
         game.spot += kdst;
     
         // Check muff, but not on safety kick
-        if (!touchback && !block && game.status !== -4 && this.util.rollDie() === 6) {
-            if (this.util.rollDie() === 6) {
+        if (!touchback && !block && game.status !== -4 && Utils.rollDie() === 6) {
+            if (Utils.rollDie() === 6) {
                 possession = false;
             }
         }
@@ -1191,7 +1190,7 @@ export default class Run {
     };
     
     hailMary(game) {
-        const die = this.util.rollDie();
+        const die = Utils.rollDie();
         let msg = null;
         let dst = 0;
     
@@ -1342,7 +1341,7 @@ export default class Run {
                 if (bon > dst) {
                     good = true;
                 } else if (bon === dst) {
-                    coin = this.util.coinFlip();
+                    coin = Utils.coinFlip();
 
                     if (coin) {
                         good = true;
@@ -1465,7 +1464,7 @@ export default class Run {
             game.two_point = true;
         } else {
             // printDown('XP');
-            const die = this.util.rollDie();
+            const die = Utils.rollDie();
             // printFG(die !== 6);
 
             if (die !== 6) {
@@ -1498,7 +1497,7 @@ export default class Run {
         // Sticks
         if (game.spot === game.fst_down) {
             alert('Sticks...');
-            coin = this.util.coinFlip();
+            coin = Utils.coinFlip();
 
             if (!coin) {
                 alert('Almost!');
@@ -1618,14 +1617,14 @@ export default class Run {
             } while (coinPick !== 'H' && coinPick !== 'T');
         } else {  // Computer picking
             alert('Coin Toss\n' + awayName + ' choosing...\n');
-            coinPick = this.util.coinFlip() ? 'H' : 'T';
+            coinPick = Utils.coinFlip() ? 'H' : 'T';
         }
 
         // Show result
         result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '!\n';
         result += 'Coin toss!!!\n\n\n\n\n';
         // Some sort of graphic
-        actFlip = this.util.coinFlip() ? 'H' : 'T';
+        actFlip = Utils.coinFlip() ? 'H' : 'T';
         result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '...';
         alert(result);
 
@@ -1651,7 +1650,7 @@ export default class Run {
         } else {  // Computer choosing
             alert((actFlip === coinPick ? awayName :homeName) + ' choosing...');
 
-            decPick = this.util.randInt(1,2);
+            decPick = Utils.randInt(1,2);
             if (!game.isOT()) {
                 decPick = decPick === 1 ? 'K' : 'R';
             }
