@@ -50,7 +50,7 @@ export default class Game {
         }
     }
 
-    get runIt() {
+    runIt() {
         this.run.playGame();
     }
 
