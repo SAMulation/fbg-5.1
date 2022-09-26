@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Football Bored Game</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="js/script.test.js"></script>
+    <script type="module" src="js/script.js"></script>
 </head>
 <body>
     <div class="page-wrap">
@@ -24,15 +24,10 @@
 
           <div class="selection pl1">
             <form>
-                <!-- <input class="p1Pick" list="p1Team" name="p1Team"> -->
                 <label for="p1Team">Choose P1 team:</label><br>
                 <select id="p1Team" class="teamList" name="p1Team">
-                <!-- <datalist id="p1Team" class="teamList"> -->
                     <option value="">Please select P1's team</option>
                 </select> <br>
-                <!-- </datalist> -->
-                <!-- <br>
-                <input class="pl1" type="submit"> -->
               </form><br>
           </div>
 
@@ -44,16 +39,12 @@
 
             <div class="selection pl2">
                 <form action="#">
-                    <!-- <input list="play2Team" name="p2Team"> -->
                     <label for="p2Team">Choose P2 team:</label><br>
                     <select id="p2Team" class="teamList" name="p2Team">
-                    <!-- <datalist id="play2Team" class="teamList"> -->
                         <option value="-1" selected>Please select P2's team</option>
-                    <!-- </datalist><br> -->
                      </select> <br>
                     <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked disabled>
                     <label for="cpuSelect"> Computer?</label><br>
-                    <!-- <input class="pl2" type="submit"> -->
                     </form><br>
             </div>
 
@@ -77,7 +68,5 @@
           Footer
         </footer>
       </div>
-    
-    <!-- <script src="script.js"></script> -->
 </body>
 </html>
