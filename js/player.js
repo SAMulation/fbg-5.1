@@ -44,26 +44,70 @@ export default class Player {
     }
 
     fillPlays(option, qtr = 4) {
+        let hm = (qtr > 4 ? 2 : 3);
+
         if (option === 'a' || option === 'p') {
-            this.plays = [3, 3, 3, 3, 1];
+            // this.plays = [3, 3, 3, 3, 1];
+            if (option === 'p') {  // cache hm
+                hm = this.plays.HM.count
+            }
+
+            this.plays = {
+                'SR': {
+                    'name': 'Short Run',
+                    'abrv': 'SR',
+                    'count': 3,
+                    'type': 'reg'
+                },
+                'LR': {
+                    'name': 'Long Run',
+                    'abrv': 'LR',
+                    'count': 3,
+                    'type': 'reg'
+                },
+                'SP': {
+                    'name': 'Short Pass',
+                    'abrv': 'SP',
+                    'count': 3,
+                    'type': 'reg'
+                },
+                'LP': {
+                    'name': 'Long Pass',
+                    'abrv': 'LP',
+                    'count': 3,
+                    'type': 'reg'
+                },
+                'TP': {
+                    'name': 'Trick Play',
+                    'abrv': 'TP',
+                    'count': 1,
+                    'type': 'reg'
+                },
+                'HM': {
+                    'name': 'Hail Mary',
+                    'abrv': 'HM',
+                    'count': hm,
+                    'type': 'reg'
+                }
+            }
             console.log('Refilling Play Cards');
         }
 
-        if (option === 'a') {
-            // 3 hail marys by default per half
-            this.hm = 3;
-            // If OT, only 2 hail marys
-            if (qtr > 4) {
-                this.hm = 2;
-            }
-        }
+        // if (option === 'a') {
+        //     // 3 hail marys by default per half
+        //     this.hm = 3;
+        //     // If OT, only 2 hail marys
+        //     if (qtr > 4) {
+        //         this.hm = 2;
+        //     }
+        // }
     }
 
     decPlays(idx) {
-        if (idx === 5) {  // HM
+        if (idx === 'HM') {  // 5) {  // HM
             this.hm--;
         } else {
-            this.plays[idx]--;
+            this.plays[idx]['count']--;
 
             // if (this.plays[idx] <= 0) {
 
@@ -81,7 +125,18 @@ export default class Player {
                 // if (refill) {
                 //     this.fillPlays('p');
                 // }
-            if (this.plays.every(play => play <= 0)) {
+            // if (this.plays.every(play => play['count'] <= 0)) {
+            //     this.fillPlays('p');
+            // }
+            let fill = true;
+            for (let play in this.plays) {
+                if (play !== 'HM' && this.plays[play]['count'] > 0) {
+                    fill = false;
+                    return;
+                }
+            }
+
+            if (fill) {
                 this.fillPlays('p');
             }
             // }

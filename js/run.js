@@ -440,6 +440,7 @@ export default class Run {
         // Making sure you didn't exit
         if (game.status !== 999) {
             let stat = this.setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay);
+            debugger
             game.status = stat;
     
             this.alertBox("Both teams are lining up for the snap...");
@@ -975,8 +976,9 @@ export default class Run {
     
     drawPlay(game, plr, play) {
         // console.log('drawPlay');
-        const cardNum = "SRLRSPLPTPHM".indexOf(play) / 2;
-        game.players[plr].decPlays(cardNum);
+        // const cardNum = "SRLRSPLPTPHM".indexOf(play) / 2;
+        // game.players[plr].decPlays(cardNum);
+        game.players[plr].decPlays(play);
         // console.log(game.players[plr].plays);
     };
     
@@ -1514,7 +1516,7 @@ export default class Run {
         this.scoreChange(game, game.off_num, 6);
 
         // addRecap ( touchdown )
-
+        debugger
         if (this.patNec(game)) {
             this.pat(game);
         }
@@ -1664,6 +1666,7 @@ export default class Run {
         if (game.qtr > 4 && game.ot_poss === 0) {
             game.current_time = -0.5;
         }
+        document.querySelector('.page-subheader').innerText = this.showBoard();
     };
 
     async gameCtrl(game) {
