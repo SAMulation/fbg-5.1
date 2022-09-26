@@ -6,6 +6,7 @@ import Site from './site.js';
 // import Run from './run.js';
 import TextInput from './text.js';
 import Kickoff from './kickoff.test.js';
+import ButtonInput from './button.js';
 
 
 
@@ -362,4 +363,5 @@ for (let key in DEF_PLAYS) {
             document.querySelector('.playSubmit').disabled = true;
         }
 
+window.butt = new ButtonInput();
 
