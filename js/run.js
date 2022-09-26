@@ -1,175 +1,64 @@
 import Utils from './utils.js'
 
-const DEF_PLAYS = {
-    'SR': {
-        'name': 'Short Run',
-        'abrv': 'SR',
-        'count': 3,
-        'type': 'reg'
-    },
-    'LR': {
-        'name': 'Long Run',
-        'abrv': 'LR',
-        'count': 3,
-        'type': 'reg'
-    },
-    'SP': {
-        'name': 'Short Pass',
-        'abrv': 'SP',
-        'count': 3,
-        'type': 'reg'
-    },
-    'LP': {
-        'name': 'Long Pass',
-        'abrv': 'LP',
-        'count': 3,
-        'type': 'reg'
-    },
-    'TP': {
-        'name': 'Trick Play',
-        'abrv': 'TP',
-        'count': 1,
-        'type': 'reg'
-    },
-    'HM': {
-        'name': 'Hail Mary',
-        'abrv': 'HM',
-        'count': 3,
-        'type': 'reg'
-    },
-    'FG': {
-        'name': 'Field Goal',
-        'abrv': 'FG',
-        'count': -1,
-        'type': 'reg'
-    },
-    'PT': {
-        'name': 'Punt',
-        'abrv': 'PT',
-        'count': -1,
-        'type': 'reg'
-    },
-    'RK': {
-        'name': 'Regular Kick',
-        'abrv': 'RK',
-        'count': -1,
-        'type': 'kick'
-    },
-    'OK': {
-        'name': 'Onside Kick',
-        'abrv': 'OK',
-        'count': -1,
-        'type': 'kick'
-    },
-    'SK': {
-        'name': 'Squib Kick',
-        'abrv': 'SK',
-        'count': -1,
-        'type': 'kick'
-    },
-    'RR': {
-        'name': 'Regular Return',
-        'abrv': 'RR',
-        'count': -1,
-        'type': 'ret'
-    },
-    'OR': {
-        'name': 'Onside Return',
-        'abrv': 'OR',
-        'count': -1,
-        'type': 'ret'
-    },
-    'TB': {
-        'name': 'Touchback',
-        'abrv': 'TB',
-        'count': -1,
-        'type': 'ret'
-    },
-    'XP': {
-        'name': 'Extra Point',
-        'abrv': 'XP',
-        'count': -1,
-        'type': 'pat'
-    },
-    '2P': {
-        'name': '2-point Conversion',
-        'abrv': '2P',
-        'count': -1,
-        'type': 'pat'
-    },
-    'H': {
-        'name': 'Heads',
-        'abrv': 'H',
-        'count': -1,
-        'type': 'coin'
-    },
-    'T': {
-        'name': 'Tails',
-        'abrv': 'T',
-        'count': -1,
-        'type': 'coin'
-    }
-}
-
 export default class Run {
     constructor(game, input) {
         // Pointer to game object
         this.game = game; 
         this.input = input; 
-        this.alert = 'skip';
+        this.alert = '';
     }
 
-    async buttonPress(src) {
-        // debugger
-        // this.game.buttonPressed = src;
-        // console.log(this.game.buttonPressed);
-        return await Promise.resolve(src);
-    }
+    // async buttonPress(src) {
+    //     // debugger
+    //     // this.game.buttonPressed = src;
+    //     // console.log(this.game.buttonPressed);
+    //     return await Promise.resolve(src);
+    // }
 
-    bindButtons = (rootElement) => {
-        // Clear press or press and hold
-        const buttons = rootElement.querySelectorAll('button.play');
-        console.log(buttons)
+    // bindButtons = (rootElement) => {
+    //     // Clear press or press and hold
+    //     const buttons = rootElement.querySelectorAll('button.play');
+    //     console.log(buttons)
     
-        buttons.forEach(button => {
-            // was click
-            button.addEventListener('pointerdown', event => {
-                // console.log(event.target);
-                this.game.buttonPressed = buttonPress(event.target.getAttribute("data-playType"));
-            });
-        })
-    }
+    //     buttons.forEach(button => {
+    //         // was click
+    //         button.addEventListener('pointerdown', event => {
+    //             // console.log(event.target);
+    //             this.game.buttonPressed = buttonPress(event.target.getAttribute("data-playType"));
+    //         });
+    //     })
+    // }
 
-    makeButtons(test, p) {
-        let store = [];
-        let count = 0;
+    // makeButtons(test, p) {
+    //     let store = [];
+    //     let count = 0;
 
-        for (let key in DEF_PLAYS) {
-            // if (DEF_PLAYS[key]['type'] === 'reg') {
-            // console.log(key, DEF_PLAYS[key]);
-                if (test.includes(key)) {
-                    store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
-                    count++;
-                }
-            // }
-        }
+    //     for (let key in DEF_PLAYS) {
+    //         // if (DEF_PLAYS[key]['type'] === 'reg') {
+    //         // console.log(key, DEF_PLAYS[key]);
+    //             if (test.includes(key)) {
+    //                 store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
+    //                 count++;
+    //             }
+    //         // }
+    //     }
 
-        console.log(store);
+    //     console.log(store);
 
-        const buttonArea = document.querySelector('.selection.pl' + p);
-        buttonArea.textContent = '';
+    //     const buttonArea = document.querySelector('.selection.pl' + p);
+    //     buttonArea.textContent = '';
 
-        for (let i = 0; i < store.length; i++) {
-            const btn = document.createElement("button");
-            const t = document.createTextNode(store[i]['name']);
-            btn.appendChild(t);
-            btn.classList.add("plays");
-            btn.setAttribute('data-playType', store[i]['abrv'])
-            buttonArea.appendChild(btn);
-        }
+    //     for (let i = 0; i < store.length; i++) {
+    //         const btn = document.createElement("button");
+    //         const t = document.createTextNode(store[i]['name']);
+    //         btn.appendChild(t);
+    //         btn.classList.add('play');
+    //         btn.setAttribute('data-playType', store[i]['abrv'])
+    //         buttonArea.appendChild(btn);
+    //     }
 
-        this.bindButtons(buttonArea);
-    }
+    //     this.bindButtons(buttonArea);
+    // }
 
     alertBox(msg) {
         if (this.alert !== 'skip') {
@@ -207,7 +96,7 @@ export default class Run {
             while (game.current_time >= 0 && game.status != 999) {
                 //game.save('as-' + datetime.now().strftime("%m.%d.%Y-%H.%M.%S"))
                 if (game.status < 0) {
-                    this.kickoff(game);
+                    await this.kickoff(game);
     
                 } else if (game.status > 10 && game.status < 100 || game.two_point) {
                     await this.playMechanism(game);
@@ -219,7 +108,7 @@ export default class Run {
             }
     
             if (game.status < 900) {
-                this.gameCtrl(game);
+                await this.gameCtrl(game);
             }
         }
     
@@ -228,7 +117,7 @@ export default class Run {
         }
     };
 
-    kickoff(game) {
+    async kickoff(game) {
         const oNum = game.off_num;
         const dNum = game.def_num;
         game.down = 0;
@@ -245,10 +134,10 @@ export default class Run {
             game.thisPlay.dist = 0;
             // moveBall('s');
             
-            this.kickPage(game, oNum);
+            await this.kickPage(game, oNum);
     
             if (game.status !== 999) {
-                this.returnPage(game, dNum);
+                await this.returnPage(game, dNum);
             }
             if (game.status !== 999) {
                 this.kickDec(game);
@@ -321,13 +210,13 @@ export default class Run {
         }
     };
 
-    kickPage(game, oNum) {
+    async kickPage(game, oNum) {
         // const oName = game.players[oNum].team.name;
         // printDown('KICK');
         // let kckDec = null;
     
         if (game.isReal(oNum)) {
-            this.playPages(game, oNum, 'kick');
+            await this.playPages(game, oNum, 'kick');
         } else {
             this.cpuPages(game, 'kick');
         }
@@ -335,11 +224,11 @@ export default class Run {
         // game.players[oNum].currentPlay = kckDec;
     }
     
-    returnPage(game, dNum, pick = null) {
+    async returnPage(game, dNum, pick = null) {
         // const dName = game.players[dNum].team.name;
     
         if (game.isReal(dNum)) {
-            this.playPages(game, dNum, 'ret', pick);
+            await this.playPages(game, dNum, 'ret', pick);
         } else {
             this.cpuPages(game, 'ret', pick);
         }
@@ -882,30 +771,31 @@ export default class Run {
 
     async playPages(game, p, state = 'reg', pick = null) {
         let selection = null;
-        let test = 'SRLRSPLPTPHMFGPT';
+        let options = 'SRLRSPLPTPHMFGPT';
         // LATER: Use status to change validity based on play type
         if (state === 'xp') {
-            test = 'XP2P';
+            options = 'XP2P';
         } else if (state === 'kick') {
-            test = 'RKSKOK';
+            options = 'RKSKOK';
         } else if (state === 'ret') {
-            test = 'RRORTB';
+            options = 'RRORTB';
         }
 
-        this.makeButtons(test, p);
+        // this.makeButtons(options, p);
     
         // Get message to display
-        const options = this.loadPlay(p, state);
+        const msg = this.loadPlay(p, state);
         // const options = loadPlay(state);  // LATER
         let errorMsg = null;
         
+        selection = await this.input.getText(p, msg, options);
 
         // Get user input
         // do {
             // selection = this.input.getText(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
             // debugger
-            // selection = await this.input.getText(options);
-            selection = await this.waitForSelection(game, p, test, state);
+        
+            // selection = await this.waitForSelection(game, p, options, state);
             // if (pick) {
             //     selection = pick;
             // }
@@ -918,16 +808,16 @@ export default class Run {
             //     }
             // } // else {
                 // selection = confirm('Are you sure you want to exit?');
-            if (selection === 'EXIT') {
+            // if (selection === 'EXIT') {
                 // selection = 'EXIT';
-                game.status = 999;
-            } // else {
+                // game.status = 999;
+            // } // else {
             //     selection = null;
             // }
             // }
             // console.log(selection);
-            console.log(selection);
-        // } while (!test.includes(selection) && game.status !== 999);
+            // console.log(selection);
+        // } while (!options.includes(selection) && game.status !== 999);
         // console.log(selection);
 
 
@@ -1813,9 +1703,9 @@ export default class Run {
         }
     };
 
-    gameCtrl(game) {
+    async gameCtrl(game) {
         if (game.status === 0) {
-            this.coinToss(game);
+            await this.coinToss(game);
 
             if (!game.isOT() || game.game_type === 'otc') {
                 this.resetVar(game);
@@ -1850,18 +1740,18 @@ export default class Run {
         let actFlip = null;
         let decPick = null;
         let rec_fst = 'away';
-
+        debugger
         if (game.isReal(game.away)) {
-            this.makeButtons('H,T', game.away)
+            // this.makeButtons('H,T', game.away)
             // do {
             //     // debugger
-            //     coinPick = await this.input.getText('Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n');
+            coinPick = await this.input.getText(game.away, 'Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n', 'H,T');
             //     if (typeof(coinPick) === 'string') {
             //         coinPick = coinPick.toUpperCase();
             //     } else {
             //         coinPick = null;
             //     }
-            coinPick = game.buttonPressed;
+            // coinPick = game.buttonPressed;
             // } while (coinPick !== 'H' && coinPick !== 'T');
         } else {  // Computer picking
             this.alertBox('Coin Toss\n' + awayName + ' choosing...\n');
@@ -1878,7 +1768,8 @@ export default class Run {
 
         if (game.num_plr === 2 || actFlip === coinPick && game.away === 1 || actFlip !== coinPick && game.home === 1) {
             result = (actFlip === coinPick ? awayName :homeName) + ' choose, ';
-            do {
+            //do {
+                // MOVE THIS TO TEXT INPUT CLASS
                 if (game.isOT()) {
                     result += 'Ball [1]st or Ball [2]nd?\n';
                 } else {
@@ -1886,16 +1777,16 @@ export default class Run {
                 }
 
                 // debugger
-                decPick = await this.input.getText(result);
-                if (typeof(decPick) === 'string') {
+                decPick = await this.input.getText(game.home, result, (game.isOT() ? '1,2' : 'K,R'));
+                //if (typeof(decPick) === 'string') {
                     // if (game.isOT() && (decPick === '1' || decPick === '2')) {
                     //     decPick = Number(decPick);
                     // } else { }
-                    decPick = decPick.toUpperCase();
-                } else {
-                    decPick = null;
-                }
-            } while ((!game.isOT() && decPick !== 'K' && decPick !== 'R') || (game.isOT() && decPick !== 1 && decPick !== 2));
+                    //decPick = decPick.toUpperCase();
+                //} else {
+                    //decPick = null;
+                // }
+            //} while ((!game.isOT() && decPick !== 'K' && decPick !== 'R') || (game.isOT() && decPick !== 1 && decPick !== 2));
         } else {  // Computer choosing
             this.alertBox((actFlip === coinPick ? awayName :homeName) + ' choosing...');
 
