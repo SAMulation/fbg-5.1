@@ -1,20 +1,203 @@
 import Utils from './utils.js'
 
+const DEF_PLAYS = {
+    'SR': {
+        'name': 'Short Run',
+        'abrv': 'SR',
+        'count': 3,
+        'type': 'reg'
+    },
+    'LR': {
+        'name': 'Long Run',
+        'abrv': 'LR',
+        'count': 3,
+        'type': 'reg'
+    },
+    'SP': {
+        'name': 'Short Pass',
+        'abrv': 'SP',
+        'count': 3,
+        'type': 'reg'
+    },
+    'LP': {
+        'name': 'Long Pass',
+        'abrv': 'LP',
+        'count': 3,
+        'type': 'reg'
+    },
+    'TP': {
+        'name': 'Trick Play',
+        'abrv': 'TP',
+        'count': 1,
+        'type': 'reg'
+    },
+    'HM': {
+        'name': 'Hail Mary',
+        'abrv': 'HM',
+        'count': 3,
+        'type': 'reg'
+    },
+    'FG': {
+        'name': 'Field Goal',
+        'abrv': 'FG',
+        'count': -1,
+        'type': 'reg'
+    },
+    'PT': {
+        'name': 'Punt',
+        'abrv': 'PT',
+        'count': -1,
+        'type': 'reg'
+    },
+    'RK': {
+        'name': 'Regular Kick',
+        'abrv': 'RK',
+        'count': -1,
+        'type': 'kick'
+    },
+    'OK': {
+        'name': 'Onside Kick',
+        'abrv': 'OK',
+        'count': -1,
+        'type': 'kick'
+    },
+    'SK': {
+        'name': 'Squib Kick',
+        'abrv': 'SK',
+        'count': -1,
+        'type': 'kick'
+    },
+    'RR': {
+        'name': 'Regular Return',
+        'abrv': 'RR',
+        'count': -1,
+        'type': 'ret'
+    },
+    'OR': {
+        'name': 'Onside Return',
+        'abrv': 'OR',
+        'count': -1,
+        'type': 'ret'
+    },
+    'TB': {
+        'name': 'Touchback',
+        'abrv': 'TB',
+        'count': -1,
+        'type': 'ret'
+    },
+    'XP': {
+        'name': 'Extra Point',
+        'abrv': 'XP',
+        'count': -1,
+        'type': 'pat'
+    },
+    '2P': {
+        'name': '2-point Conversion',
+        'abrv': '2P',
+        'count': -1,
+        'type': 'pat'
+    },
+    'H': {
+        'name': 'Heads',
+        'abrv': 'H',
+        'count': -1,
+        'type': 'coin'
+    },
+    'T': {
+        'name': 'Tails',
+        'abrv': 'T',
+        'count': -1,
+        'type': 'coin'
+    }
+}
+
 export default class Run {
-    constructor(game) {
+    constructor(game, input) {
         // Pointer to game object
         this.game = game; 
+        this.input = input; 
+        this.alert = 'skip';
     }
 
+    async buttonPress(src) {
+        // debugger
+        // this.game.buttonPressed = src;
+        // console.log(this.game.buttonPressed);
+        return await Promise.resolve(src);
+    }
+
+    bindButtons = (rootElement) => {
+        // Clear press or press and hold
+        const buttons = rootElement.querySelectorAll('button.play');
+        console.log(buttons)
+    
+        buttons.forEach(button => {
+            // was click
+            button.addEventListener('pointerdown', event => {
+                // console.log(event.target);
+                this.game.buttonPressed = buttonPress(event.target.getAttribute("data-playType"));
+            });
+        })
+    }
+
+    makeButtons(test, p) {
+        let store = [];
+        let count = 0;
+
+        for (let key in DEF_PLAYS) {
+            // if (DEF_PLAYS[key]['type'] === 'reg') {
+            // console.log(key, DEF_PLAYS[key]);
+                if (test.includes(key)) {
+                    store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
+                    count++;
+                }
+            // }
+        }
+
+        console.log(store);
+
+        const buttonArea = document.querySelector('.selection.pl' + p);
+        buttonArea.textContent = '';
+
+        for (let i = 0; i < store.length; i++) {
+            const btn = document.createElement("button");
+            const t = document.createTextNode(store[i]['name']);
+            btn.appendChild(t);
+            btn.classList.add("plays");
+            btn.setAttribute('data-playType', store[i]['abrv'])
+            buttonArea.appendChild(btn);
+        }
+
+        this.bindButtons(buttonArea);
+    }
+
+    alertBox(msg) {
+        if (this.alert !== 'skip') {
+            alert(msg);
+        } else {
+            console.log(msg);
+        }
+    }
+
+    legalPlays(p, type, PLAYS) {
+        this.game.players[p].plays[0] = 0;
+        for (let key in PLAYS) {
+            if (PLAYS.hasOwnProperty(key)) {
+               console.log(key, yourobject[key]);
+            }
+         }
+    }
+
+
     playGame() {
-        alert("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com");
+        // this.alertBox("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com");
 
         this.gameLoop(this.game, 0);
     
         console.log(this.game);
     };
 
-    gameLoop(game, test = 11) {
+    async gameLoop(game, test = 11) {
         game.status = test;
         if (test === 0) {
             game.current_time = -0.5;  // LATER: Remember to check
@@ -27,7 +210,7 @@ export default class Run {
                     this.kickoff(game);
     
                 } else if (game.status > 10 && game.status < 100 || game.two_point) {
-                    this.playMechanism(game);
+                    await this.playMechanism(game);
                 }
     
                 if (game.status !== 999) {
@@ -152,17 +335,17 @@ export default class Run {
         // game.players[oNum].currentPlay = kckDec;
     }
     
-    returnPage(game, dNum) {
+    returnPage(game, dNum, pick = null) {
         // const dName = game.players[dNum].team.name;
     
         if (game.isReal(dNum)) {
-            this.playPages(game, dNum, 'ret');
+            this.playPages(game, dNum, 'ret', pick);
         } else {
-            this.cpuPages(game, 'ret');
+            this.cpuPages(game, 'ret', pick);
         }
     }
     
-    kickDec(game) {
+    kickDec(game, die1 = null, mCoddsdie2 = null, yC = null) {
         const oName = game.players[game.off_num].team.name;
         const dName = game.players[game.def_num].team.name;
         const kickType = game.players[game.off_num].currentPlay;
@@ -176,14 +359,28 @@ export default class Run {
         let multiplier = -1;
         let retDist = 0;
         let okResult = false;
-        // alert('Teams are lining up for the kick...);
+        // this.alertBox('Teams are lining up for the kick...);
     
+        // Testing override
+        if (game.test) {
+
+        }
+
         if (kickType === 'RK') {
             if (retType === 'RR') {
                 tmp = Utils.rollDie();
+                if (die1) {
+                    tmp = die1;
+                }
                 kickDist = 5 * tmp - 65;
                 mltCard = game.decMults().card;
+                if (mCoddsdie2) {
+                    mltCard = mCoddsdie2;
+                }
                 yard = game.decYards();
+                if (yC) {
+                    yard = yC;
+                }
     
                 if (mltCard === 'King') {
                     multiplier = 10;
@@ -199,35 +396,47 @@ export default class Run {
                 touchback = true;
             }
         } else if (kickType === 'OK') {
-            alert(oName + ' onside kick!!!');
+            this.alertBox(oName + ' onside kick!!!');
             let odds = 6;
             if (retType === 'RK') {
                 odds = 12;
             }
     
             tmp = Utils.randInt(1,odds);
+            if (mCoddsdie2) {
+                tmp = mCoddsdie2;
+            }
             okResult = tmp === 1;  // 1 in 'odds' odds of getting OK
             kickDist = -10 - tmp;
-            retDist = tmp;
+            retDist = tmp + Utils.rollDie();
+            if (die1) {
+                retDist = tmp + die1;
+            }
         // Squib Kick
         } else {
             tmp = Utils.rollDie();
+            if (die1) {
+                tmp = die1;
+            }
             kickDist = -15 - 5 * tmp;
             if (retType === 'RR') {
                 tmp = Utils.rollDie() + Utils.rollDie();
+                if (die1 && mCoddsdie2) {
+                    tmp = die1 + mCoddsdie2;
+                }
                 retDist = tmp;
             } else {
                 retDist = 0;
             }
         }
     
-        alert('The kick is up...');
+        this.alertBox('The kick is up...');
     
         if (touchback) {
-            alert('Deep kick!');
+            this.alertBox('Deep kick!');
             // moveBall('c');
         } else {
-            alert(oName + ' kicks...');
+            this.alertBox(oName + ' kicks...');
             game.thisPlay.dist = kickDist;
             // moveBall('k');
             game.spot += kickDist;
@@ -235,11 +444,11 @@ export default class Run {
     
         if (kickType === 'OK') {
             if (okResult) {
-                alert(oName + ' recovers!');
+                this.alertBox(oName + ' recovers!');
                 possession = false;
                 retDist = -retDist;
             } else {
-                alert(dName + ' recovers!');
+                this.alertBox(dName + ' recovers!');
             }
         }
     
@@ -288,24 +497,24 @@ export default class Run {
             // LATER: Change to 'tb' or something better
             game.time_change = 1;
         }
-        alert(msg);
+        this.alertBox(msg);
     
         if (game.status < 0) {
             game.status = Math.abs(game.status);  // Make status positive (no more kicking)
         }
     };
 
-    playMechanism(game) {
+    async playMechanism(game) {
         let stat, ono, p1, p2;
     
         this.prePlay(game, 11);
-        this.pickPlay(game);
+        await this.pickPlay(game);
     
         stat = game.status;
         ono = game.off_num;
         p1 = game.players[1].currentPlay;
         p2 = game.players[2].currentPlay;
-        console.log(stat);
+        // console.log(stat);
         if (stat !== 999) {
             // lastChanceTO(stat, game.qtr, game.current_time, game.time_change);
             this.doPlay(game, stat, ono, p1, p2);
@@ -313,7 +522,7 @@ export default class Run {
     };
     
     prePlay(game, stat) {
-        console.log('prePlay');
+        // console.log('prePlay');
         game.thisPlay.multiplier_card = 999;
         game.thisPlay.multiplier_num = 999;
         game.thisPlay.yard_card = 999;
@@ -358,15 +567,15 @@ export default class Run {
         game.two_minute = two_min;
     };
     
-    pickPlay(game) {
-        console.log('pickPlay');
+    async pickPlay(game) {
+        // console.log('pickPlay');
         for (let p = 1; p <= 2; p++) {
             game.players[p].currentPlay = '';
     
             // Computer Stuff
             if (game.status !== 999 && p === 2 && !game.isReal(2)) {
                 // This is where the computer can call timeout or pick special play
-                alert(game.players[2].team.name + ' are picking their play...');
+                this.alertBox(game.players[2].team.name + ' are picking their play...');
                 // # LATER Print that computer is picking play
                 if (game.time_change === 0) {
                     this.cpuTime(game);
@@ -377,7 +586,7 @@ export default class Run {
     
             while (game.players[p].currentPlay === '' && game.status !== 999) {
                 if (game.isReal(p)) {
-                    this.playPages(game, p);
+                    await this.playPages(game, p);
                 } else {
                     this.cpuPages(game);  // It used to say 'plrs' for second param investigate
                 }
@@ -390,11 +599,11 @@ export default class Run {
             let stat = this.setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay);
             game.status = stat;
     
-            alert("Both teams are lining up for the snap...");
+            this.alertBox("Both teams are lining up for the snap...");
         
         // Exit out of the game
         } else {
-            alert('Catch ya laterrrrr!');
+            this.alertBox('Catch ya laterrrrr!');
             // console.log(game);
         }
     };
@@ -463,7 +672,7 @@ export default class Run {
             msg = "Timeout not called, one's been called...";
         }
     
-        alert(msg);
+        this.alertBox(msg);
     };
     
     cpuPlay(game) {
@@ -580,7 +789,7 @@ export default class Run {
         }
     };
     
-    cpuPages(game, state = 'reg') {
+    cpuPages(game, state = 'reg', pick = null) {
         if (state === 'reg') {
             let total = 0;
             let play = -1;
@@ -596,10 +805,10 @@ export default class Run {
                 total = game.players[2].plays[play];
             }
         
-            console.log("SRLRSPLPTP".substring(2 * play, 2 * play + 2));
+            // console.log("SRLRSPLPTP".substring(2 * play, 2 * play + 2));
             game.players[2].currentPlay = "SRLRSPLPTP".substring(2 * play, 2 * play + 2);
         } else if (state === 'xp') {
-            alert(game.players[2].team.name + ' selecting PAT type...\n');
+            this.alertBox(game.players[2].team.name + ' selecting PAT type...\n');
             let selection = 'XP';
     
             const diff = game.players[1].score - game.players[2].score;
@@ -610,7 +819,7 @@ export default class Run {
     
             game.players[2].currentPlay = selection;
         } else if (state === 'kick') {
-            alert(game.players[2].team.name + ' selecting kickoff type...');
+            this.alertBox(game.players[2].team.name + ' selecting kickoff type...');
             this.cpuTime(game);
             
             const qtr = game.qtr;
@@ -627,7 +836,7 @@ export default class Run {
     
             game.players[2].currentPlay = kckDec;
         } else if (state === 'ret') {
-            alert(game.players[2].team.name + ' selecting return type...');
+            this.alertBox(game.players[2].team.name + ' selecting return type...');
             this.cpuTime(game);
             
             const qtr = game.qtr;
@@ -645,10 +854,33 @@ export default class Run {
     
             game.players[2].currentPlay = retDec;
         }
+
+        if (pick) {
+            game.players[2].currentPlay = pick;
+        }
     
     };
     
-    playPages(game, p, state = 'reg') {
+    async waitForSelection(game, test, state) {
+        // if (pick) {
+        //     selection = pick;
+        // }
+        let selection;
+        if (game.buttonPressed) {
+            selection = await game.buttonPressed;
+            if (selection !== 'EXIT') {
+                selection = selection.toUpperCase();
+                errorMsg = this.playValid(game, p, selection);
+                if (errorMsg) {
+                    this.alertBox(errorMsg);
+                    selection = null;
+                }
+            } 
+        }
+
+    }
+
+    async playPages(game, p, state = 'reg', pick = null) {
         let selection = null;
         let test = 'SRLRSPLPTPHMFGPT';
         // LATER: Use status to change validity based on play type
@@ -659,43 +891,56 @@ export default class Run {
         } else if (state === 'ret') {
             test = 'RRORTB';
         }
+
+        this.makeButtons(test, p);
     
         // Get message to display
         const options = this.loadPlay(p, state);
         // const options = loadPlay(state);  // LATER
         let errorMsg = null;
-    
+        
+
         // Get user input
         do {
-            // selection = prompt(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
-            selection = prompt(options);
-            if (selection) {
-                selection = selection.toUpperCase();
-                errorMsg = this.playValid(game, p, selection);
-                if (errorMsg) {
-                    alert(errorMsg);
-                    selection = null;
-                }
-            } else {
-                selection = confirm('Are you sure you want to exit?');
-                if (selection) {
-                    selection = 'EXIT';
-                    game.status = 999;
-                } else {
-                    selection = null;
-                }
-            }
+            // selection = this.input.getText(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
+            // debugger
+            // selection = await this.input.getText(options);
+            selection = await this.waitForSelection(game, p, test, state);
+            // if (pick) {
+            //     selection = pick;
+            // }
+            // if (selection !== 'EXIT') {
+            //     selection = selection.toUpperCase();
+            //     errorMsg = this.playValid(game, p, selection);
+            //     if (errorMsg) {
+            //         this.alertBox(errorMsg);
+            //         selection = null;
+            //     }
+            // } // else {
+                // selection = confirm('Are you sure you want to exit?');
+            if (selection === 'EXIT') {
+                // selection = 'EXIT';
+                game.status = 999;
+            } // else {
+            //     selection = null;
+            // }
+            // }
+            // console.log(selection);
             console.log(selection);
         } while (!test.includes(selection) && game.status !== 999);
-        //console.log(selection);
+        // console.log(selection);
+
+
+
         game.players[p].currentPlay = selection;
+        // debugger
     };
     
     playValid(game, p, sel) {
-        console.log('playValid');
+        // console.log('playValid');
         let msg = null;
         const num = "SRLRSPLPTPHMFGPT".indexOf(sel) / 2;
-        console.log(num);
+        // console.log(num);
         let tot = 0;
     
         if (sel === 'FG' || sel === 'PT') {
@@ -706,7 +951,7 @@ export default class Run {
             tot = game.players[p].plays[num];
         }
     
-        console.log(tot);
+        // console.log(tot);
     
         if (num >= 0 && num <= 5) {  // LATER: Check hail mary
             if (tot === 0) {
@@ -839,7 +1084,7 @@ export default class Run {
     
     doPlay(game, stat, ono, p1, p2) {
         // rplcpic boardtop
-        console.log('doPlay');
+        // console.log('doPlay');
     
         if (stat >= 11 && stat <= 13) {
             this.regPlay(game, p1, p2);        
@@ -875,21 +1120,21 @@ export default class Run {
             }
         }
     
-        // alert(report);
+        // this.alertBox(report);
     };
     
     drawPlay(game, plr, play) {
-        console.log('drawPlay');
+        // console.log('drawPlay');
         const cardNum = "SRLRSPLPTPHM".indexOf(play) / 2;
         game.players[plr].decPlays(cardNum);
-        console.log(game.players[plr].plays);
+        // console.log(game.players[plr].plays);
     };
     
     samePlay(game) {
         const coin = Utils.coinFlip();
         let multCard = null;
     
-        alert('Same play!');
+        this.alertBox('Same play!');
         multCard = game.decMults();
     
         if (multCard.card === 'King') {
@@ -900,7 +1145,7 @@ export default class Run {
             game.thisPlay.multiplier = -3;
         } else {
             if (coin) {
-                alert('Picked!');
+                this.alertBox('Picked!');
                 this.changePoss(game, 'to');
             }
             game.thisPlay.dist = 0;
@@ -947,10 +1192,10 @@ export default class Run {
                 }
             } else {
                 if (die === 6) {
-                    alert('FUMBLE!!!');
+                    this.alertBox('FUMBLE!!!');
                     game.thisPlay.dist = 101;  // Touchdown
                 } else {  // die === 4 && die === 5
-                    alert('FUMBLE!!');
+                    this.alertBox('FUMBLE!!');
                     if ((100 - game.spot) / 2 > 25) {  // Half the field or 25, whichever is more
                         game.thisPlay.dist = Math.round((100 - game.spot) / 2);
                     } else {
@@ -969,7 +1214,7 @@ export default class Run {
     
     trickPlay(game) {
         const die = Utils.rollDie();
-        alert((game.status === 12 ? game.players[game.off_num].team.name : game.players[game.def_num].team.name) + ' trick play!');
+        this.alertBox((game.status === 12 ? game.players[game.off_num].team.name : game.players[game.def_num].team.name) + ' trick play!');
     
         if (die === 2) {
             // If timeout called, return
@@ -1025,7 +1270,7 @@ export default class Run {
         let fdst = spt + 17;
         const die = Utils.rollDie();
         
-        alert(name + ' attempting a ' + fdst + '-yard field goal...');
+        this.alertBox(name + ' attempting a ' + fdst + '-yard field goal...');
         
         // Ice kicker
         if (game.time_change === 4 && game.last_call_to !== game.off_num) {
@@ -1043,7 +1288,7 @@ export default class Run {
         // LATER: Field goal graphics will go here
     
         if (make) {
-            alert(name + ' field goal is good!');
+            this.alertBox(name + ' field goal is good!');
             this.scoreChange(game, ono, 3);
             if (game.isOT()) {
                 // Maybe the graphics are different here
@@ -1051,7 +1296,7 @@ export default class Run {
                 game.status = -3;
             }
         } else {
-            alert(name + ' field goal is no good...');
+            this.alertBox(name + ' field goal is no good...');
             if (!game.isOT()) {
                 this.changePoss(game, 'fg');
             }
@@ -1085,7 +1330,7 @@ export default class Run {
         }
     
         // printDown('PUNT');
-        alert(oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...');
+        this.alertBox(oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...');
     
         // Check block (not on Safety Kick)
         if (game.status !== -4 && Utils.rollDie() === 6) {
@@ -1105,13 +1350,13 @@ export default class Run {
             }
         }
     
-        alert('The punt is up...');
+        this.alertBox('The punt is up...');
     
         if (touchback) {
-            alert('Deep kick!');
+            this.alertBox('Deep kick!');
             // moveBall('c');
         } else if (block) {
-            alert(dName + ' blocked the punt!!!');
+            this.alertBox(dName + ' blocked the punt!!!');
             // addRecap( blocked punt )
         // Regular punt/safety kick 
         } else {
@@ -1135,7 +1380,7 @@ export default class Run {
                 this.changePoss(game, 'pnt');
             }
         } else {
-            alert(dName + ' muffed the kick!\n' + oName + ' recovers the ball...');
+            this.alertBox(dName + ' muffed the kick!\n' + oName + ' recovers the ball...');
             // addRecap( muffed punt )
             // record turnover to def_num
         }
@@ -1178,7 +1423,7 @@ export default class Run {
                 msg += dName + ' returns for ' + retDist + ' yards.';
             }
         } else if (touchback) {
-            alert(dName + ' takes a touchback...');
+            this.alertBox(dName + ' takes a touchback...');
             game.spot = 20;
             // moveBall('s')  // Maybe
         }
@@ -1194,7 +1439,7 @@ export default class Run {
         let msg = null;
         let dst = 0;
     
-        alert(game.players[game.off_num].team.name + ' hail mary!');
+        this.alertBox(game.players[game.off_num].team.name + ' hail mary!');
     
         if (die === 1) {
             msg = 'BIG SACK!';
@@ -1213,7 +1458,7 @@ export default class Run {
         }
     
         if (msg) {
-            alert(msg);
+            this.alertBox(msg);
         }
     
         game.thisPlay.multiplier_card = '/';
@@ -1256,7 +1501,7 @@ export default class Run {
                 this.timeChange(game);
             }
 
-            // alert('Teams huddling up...\nPress Enter...\n');
+            // this.alertBox('Teams huddling up...\nPress Enter...\n');
 
             if (game.status > 0 && game.status < 10) {
                 game.status = 11;
@@ -1324,7 +1569,7 @@ export default class Run {
         const times = game.thisPlay.multiplier === 999 ? '/' : null;
         const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card;
 
-        alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
+        this.alertBox('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
     };
 
     checkScore(game, bon, dst) {
@@ -1349,22 +1594,22 @@ export default class Run {
                 }
 
                 if (good) {
-                    alert(oname + ' 2-point conversion good!');
+                    this.alertBox(oname + ' 2-point conversion good!');
                     this.scoreChange(game, ono, 2);
                 } else {
                     if (game.time_change < 2 || game.time_change > 3) {
-                        alert(oname + ' 2-point conversion no good!');
+                        this.alertBox(oname + ' 2-point conversion no good!');
                     }
                 }
             } else if (game.spot + dst <= 0 || game.spot + dst >= 100 && game.turnover) {
                 // dno = ono;
                 // dname = oname;
 
-                alert(dname + ' returned 2-pt!!!');
+                this.alertBox(dname + ' returned 2-pt!!!');
                 this.scoreChange(game, dno, 2);
             } else {
                 if (game.time_change < 2 || game.time_change > 3) {
-                    alert(oname + ' 2-point conversion no good!');
+                    this.alertBox(oname + ' 2-point conversion no good!');
                 }
             }
 
@@ -1380,13 +1625,13 @@ export default class Run {
 
         if (game.status === 101) {
             this.touchdown(game);
-            // alert('Congrats!\n\nYou scored a touchdown and broke the game. Come back later for more gameplay...\n');
+            // this.alertBox('Congrats!\n\nYou scored a touchdown and broke the game. Come back later for more gameplay...\n');
             //game.status = 101;
         }
         
         if (game.status === 102) {
             this.safety(game);
-            // alert('Congrats!\n\nYou scored a safety and broke the game. Come back later for more gameplay...\n');
+            // this.alertBox('Congrats!\n\nYou scored a safety and broke the game. Come back later for more gameplay...\n');
             //game.status = 102;
         }
     };
@@ -1403,7 +1648,7 @@ export default class Run {
     };
 
     safety(game) {
-        alert(game.players[game.def_num].team.name + ' forced a safety!!');
+        this.alertBox(game.players[game.def_num].team.name + ' forced a safety!!');
         this.scoreChange(game, game.def_num, 2);
         if (game.isOT()) {
             game.ot_poss = 0;
@@ -1414,7 +1659,7 @@ export default class Run {
     };
 
     touchdown(game) {
-        alert(game.players[game.off_num].team.name + ' scored a touchdown!!!');
+        this.alertBox(game.players[game.off_num].team.name + ' scored a touchdown!!!');
         this.scoreChange(game, game.off_num, 6);
 
         // addRecap ( touchdown )
@@ -1468,10 +1713,10 @@ export default class Run {
             // printFG(die !== 6);
 
             if (die !== 6) {
-                alert(oName + ' XP good!');
+                this.alertBox(oName + ' XP good!');
                 this.scoreChange(game, oNum, 1);
             } else {
-                alert(oName + ' XP no good...');
+                this.alertBox(oName + ' XP no good...');
                 // Might need some graphics here
             }
 
@@ -1496,11 +1741,11 @@ export default class Run {
 
         // Sticks
         if (game.spot === game.fst_down) {
-            alert('Sticks...');
+            this.alertBox('Sticks...');
             coin = Utils.coinFlip();
 
             if (!coin) {
-                alert('Almost!');
+                this.alertBox('Almost!');
             }
         }
 
@@ -1510,7 +1755,7 @@ export default class Run {
 
         if (game.spot > game.fst_down || coin) {
             if (game.down !== 0) {
-                alert('First down!');
+                this.alertBox('First down!');
                 // print_down(game);
             }
             game.down = 1;
@@ -1535,7 +1780,7 @@ export default class Run {
         }
 
         if (game.down > 4) {
-            alert('Turnover on downs!!!');
+            this.alertBox('Turnover on downs!!!');
             changePoss(game, 'to');
 
             game.down = 1;
@@ -1597,7 +1842,7 @@ export default class Run {
         }
     };
 
-    coinToss(game) {
+    async coinToss(game) {
         const awayName = game.players[game.away].team.name;
         const homeName = game.players[game.home].team.name;
         let coinPick = null;
@@ -1607,16 +1852,19 @@ export default class Run {
         let rec_fst = 'away';
 
         if (game.isReal(game.away)) {
-            do {
-                coinPick = prompt('Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n');
-                if (typeof(coinPick) === 'string') {
-                    coinPick = coinPick.toUpperCase();
-                } else {
-                    coinPick = null;
-                }
-            } while (coinPick !== 'H' && coinPick !== 'T');
+            this.makeButtons('H,T', game.away)
+            // do {
+            //     // debugger
+            //     coinPick = await this.input.getText('Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n');
+            //     if (typeof(coinPick) === 'string') {
+            //         coinPick = coinPick.toUpperCase();
+            //     } else {
+            //         coinPick = null;
+            //     }
+            coinPick = game.buttonPressed;
+            // } while (coinPick !== 'H' && coinPick !== 'T');
         } else {  // Computer picking
-            alert('Coin Toss\n' + awayName + ' choosing...\n');
+            this.alertBox('Coin Toss\n' + awayName + ' choosing...\n');
             coinPick = Utils.coinFlip() ? 'H' : 'T';
         }
 
@@ -1626,7 +1874,7 @@ export default class Run {
         // Some sort of graphic
         actFlip = Utils.coinFlip() ? 'H' : 'T';
         result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '...';
-        alert(result);
+        this.alertBox(result);
 
         if (game.num_plr === 2 || actFlip === coinPick && game.away === 1 || actFlip !== coinPick && game.home === 1) {
             result = (actFlip === coinPick ? awayName :homeName) + ' choose, ';
@@ -1637,7 +1885,8 @@ export default class Run {
                     result += '[K]ick of [R]eceive?\n';
                 }
 
-                decPick = prompt(result);
+                // debugger
+                decPick = await this.input.getText(result);
                 if (typeof(decPick) === 'string') {
                     // if (game.isOT() && (decPick === '1' || decPick === '2')) {
                     //     decPick = Number(decPick);
@@ -1648,7 +1897,7 @@ export default class Run {
                 }
             } while ((!game.isOT() && decPick !== 'K' && decPick !== 'R') || (game.isOT() && decPick !== 1 && decPick !== 2));
         } else {  // Computer choosing
-            alert((actFlip === coinPick ? awayName :homeName) + ' choosing...');
+            this.alertBox((actFlip === coinPick ? awayName :homeName) + ' choosing...');
 
             decPick = Utils.randInt(1,2);
             if (!game.isOT()) {
@@ -1673,7 +1922,7 @@ export default class Run {
         }
 
         result += '...\n';
-        alert(result);
+        this.alertBox(result);
 
         if ((actFlip === coinPick && (decPick === '2' || decPick === 'K')) || (coinPick !== actFlip && (decPick === '1' || decPick === 'R'))) {
             rec_fst = 'home';
@@ -1765,11 +2014,11 @@ export default class Run {
                 // LATER: Record quarter score here
             }
 
-            alert('Quarter end...');
+            this.alertBox('Quarter end...');
 
             // Used to check !over, but you should never get there
             if (!(game.qtr % 2) && !(game.qtr === 4 && game.game_type === 'otc')) {
-                alert('Halftime shuffle...');
+                this.alertBox('Halftime shuffle...');
                 // LATER: Stat review statBoard(game);
             }
 
@@ -1809,7 +2058,7 @@ export default class Run {
         // display game over
         // statBoard()
         // record final qtr scores
-        alert(wName + ' wins the game ' + game.players[winner].score + ' - ' + game.players[game.opp(winner)].score + '!!!');
+        this.alertBox(wName + ' wins the game ' + game.players[winner].score + ' - ' + game.players[game.opp(winner)].score + '!!!');
         game.status = 900 + winner;
         // fireworks();
         // storeStats(winner, false);
