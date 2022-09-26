@@ -901,7 +901,7 @@ export default class Run {
         
 
         // Get user input
-        do {
+        // do {
             // selection = this.input.getText(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
             // debugger
             // selection = await this.input.getText(options);
@@ -927,7 +927,7 @@ export default class Run {
             // }
             // console.log(selection);
             console.log(selection);
-        } while (!test.includes(selection) && game.status !== 999);
+        // } while (!test.includes(selection) && game.status !== 999);
         // console.log(selection);
 
 
