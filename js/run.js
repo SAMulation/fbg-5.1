@@ -1618,7 +1618,7 @@ export default class Run {
             }
 
             // print_down(game);
-            document.querySelector('.page-subheader').innerText = this.showBoard();
+            // document.querySelector('.page-subheader').innerText = this.showBoard();
 
             if (game.status > 10) {
                 // LATER: Inc player's first downs here
@@ -1639,6 +1639,7 @@ export default class Run {
         }
 
         // print_down(game);
+        document.querySelector('.page-subheader').innerText = this.showBoard();
     };
 
     timeChange(game) {
