@@ -1,6 +1,7 @@
 import Player from './player.js'
 import Play from './play.js'
 import Run from './run.js'
+import TextInput from './text.js';
 
 export default class Game {
     constructor(team1, team2, game_type, num_plr, away, home, mults = null, yards = null) {
@@ -39,7 +40,13 @@ export default class Game {
         this.mults = mults; 
         this.yards = yards;
 
-        this.run = new Run(this);
+        this.run = new Run(this, new TextInput);
+
+        this.test = true;
+
+        this.buttonPressed = null;
+
+
 
         if (!this.mults) {
             this.fillMults();

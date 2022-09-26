@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Bored Game - Play</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="js/script2.test.js"></script>
+</head>
+<body>
+    <div class="page-wrap">
+        <header class="page-header">
+          <h1>Football Bored Game</h1>
+          <p>If you've stumbled upon this, it is <em>very</em> much a work in progess right now. Bear with me...</p>
+        </header>
+
+        <section class="page-subheader">
+          Subheader
+        </section>
+
+        <main class="page-main">
+          <h1>Team 1 Pick Play</h1><br>
+
+          <div class="selection pl1">
+            <button class="play" data-playType="SR">SR</button>
+            <button class="play" data-playType="LR">LR</button>
+            <button class="play" data-playType="SP">SP</button>
+            <button class="play" data-playType="LP">LP</button>
+            <button class="play" data-playType="TP">TP</button>
+            <button class="play" data-playType="HM">HM</button>
+            <button class="play" data-playType="FG">FG</button>
+            <button class="play" data-playType="PT">PT</button>
+            <button class="play" data-playType="TO">TO</button>
+          </div>
+
+          <!-- <p class="pl1 hidden">Player 1 selected <span class="pl1">team</span>!</p> -->
+        </main>
+
+        <aside class="page-sidebar">
+            <h1>Team 2 Pick Play</h1><br>
+
+            <div class="selection pl2">
+              <button class="play" data-playType="SR">SR</button>
+              <button class="play" data-playType="LR">LR</button>
+              <button class="play" data-playType="SP">SP</button>
+              <button class="play" data-playType="LP">LP</button>
+              <button class="play" data-playType="TP">TP</button>
+              <button class="play" data-playType="HM">HM</button>
+              <button class="play" data-playType="FG">FG</button>
+              <button class="play" data-playType="PT">PT</button>
+              <button class="play" data-playType="TO">TO</button>
+            </div>
+
+            <!-- <p class="pl2 hidden">Player 2 selected <span class="pl2">team</span>!</p> -->
+        </aside>
+
+        <section class="page-selection2">
+            <form id="gameForm">
+                <label for="quantity">Quarter Length (between 1 and 15)</label><br>
+                <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
+                <br>
+                <input class="playSubmit" type="submit" value="Submit">
+              </form>
+        </section>
+
+        <footer class="page-subfooter">
+            <button class="playButton" name="button" disabled>Start Playing</button>
+          </footer>
+
+        <footer class="page-footer">
+          Footer
+        </footer>
+      </div>
+    
+    <!-- <script src="script.js"></script> -->
+</body>
+</html>

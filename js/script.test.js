@@ -5,6 +5,8 @@ import Game from './game.js';
 import Site from './site.js';
 // import Run from './run.js';
 import TextInput from './text.js';
+import Kickoff from './kickoff.test.js';
+
 
 
 // GLOBAL VARIABLES
@@ -72,7 +74,7 @@ console.log(game);
 // FIX: REMOVE LATER - Set to window for easy access
 window.site = site;
 window.game = game;
-window.text = new TextInput();
+// window.text = new TextInput();
 
 // FUNCTION DEFINITIONS
 // THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
@@ -173,3 +175,9 @@ const initGame = (site) => {
 setTeamLists(document.querySelectorAll('.teamList'));
 submitTeams(document.querySelector('#gameForm'));
 pressPlayButton(document.querySelector('.playButton'));
+
+window.kick = new Kickoff(game);
+
+// Test all kickoff choices
+const kickChoices = ['RK', 'OK', 'SK'];
+const retChoices = ['RR', 'OR', 'TB'];
