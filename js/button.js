@@ -111,34 +111,31 @@ const DEF_PLAYS = {
         'name': 'Kick',
         'abrv': 'K',
         'count': -1,
-        'type': 'kickdec'
+        'type': 'kickDecReg'
     },
     'R': {
         'name': 'Receive',
         'abrv': 'R',
         'count': -1,
-        'type': 'kickdec'
+        'type': 'kickDecReg'
     },
     '1': {
         'name': 'Ball 1st',
         'abrv': '1',
         'count': -1,
-        'type': 'kickdec'
+        'type': 'kickDecOT'
     },
     '2': {
         'name': 'Ball 2nd',
         'abrv': '2',
         'count': -1,
-        'type': 'kickdec'
+        'type': 'kickDecOT'
     }
 }
 
 export default class ButtonInput {
-    async getText (p, msg, options) {
-        this.makeButtons(options, p);
-
-
-
+    async getText (p, msg, type) {
+        this.makeButtons(type, p);
 
         // Play abbreviation
         return new Promise((resolve, reject) => {
@@ -147,32 +144,25 @@ export default class ButtonInput {
     }
 
     bindButtons (rootElement, resolve) {
-        // Clear press or press and hold
         const buttons = rootElement.querySelectorAll('button.play');
-        console.log(buttons)
     
         buttons.forEach(button => {
-            // was click
             button.addEventListener('click', event => {
-                // console.log(event.target);
-                // this.game.buttonPressed = buttonPress(event.target.getAttribute("data-playType"));
                 resolve(event.target.getAttribute("data-playType"));
+                event.target.parentElement.innerHTML = '';
             });
         })
     }
 
-    makeButtons(options, p) {
+    makeButtons(type, p) {
         let store = []; 
         let count = 0;
 
         for (let key in DEF_PLAYS) {
-            // if (DEF_PLAYS[key]['type'] === 'reg') {
-            // console.log(key, DEF_PLAYS[key]);
-                if (options.includes(key)) {
+                if (DEF_PLAYS[key]['type'] === type) {
                     store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
                     count++;
                 }
-            // }
         }
 
         console.log(store);
@@ -188,7 +178,5 @@ export default class ButtonInput {
             btn.setAttribute('data-playType', store[i]['abrv'])
             buttonArea.appendChild(btn);
         }
-
-        // this.bindButtons(buttonArea);
     }
 }

@@ -5,60 +5,10 @@ export default class Run {
         // Pointer to game object
         this.game = game; 
         this.input = input; 
-        this.alert = '';
+        this.alert = 'skip';  // 'skip' or ''
     }
 
-    // async buttonPress(src) {
-    //     // debugger
-    //     // this.game.buttonPressed = src;
-    //     // console.log(this.game.buttonPressed);
-    //     return await Promise.resolve(src);
-    // }
-
-    // bindButtons = (rootElement) => {
-    //     // Clear press or press and hold
-    //     const buttons = rootElement.querySelectorAll('button.play');
-    //     console.log(buttons)
     
-    //     buttons.forEach(button => {
-    //         // was click
-    //         button.addEventListener('pointerdown', event => {
-    //             // console.log(event.target);
-    //             this.game.buttonPressed = buttonPress(event.target.getAttribute("data-playType"));
-    //         });
-    //     })
-    // }
-
-    // makeButtons(test, p) {
-    //     let store = [];
-    //     let count = 0;
-
-    //     for (let key in DEF_PLAYS) {
-    //         // if (DEF_PLAYS[key]['type'] === 'reg') {
-    //         // console.log(key, DEF_PLAYS[key]);
-    //             if (test.includes(key)) {
-    //                 store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
-    //                 count++;
-    //             }
-    //         // }
-    //     }
-
-    //     console.log(store);
-
-    //     const buttonArea = document.querySelector('.selection.pl' + p);
-    //     buttonArea.textContent = '';
-
-    //     for (let i = 0; i < store.length; i++) {
-    //         const btn = document.createElement("button");
-    //         const t = document.createTextNode(store[i]['name']);
-    //         btn.appendChild(t);
-    //         btn.classList.add('play');
-    //         btn.setAttribute('data-playType', store[i]['abrv'])
-    //         buttonArea.appendChild(btn);
-    //     }
-
-    //     this.bindButtons(buttonArea);
-    // }
 
     alertBox(msg) {
         if (this.alert !== 'skip') {
@@ -80,6 +30,10 @@ export default class Run {
 
     playGame() {
         // this.alertBox("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com");
+        document.querySelector('.selection.pl1').innerHTML = '';
+        document.querySelector('.selection.pl2').innerHTML = '';
+        document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play';
+        document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play';
 
         this.gameLoop(this.game, 0);
     
@@ -788,7 +742,7 @@ export default class Run {
         // const options = loadPlay(state);  // LATER
         let errorMsg = null;
         
-        selection = await this.input.getText(p, msg, options);
+        selection = await this.input.getText(p, msg, state);
 
         // Get user input
         // do {
@@ -892,6 +846,12 @@ export default class Run {
     
         return options;
     };
+
+    showBoard() {
+        let text = game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + '\n';
+        text += game.down + this.ending(game.down) + ' & ' + this.downDist(game.fst_down, game.spot) + ' | ' + this.printTime(game.current_time) + ' | Ball on: ' + this.printSpot(game, game.spot) + '\n';
+        return text;
+    }
     
     ending(num) {
         let ending = 'th';
@@ -1657,6 +1617,7 @@ export default class Run {
             }
 
             // print_down(game);
+            document.querySelector('.page-subheader').innerText = this.showBoard();
 
             if (game.status > 10) {
                 // LATER: Inc player's first downs here
@@ -1740,12 +1701,12 @@ export default class Run {
         let actFlip = null;
         let decPick = null;
         let rec_fst = 'away';
-        debugger
+        // debugger
         if (game.isReal(game.away)) {
             // this.makeButtons('H,T', game.away)
             // do {
             //     // debugger
-            coinPick = await this.input.getText(game.away, 'Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n', 'H,T');
+            coinPick = await this.input.getText(game.away, 'Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n', 'coin');
             //     if (typeof(coinPick) === 'string') {
             //         coinPick = coinPick.toUpperCase();
             //     } else {
@@ -1767,7 +1728,7 @@ export default class Run {
         this.alertBox(result);
 
         if (game.num_plr === 2 || actFlip === coinPick && game.away === 1 || actFlip !== coinPick && game.home === 1) {
-            result = (actFlip === coinPick ? awayName :homeName) + ' choose, ';
+            result = (actFlip === coinPick ? awayName : homeName) + ' choose, ';
             //do {
                 // MOVE THIS TO TEXT INPUT CLASS
                 if (game.isOT()) {
@@ -1777,7 +1738,7 @@ export default class Run {
                 }
 
                 // debugger
-                decPick = await this.input.getText(game.home, result, (game.isOT() ? '1,2' : 'K,R'));
+                decPick = await this.input.getText((actFlip === coinPick ? game.away : game.home), result, (game.isOT() ? 'kickDecOT' : 'kickDecReg'));
                 //if (typeof(decPick) === 'string') {
                     // if (game.isOT() && (decPick === '1' || decPick === '2')) {
                     //     decPick = Number(decPick);
@@ -1904,13 +1865,15 @@ export default class Run {
             if (game.qtr !== 0 && !(game.qtr === 4 && game.game_type === 'otc')) {
                 // LATER: Record quarter score here
             }
+            
+            if (game.qtr !== 0) {
+                this.alertBox('Quarter end...');
 
-            this.alertBox('Quarter end...');
-
-            // Used to check !over, but you should never get there
-            if (!(game.qtr % 2) && !(game.qtr === 4 && game.game_type === 'otc')) {
-                this.alertBox('Halftime shuffle...');
-                // LATER: Stat review statBoard(game);
+                // Used to check !over, but you should never get there
+                if (!(game.qtr % 2) && !(game.qtr === 4 && game.game_type === 'otc')) {
+                    this.alertBox('Halftime shuffle...');
+                    // LATER: Stat review statBoard(game);
+                }
             }
 
             // Get ready for OT or reset clock for next qtr

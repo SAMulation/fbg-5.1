@@ -13,7 +13,7 @@ export default class Game {
         //                  yards2=None,
         //                  stats1=None, stats2=None) {
         this.game_type = game_type;
-        this.num_plr = num_plr;
+        this.num_plr = 2;  // num_plr;
         this.away = away;
         this.home = home;
         // this.current_time = 7;  // qtr_length;
