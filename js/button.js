@@ -161,7 +161,7 @@ export default class ButtonInput {
         for (let key in DEF_PLAYS) {
                 if (DEF_PLAYS[key]['type'] === type) {
                     // add count here
-                    store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
+                    store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'], 'count': DEF_PLAYS[key]['count'] };
                     count++;
                 }
         }
@@ -176,8 +176,12 @@ export default class ButtonInput {
             const t = document.createTextNode(store[i]['name']);
             btn.appendChild(t);
             btn.classList.add('play');
+            // Set data-playType to play abrv, used throughout
             btn.setAttribute('data-playType', store[i]['abrv'])
-            // here make the button disabled if count is zero or less
+            // Set the button to disabled if count is zero (prevents negatives)
+            if (store[i]['count'] === 0) {
+                btn.setAttribute('disabled', '')
+            }
             buttonArea.appendChild(btn);
         }
     }
