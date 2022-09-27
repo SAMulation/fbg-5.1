@@ -63,7 +63,7 @@ export default class Run {
                 }
     
                 if (game.status !== 999) {
-                    this.endPlay(game);
+                    await this.endPlay(game);
                 }
             }
     
@@ -446,9 +446,8 @@ export default class Run {
     
         // Making sure you didn't exit
         if (game.status !== 999) {
-            let stat = this.setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay);
+            game.status = this.setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay);
             // debugger
-            game.status = stat;
     
             this.alertBox("Both teams are lining up for the snap...");
         
@@ -791,7 +790,7 @@ export default class Run {
     playValid(game, p, sel) {
         // console.log('playValid');
         let msg = null;
-        const num = "SRLRSPLPTPHMFGPT".indexOf(sel) / 2;
+        const num = "SR,LR,SP,LP,TP,HM,FG,PT".indexOf(sel) / 3;
         // console.log(num);
         let tot = 0;
     
@@ -815,8 +814,8 @@ export default class Run {
             msg = 'Illegal play!';
         }
     
-        if (!msg && num >= 6 && num <= 8 && game.def_num === p) {
-            msg = (num === 8) ? "PUNT" : sel + ' not allowed on defense!';
+        if (!msg && num >= 5 && num <= 7 && game.def_num === p) {
+            msg = ((num === 7) ? "PUNT" : sel) + ' not allowed on defense!';
         }
     
         if (!msg && sel === 'FG' && game.spot < 30) {
@@ -922,7 +921,7 @@ export default class Run {
                 stat = 17;
             } else if (p1 === 'FG' || p2 === 'FG') {
                 stat = 15;
-            } else if (p1 === 'PUNT' || p2 === 'PUNT') {
+            } else if (p1 === 'PT' || p2 === 'PT') {
                 stat = 16;
             }
         }
@@ -1201,10 +1200,10 @@ export default class Run {
         // Get yard card
         if (!block) {
             // Yard card times 10 and, if heads, add 20
-            kdst = 10 * game.decYards() / 2 + 20 * coinFlip();
+            kickDist = 10 * game.decYards() / 2 + 20 * Utils.coinFlip();
             
             // Check for touchbacks
-            if (game.spot + kdst > 100) {
+            if (game.spot + kickDist > 100) {
                 touchback = true;
             }
         }
@@ -1219,11 +1218,11 @@ export default class Run {
             // addRecap( blocked punt )
         // Regular punt/safety kick 
         } else {
-            game.thisPlay.dist = kdst;
+            game.thisPlay.dist = kickDist;
             // moveBall('k');
         }
     
-        game.spot += kdst;
+        game.spot += kickDist;
     
         // Check muff, but not on safety kick
         if (!touchback && !block && game.status !== -4 && Utils.rollDie() === 6) {
@@ -1245,24 +1244,24 @@ export default class Run {
         }
     
         // Return
+        let msg = 'The return:\n';
+
         if (possession && !touchback && !block) {
-            const mlt = game.decMults().card;
+            const mltCard = game.decMults().card;
             const yrd = game.decYards();
+            let mlt = -0.5;
     
-            if (mlt === 'King') {
+            if (mltCard === 'King') {
                 mlt = 7;
-            } else if (mlt === 'Queen') {
+            } else if (mltCard === 'Queen') {
                 mlt = 4;
-            } else if (mlt === 'Jack') {
+            } else if (mltCard === 'Jack') {
                 mlt = 1;
-            } else {
-                mlt = -0.5;
             }
     
             retDist = Math.round(mlt * yrd);
     
-            let msg = 'The return:\n';
-            if (rdst === 0) {
+            if (retDist === 0) {
                 msg += 'No return.';
             } else {
                 if (game.spot + retDist >= 100) {
@@ -1282,7 +1281,7 @@ export default class Run {
                 msg += dName + ' returns for ' + retDist + ' yards.';
             }
         } else if (touchback) {
-            this.alertBox(dName + ' takes a touchback...');
+            msg += dName + ' takes a touchback...';
             game.spot = 20;
             // moveBall('s')  // Maybe
         }
@@ -1291,6 +1290,8 @@ export default class Run {
         if (game.status === -4 || game.status === 16) {
             game.status = 6;
         }
+
+        this.alertBox(msg);
     };
     
     hailMary(game) {
@@ -1330,7 +1331,7 @@ export default class Run {
 
     
     // END OF PLAY - WE HAVE THE DATA, LET'S GO!!!
-    endPlay(game) {
+    async endPlay(game) {
         const p1 = game.players[1].currentPlay;
         const p2 = game.players[2].currentPlay;
 
@@ -1349,7 +1350,7 @@ export default class Run {
             }
         }
 
-            this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist);
+            await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist);
 
             console.log('Updating scoreboard...');
             if (!game.isOT() && game.ot_poss < 0 && !game.two_point && game.status < 15 || game.status == 17) {
@@ -1432,11 +1433,11 @@ export default class Run {
         const times = game.thisPlay.multiplier === 999 ? '/' : null;
         const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card;
 
-        // this.alertBox('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
-        alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
+        this.alertBox('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up.');  // Press Enter...\n');
+        // alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
     };
 
-    checkScore(game, bon, dst) {
+    async checkScore(game, bon, dst) {
         const ono = game.off_num;
         const dno = game.def_num;
         const oname = game.players[ono].team.name;
@@ -1488,7 +1489,7 @@ export default class Run {
         }
 
         if (game.status === 101) {
-            this.touchdown(game);
+            await this.touchdown(game);
             // this.alertBox('Congrats!\n\nYou scored a touchdown and broke the game. Come back later for more gameplay...\n');
             //game.status = 101;
         }
@@ -1522,14 +1523,14 @@ export default class Run {
         // addRecap( safety )
     };
 
-    touchdown(game) {
+    async touchdown(game) {
         this.alertBox(game.players[game.off_num].team.name + ' scored a touchdown!!!');
         this.scoreChange(game, game.off_num, 6);
 
         // addRecap ( touchdown )
         debugger
         if (this.patNec(game)) {
-            this.pat(game);
+            await this.pat(game);
         }
 
         if (game.isOT()) {
@@ -1548,14 +1549,14 @@ export default class Run {
         // return !endGameNoTO && !endOT || !scoreDiff;
     };
 
-    pat(game) {
+    async pat(game) {
         const oNum = game.off_num;
         const oName = game.players[oNum].team.name;
         let selection = '2P';  // Default in 3OT+
 
         if (game.qtr < 7) {  // Must go for 2 in 3OT+
             if (game.isReal(oNum)) {
-                this.playPages(game, oNum, 'xp');
+                await this.playPages(game, oNum, 'pat');
             } else {
                 this.cpuPages(game, 'xp');
             }
