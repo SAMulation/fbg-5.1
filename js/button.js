@@ -148,8 +148,18 @@ export default class ButtonInput {
     
         buttons.forEach(button => {
             button.addEventListener('click', event => {
+                let valid = true;
                 resolve(event.target.getAttribute("data-playType"));
-                event.target.parentElement.innerHTML = '';
+                if (DEF_PLAYS[event.target.getAttribute("data-playType")]['type'] === 'reg') {
+                    const errorMsg = game.run.playValid(game, p, selection);
+                    if (errorMsg) {
+                        game.run.alertBox(errorMsg);
+                        valid = false;
+                    } // else {makeButtons()}
+                }
+                if (valid) {
+                    event.target.parentElement.innerHTML = '';
+                }
             });
         })
     }
