@@ -5,14 +5,16 @@ export default class Run {
         // Pointer to game object
         this.game = game; 
         this.input = input; 
-        this.alert = 'skip';  // 'skip' or ''
+        this.alert = 'subhead';  // 'skip' or ''
     }
 
     
 
     alertBox(msg) {
-        if (this.alert !== 'skip') {
+        if (this.alert === 'alert') {
             alert(msg);
+        } else if (this.alert === 'subhead') {
+            document.querySelector('.page-subheader').innerText = msg;
         } else {
             console.log(msg);
         }
