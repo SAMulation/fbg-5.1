@@ -856,7 +856,7 @@ export default class Run {
 
     showBoard() {
         let text = (game.off_num === 1 ? '> ' : '') + game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + (game.off_num === 2 ? ' <' : '') + '\n';
-        text += game.down + this.ending(game.down) + ' & ' + this.downDist(game.fst_down, game.spot) + ' | ' + this.printTime(game.current_time) + ' | Ball on: ' + this.printSpot(game, game.spot) + '\n';
+        text += game.down + this.ending(game.down) + ' & ' + this.downDist(game.fst_down, game.spot) + ' | ' + game.qtr + this.ending(game.qtr) + ' | ' + this.printTime(game.current_time) + ' | Ball on: ' + this.printSpot(game, game.spot) + '\n';
         return text;
     }
     
@@ -1381,12 +1381,10 @@ export default class Run {
             game.thisPlay.yard_card = game.decYards();
         }
 
-        if (game.thisPlay.multiplier === 999) {
-            if (game.thisPlay.multiplier_card === '/') {
-                game.thisPlay.multiplier = '/';
-            } else {
-                game.thisPlay.multiplier = this.calcTimes(game, p1, p2, game.thisPlay.multiplier_card.num);
-            }
+        if (game.thisPlay.multiplier === 999 && game.thisPlay.multiplier_card === '/') {
+            game.thisPlay.multiplier = '/';
+        } else if (game.thisPlay.multiplier_card !== '/') {
+            game.thisPlay.multiplier = this.calcTimes(game, p1, p2, game.thisPlay.multiplier_card.num);
         }
 
         if (game.thisPlay.dist === 999) {
