@@ -291,6 +291,7 @@ const submitTeams = (submit) => {
 const pressPlayButton = (button) => {
     button.addEventListener('pointerdown', event => {
         playGame(window.game);
+        event.target.setAttribute('disabled', '')
     });
 };
 

@@ -14,7 +14,11 @@ export default class Run {
         if (this.alert === 'alert') {
             alert(msg);
         } else if (this.alert === 'subhead') {
-            document.querySelector('.page-subheader').innerText = msg;
+            const el = document.createElement("p");
+            const t = document.createTextNode(msg);
+            el.appendChild(t);
+            // LATER: Add class, if needed // el.classList.add('play');
+            document.querySelector('.page-subheader').appendChild(el);
         } else {
             console.log(msg);
         }
@@ -79,7 +83,7 @@ export default class Run {
         game.down = 0;
         game.fst_down = 0;
     
-        this.prePlay(game, 3);  // NOW: Check on this
+        this.prePlay(game, game.status);  // NOW: Check on this
     
         if (game.status === -4) {
             this.punt(game, oNum, -4);  // Safety Kick
@@ -443,7 +447,7 @@ export default class Run {
         // Making sure you didn't exit
         if (game.status !== 999) {
             let stat = this.setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay);
-            debugger
+            // debugger
             game.status = stat;
     
             this.alertBox("Both teams are lining up for the snap...");
@@ -746,11 +750,11 @@ export default class Run {
         // const options = loadPlay(state);  // LATER
         let errorMsg = null;
         
-        selection = await this.input.getText(p, msg, state);
+        selection = await this.input.getText(game, p, msg, state);
 
         // Get user input
         // do {
-            // selection = this.input.getText(options, 'Put abbreviation here (e.g., "sr" for Short Run)');
+            // selection = this.input.getText(game, options, 'Put abbreviation here (e.g., "sr" for Short Run)');
             // debugger
         
             // selection = await this.waitForSelection(game, p, options, state);
@@ -1377,7 +1381,11 @@ export default class Run {
         }
 
         if (game.thisPlay.multiplier === 999) {
-            game.thisPlay.multiplier = this.calcTimes(game, p1, p2, game.thisPlay.multiplier_card.num);
+            if (game.thisPlay.multiplier_card === '/') {
+                game.thisPlay.multiplier = '/';
+            } else {
+                game.thisPlay.multiplier = this.calcTimes(game, p1, p2, game.thisPlay.multiplier_card.num);
+            }
         }
 
         if (game.thisPlay.dist === 999) {
@@ -1644,7 +1652,7 @@ export default class Run {
         }
 
         // print_down(game);
-        document.querySelector('.page-subheader').innerText = this.showBoard();
+        document.querySelector('.page-selection2').innerText = this.showBoard();
     };
 
     timeChange(game) {
@@ -1669,7 +1677,7 @@ export default class Run {
         if (game.qtr > 4 && game.ot_poss === 0) {
             game.current_time = -0.5;
         }
-        document.querySelector('.page-subheader').innerText = this.showBoard();
+        document.querySelector('.page-selection2').innerText = this.showBoard();
     };
 
     async gameCtrl(game) {
@@ -1714,7 +1722,7 @@ export default class Run {
             // this.makeButtons('H,T', game.away)
             // do {
             //     // debugger
-            coinPick = await this.input.getText(game.away, 'Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n', 'coin');
+            coinPick = await this.input.getText(game, game.away, 'Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n', 'coin');
             //     if (typeof(coinPick) === 'string') {
             //         coinPick = coinPick.toUpperCase();
             //     } else {
@@ -1746,7 +1754,7 @@ export default class Run {
                 }
 
                 // debugger
-                decPick = await this.input.getText((actFlip === coinPick ? game.away : game.home), result, (game.isOT() ? 'kickDecOT' : 'kickDecReg'));
+                decPick = await this.input.getText(game, (actFlip === coinPick ? game.away : game.home), result, (game.isOT() ? 'kickDecOT' : 'kickDecReg'));
                 //if (typeof(decPick) === 'string') {
                     // if (game.isOT() && (decPick === '1' || decPick === '2')) {
                     //     decPick = Number(decPick);
