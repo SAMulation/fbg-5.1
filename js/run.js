@@ -365,6 +365,7 @@ export default class Run {
     };
     
     prePlay(game, stat) {
+        console.log(game);  // LATER: Suppress this ASAP
         // console.log('prePlay');
         game.thisPlay.multiplier_card = 999;
         game.thisPlay.multiplier_num = 999;
@@ -1635,7 +1636,7 @@ export default class Run {
 
         if (game.down > 4) {
             this.alertBox('Turnover on downs!!!');
-            changePoss(game, 'to');
+            this.changePoss(game, 'to');
 
             game.down = 1;
         }
