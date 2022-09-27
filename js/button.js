@@ -134,8 +134,8 @@ const DEF_PLAYS = {
 }
 
 export default class ButtonInput {
-    async getText (p, msg, type) {
-        this.makeButtons(type, p);
+    async getText (game, p, msg, type) {
+        this.makeButtons(game, type, p);
 
         // Play abbreviation
         return new Promise((resolve, reject) => {
@@ -154,14 +154,14 @@ export default class ButtonInput {
         })
     }
 
-    makeButtons(type, p) {
+    makeButtons(game, type, p) {
         let store = []; 
         let count = 0;
 
         for (let key in DEF_PLAYS) {
                 if (DEF_PLAYS[key]['type'] === type) {
                     // add count here
-                    store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'], 'count': DEF_PLAYS[key]['count'] };
+                    store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
                     count++;
                 }
         }
@@ -179,9 +179,10 @@ export default class ButtonInput {
             // Set data-playType to play abrv, used throughout
             btn.setAttribute('data-playType', store[i]['abrv'])
             // Set the button to disabled if count is zero (prevents negatives)
-            if (store[i]['count'] === 0) {
+            if (game.players[p].plays.hasOwnProperty(store[i]['abrv']) && game.players[p].plays[store[i]['abrv']]['count'] === 0) {
                 btn.setAttribute('disabled', '')
             }
+            // More validation can go here (for FG, PUNT)
             buttonArea.appendChild(btn);
         }
     }
