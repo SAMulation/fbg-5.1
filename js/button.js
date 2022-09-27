@@ -139,25 +139,26 @@ export default class ButtonInput {
 
         // Play abbreviation
         return new Promise((resolve, reject) => {
-            this.bindButtons(document.querySelector('.selection.pl' + p), resolve);
+            this.bindButtons(document.querySelector('.selection.pl' + p), resolve, p);
         });
     }
 
-    bindButtons (rootElement, resolve) {
+    bindButtons (rootElement, resolve, p) {
         const buttons = rootElement.querySelectorAll('button.play');
     
         buttons.forEach(button => {
             button.addEventListener('click', event => {
                 let valid = true;
-                resolve(event.target.getAttribute("data-playType"));
+                // resolve(event.target.getAttribute("data-playType"));
                 if (DEF_PLAYS[event.target.getAttribute("data-playType")]['type'] === 'reg') {
-                    const errorMsg = game.run.playValid(game, p, selection);
+                    const errorMsg = game.run.playValid(game, p, event.target.getAttribute("data-playType"));
                     if (errorMsg) {
                         game.run.alertBox(errorMsg);
                         valid = false;
                     } // else {makeButtons()}
                 }
                 if (valid) {
+                    resolve(event.target.getAttribute("data-playType"));
                     event.target.parentElement.innerHTML = '';
                 }
             });
