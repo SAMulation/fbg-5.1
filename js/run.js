@@ -129,6 +129,7 @@ export default class Run {
             //addRecap(game, teamName + ' turnover!') // or however
             //game.players[game.off_num].stats.tos++;  // Inc turnovers in Stats
             game.turnover = true;
+            game.down = 0;
         } else if (mode === 'ot') {
             // Probably need a visual reset here
             game.spot = 75;
@@ -1289,6 +1290,7 @@ export default class Run {
         // If you didn't score, post-punt
         if (game.status === -4 || game.status === 16) {
             game.status = 6;
+            game.down = 0;  // CHECK: This is a band-aid
         }
 
         this.alertBox(msg);
@@ -1597,7 +1599,9 @@ export default class Run {
         let coin;
 
         if (game.down !== 0) {
+            console.log('Update down: ' + game.spot);
             game.spot += game.thisPlay.dist;
+            console.log(game.spot);
         }
 
         // if (game.spt != 0 || game.status > 0 && game.status < 10) { // Update the spot }
@@ -1688,13 +1692,17 @@ export default class Run {
             }
         } else {
             // End of half
-            if (game.status === 0 || (!game.qtr % 2)) {
+            if (game.status === 0 || (!(game.qtr % 2))) {
                 this.resetVar(game);
             }
 
             // End of odd quarter (1st, 3rd, OT)
             if (game.qtr % 2) {
-                this.resetTime(game);
+                // this.resetTime(game);  // CHECK: This was a band-aid
+                // Maybe?
+                if (game.qtr === 3) {
+                    game.status = 3;
+                } 
             }
         }
 
