@@ -8,7 +8,18 @@ export default class Run {
         this.alert = 'subhead';  // 'skip' or ''
     }
 
+    pressPlayButton(button) {
+        button.addEventListener('pointerdown', event => {
+            playGame(window.game);
+            event.target.setAttribute('disabled', '')
+        });
+    };
     
+    EnablePlayButton(button) {
+        button.innerText = 'Play Again?';
+        button.disabled = false;
+        pressPlayButton(button);
+    };
 
     alertBox(msg) {
         if (this.alert === 'alert') {
@@ -22,7 +33,7 @@ export default class Run {
         } else {
             console.log(msg);
         }
-    }
+    };
 
     legalPlays(p, type, PLAYS) {
         this.game.players[p].plays[0] = 0;
@@ -31,7 +42,7 @@ export default class Run {
                console.log(key, yourobject[key]);
             }
          }
-    }
+    };
 
 
     playGame() {
@@ -40,6 +51,7 @@ export default class Run {
         document.querySelector('.selection.pl2').innerHTML = '';
         document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play';
         document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play';
+        // document.querySelector('.playButton').disabled = true;
 
         this.gameLoop(this.game, 0);
     
@@ -1699,10 +1711,6 @@ export default class Run {
             // End of odd quarter (1st, 3rd, OT)
             if (game.qtr % 2) {
                 // this.resetTime(game);  // CHECK: This was a band-aid
-                // Maybe?
-                if (game.qtr === 3) {
-                    game.status = 3;
-                } 
             }
         }
 
@@ -1866,7 +1874,7 @@ export default class Run {
 
         if (!game.over) {
             if (!game.isOT()) {
-                // printTime();
+                document.querySelector('.page-selection2').innerText = this.showBoard();
             }
 
             if (game.qtr === 3 && game.off_num !== game.rec_first) {
@@ -1883,7 +1891,7 @@ export default class Run {
         const over = game.qtr >= 4 && game.players[1].score !== game.players[2].score;
 
         if (over) {
-            this.end_game(game);
+            this.endGame(game);
         } else {
             if (game.qtr !== 0 && !(game.qtr === 4 && game.game_type === 'otc')) {
                 // LATER: Record quarter score here
@@ -1937,6 +1945,7 @@ export default class Run {
         // record final qtr scores
         this.alertBox(wName + ' wins the game ' + game.players[winner].score + ' - ' + game.players[game.opp(winner)].score + '!!!');
         game.status = 900 + winner;
+        this.EnablePlayButton(document.querySelector('.playButton'));
         // fireworks();
         // storeStats(winner, false);
     };
