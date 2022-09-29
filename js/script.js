@@ -195,6 +195,9 @@ const playGame = (game) => {
 
     console.log(game);
 
+
+    // EnablePlayButton(document.querySelector('.playButton'));
+
     // prePlay(game, game.status);
     // pickPlay(game);
 };
@@ -293,6 +296,12 @@ const pressPlayButton = (button) => {
         playGame(window.game);
         event.target.setAttribute('disabled', '')
     });
+};
+
+const EnablePlayButton = (button) => {
+    button.innerText = 'Play Again?';
+    button.disabled = false;
+    pressPlayButton(button);
 };
 
 const initGame = (site) => {
