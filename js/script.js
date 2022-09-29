@@ -178,7 +178,7 @@ window.game = game;
 
 // FUNCTION DEFINITIONS
 // THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
-const playGame = (game) => {
+const playGame = async (game) => {
     //alert("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com");
     // while (game.status !== 999) {
     //     playMechanism(game);
@@ -191,12 +191,12 @@ const playGame = (game) => {
     // OLD
     // gameLoop(game, 0);
 
-    game.runIt();
+    await game.runIt();
 
-    console.log(game);
+    // console.log(game);
 
 
-    // EnablePlayButton(document.querySelector('.playButton'));
+    EnablePlayButton(document.querySelector('.playButton'));
 
     // prePlay(game, game.status);
     // pickPlay(game);
@@ -281,6 +281,7 @@ const submitTeams = (submit) => {
             site.team1 = value[0];
             site.team2 = value[1];
             console.log(site);
+            // game.status = 0;
             game = initGame(site);
             window.game = game;
             console.log(game);
@@ -295,6 +296,7 @@ const pressPlayButton = (button) => {
     button.addEventListener('pointerdown', event => {
         playGame(window.game);
         event.target.setAttribute('disabled', '')
+        document.querySelector('.page-subheader').innerHTML = '';
     });
 };
 

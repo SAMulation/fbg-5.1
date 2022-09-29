@@ -8,18 +8,18 @@ export default class Run {
         this.alert = 'subhead';  // 'skip' or ''
     }
 
-    pressPlayButton(button) {
-        button.addEventListener('pointerdown', event => {
-            playGame(window.game);
-            event.target.setAttribute('disabled', '')
-        });
-    };
+    // pressPlayButton(button) {
+    //     button.addEventListener('pointerdown', event => {
+    //         playGame(window.game);
+    //         event.target.setAttribute('disabled', '')
+    //     });
+    // };
     
-    EnablePlayButton(button) {
-        button.innerText = 'Play Again?';
-        button.disabled = false;
-        pressPlayButton(button);
-    };
+    // EnablePlayButton(button) {
+    //     button.innerText = 'Play Again?';
+    //     button.disabled = false;
+    //     this.pressPlayButton(button);
+    // };
 
     alertBox(msg) {
         if (this.alert === 'alert') {
@@ -45,7 +45,7 @@ export default class Run {
     };
 
 
-    playGame() {
+    async playGame() {
         // this.alertBox("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com");
         document.querySelector('.selection.pl1').innerHTML = '';
         document.querySelector('.selection.pl2').innerHTML = '';
@@ -53,7 +53,7 @@ export default class Run {
         document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play';
         // document.querySelector('.playButton').disabled = true;
 
-        this.gameLoop(this.game, 0);
+        await this.gameLoop(this.game, 0);
     
         console.log(this.game);
     };
@@ -1540,7 +1540,7 @@ export default class Run {
         this.scoreChange(game, game.off_num, 6);
 
         // addRecap ( touchdown )
-        debugger
+        // debugger
         if (this.patNec(game)) {
             await this.pat(game);
         }
@@ -1867,7 +1867,7 @@ export default class Run {
         }
 
         if (game.qtr === 4 && game.game_type != 'otc' && game.players[1].score === game.players[2].score) {
-            coinToss(game);
+            this.coinToss(game);
         }
 
         this.resetTime(game);
@@ -1936,16 +1936,17 @@ export default class Run {
         }
     };
 
-    endGame(game, winner) {
+    endGame(game) {
+        const winner = (game.players[1].score > game.players[2].score) ? 1 : 2;
         const wName = game.players[winner].team.name;
 
         // printQtr('FINAL');
         // display game over
         // statBoard()
         // record final qtr scores
-        this.alertBox(wName + ' wins the game ' + game.players[winner].score + ' - ' + game.players[game.opp(winner)].score + '!!!');
+        this.alertBox(wName + ' win the game ' + game.players[winner].score + ' - ' + game.players[game.opp(winner)].score + '!!!');
         game.status = 900 + winner;
-        this.EnablePlayButton(document.querySelector('.playButton'));
+        // this.EnablePlayButton(document.querySelector('.playButton'));
         // fireworks();
         // storeStats(winner, false);
     };

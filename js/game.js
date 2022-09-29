@@ -59,8 +59,8 @@ export default class Game {
         }
     }
 
-    runIt() {
-        this.run.playGame();
+    async runIt() {
+        await this.run.playGame();
     }
 
     // get(attr) {
