@@ -1709,7 +1709,7 @@ export default class Run {
             }
 
             // End of odd quarter (1st, 3rd, OT)
-            if (game.qtr % 2 && game.qtr !== 3) {
+            if (game.qtr % 2 && game.current_time !== game.qtr_length) {
                 this.resetTime(game);  // CHECK: This was a band-aid
             }
         }
