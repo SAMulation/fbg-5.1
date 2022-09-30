@@ -162,9 +162,11 @@ export default class Run {
                 }
                 game.down = 0;
             }
+        } else if (mode === 'nop') {
+            game.down = 0;
         }
     
-        if (mode != '' && mode !== 'k' && mode !== 'nop') {
+        if (mode !== '' && mode !== 'k' && mode !== 'nop') {
             // moveBall('s');  // Which showed ball
         }
     
@@ -909,7 +911,23 @@ export default class Run {
         board.querySelector(game.away === game.off_num ? '.botRight' : '.botLeft').innerText = this.printSpot(game, game.spot);
 
         // Qtr
-        board.querySelector('.botCenter').innerText = game.qtr + this.ending(game.qtr);
+        board.querySelector('.botCenter').innerText = this.showQuarter(game.qtr);
+    }
+
+    showQuarter(qtr) {
+        if (qtr > 4) {
+            qtr = qtr - 4;
+
+            if (qtr === 1) {
+                qtr = 'OT';
+            } else {
+                qtr = qtr + 'OT';
+            }
+        } else {
+            qtr = qtr + this.ending(qtr);
+        }
+
+        return qtr;
     }
     
     ending(num) {
@@ -1752,12 +1770,14 @@ export default class Run {
         } else {
             // End of half
             if (game.status === 0 || (!(game.qtr % 2))) {
-                this.resetVar(game);
+                await this.resetVar(game);
             }
 
             // End of odd quarter (1st, 3rd, OT)
             if (game.qtr % 2 && game.current_time !== game.qtr_length) {
-                this.resetTime(game);  // CHECK: This was a band-aid
+                if (!game.isOT() || (game.isOT() && game.ot_poss !== 2)) {
+                    this.resetTime(game);  // CHECK: This was a band-aid
+                }
             }
         }
 
@@ -1809,35 +1829,35 @@ export default class Run {
             result = (actFlip === coinPick ? awayName : homeName) + ' choose, ';
             //do {
                 // MOVE THIS TO TEXT INPUT CLASS
-                if (game.isOT()) {
+                if (game.qtr >= 4) {
                     result += 'Ball [1]st or Ball [2]nd?\n';
                 } else {
                     result += '[K]ick of [R]eceive?\n';
                 }
 
                 // debugger
-                decPick = await this.input.getText(game, (actFlip === coinPick ? game.away : game.home), result, (game.isOT() ? 'kickDecOT' : 'kickDecReg'));
+                decPick = await this.input.getText(game, (actFlip === coinPick ? game.away : game.home), result, (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'));
                 //if (typeof(decPick) === 'string') {
-                    // if (game.isOT() && (decPick === '1' || decPick === '2')) {
+                    // if (game.qtr >= 4 && (decPick === '1' || decPick === '2')) {
                     //     decPick = Number(decPick);
                     // } else { }
                     //decPick = decPick.toUpperCase();
                 //} else {
                     //decPick = null;
                 // }
-            //} while ((!game.isOT() && decPick !== 'K' && decPick !== 'R') || (game.isOT() && decPick !== 1 && decPick !== 2));
+            //} while ((!game.qtr >= 4 && decPick !== 'K' && decPick !== 'R') || (game.qtr >= 4 && decPick !== 1 && decPick !== 2));
         } else {  // Computer choosing
             this.alertBox((actFlip === coinPick ? awayName :homeName) + ' choosing...');
 
             decPick = Utils.randInt(1,2);
-            if (!game.isOT()) {
+            if (!(game.qtr >= 4)) {
                 decPick = decPick === 1 ? 'K' : 'R';
             }
         }
 
         result = (actFlip === coinPick ? awayName : homeName) + ' ';
 
-        if (game.isOT()) {
+        if (game.qtr >= 4) {
             if (decPick === '1') {
                 result += 'get ball 1st';
             } else {
@@ -1862,7 +1882,7 @@ export default class Run {
         game.def_num = game.rec_first;  // Because they're receiving first
         game.off_num = game.opp(game.def_num);  // Because they're kicking
 
-        if (game.isOT()) {
+        if (game.qtr >= 4) {
             if (game.game_type !== 'otc') {
                 // Might need this for graphic resetting later
             }
@@ -1871,7 +1891,7 @@ export default class Run {
         }
     };
 
-    resetVar(game) {
+    async resetVar(game) {
         if (game.qtr === 0 || (game.qtr === 4 && game.game_type === 'otc')) {
             // displayBoard()
             // printNames()
@@ -1914,7 +1934,7 @@ export default class Run {
         }
 
         if (game.qtr === 4 && game.game_type != 'otc' && game.players[1].score === game.players[2].score) {
-            this.coinToss(game);
+            await this.coinToss(game);
         }
 
         this.resetTime(game);
