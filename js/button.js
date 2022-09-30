@@ -136,7 +136,13 @@ const DEF_PLAYS = {
 export default class ButtonInput {
     async getText (game, p, msg, type) {
         this.makeButtons(game, type, p);
-
+        
+        if (type === 'reg') {
+            document.querySelector('.selection.pl' + p).classList.add('reg');
+        } else {
+            document.querySelector('.selection.pl' + p).classList.remove('reg');
+        }
+        
         // Play abbreviation
         return new Promise((resolve, reject) => {
             this.bindButtons(document.querySelector('.selection.pl' + p), resolve, p);
