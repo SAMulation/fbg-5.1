@@ -50,6 +50,8 @@ export default class Run {
         document.querySelector('.selection.pl1').innerHTML = '';
         document.querySelector('.selection.pl2').innerHTML = '';
         document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play';
+        document.querySelector('.page-main .to1').innerText = 'TO';
+        document.querySelector('.page-sidebar .to2').innerText = 'TO';
         document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play';
         // document.querySelector('.playButton').disabled = true;
         this.showBoard(document.querySelector('.scoreboard'));
