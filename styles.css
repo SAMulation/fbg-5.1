@@ -36,7 +36,8 @@
   }
 
   body {
-    background: #e4e4e4;
+    /* background: #e4e4e4; */
+    background-color: rgb(183, 205, 168);
     padding: 5px;
     height: 100vh;
     margin: 0;
@@ -45,7 +46,7 @@
     /* text-transform: uppercase; */
   }
   .page-wrap {
-    background: white;
+    /* background: white; */
     height: calc(100vh - 10px);
     box-shadow: 0 0 3px rgba(black, 0.33);
   
@@ -58,39 +59,40 @@
   .page-wrap > * {
       padding: 1rem;
       text-align: center;
+      border: 2px solid black;
   }
   
 
   
   .page-header {
     grid-column: 1 / -1;
-    background: #ffcdd2;
-    position: sticky;
+    /* background: #ffcdd2; */
+    /* position: sticky; */
     top: 0;
   }
 
   .page-subheader {
     display: none;
     grid-column: 1 / -1;
-    background: #bbdefb;
+    /* background: #bbdefb; */
   }
   
   .page-main {
     grid-row: span 1;
     grid-column: 1 / 2;
-    background: #dcedc8;
+    /* background: #dcedc8; */
   }
 
   .page-sidebar {
     grid-column: 2 / 3;
     grid-row: span 1;
-    background: #e1bee7;
+    /* background: #e1bee7; */
   }
 
   .page-selection2 {
     grid-column: 1 / -1;
     grid-row: span 1;
-    background: #c5fffb;
+    /* background: #c5fffb; */
   }
 
   .page-main *, .page-sidebar * {
@@ -99,11 +101,11 @@
 
   .page-subfooter {
     grid-column: 1 / -1;
-    background: #caa15f;
+    /* background: #caa15f; */
   }
   .page-footer {
     grid-column: 1 / -1;
-    background: #ffecb3;
+    /* background: #ffecb3; */
   }
   
   details p {
