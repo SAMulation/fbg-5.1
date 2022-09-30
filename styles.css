@@ -5,6 +5,34 @@
     font-family: sans-serif;
   }
 
+  @font-face {
+    font-family: 'calc';
+    src: url(fonts/calc/ti-calculator-font.ttf);
+  }
+
+  p, button {
+    font-family: 'calc', sans-serif;
+    font-size: 1rem;
+    line-height: 1rem;
+  }
+
+  button {
+    border: rgb(195, 195, 195) solid 2px;
+    background-color: rgb(75, 75, 75);
+    color: white;
+    border-radius: 10%;
+    padding: 10px;
+    margin: 10px;
+  }
+
+  button:hover {
+    background-color: #9c9c9c;
+  }
+
+  button:disabled {
+    display: none;
+  }
+
   body {
     background: #e4e4e4;
     padding: 5px;
