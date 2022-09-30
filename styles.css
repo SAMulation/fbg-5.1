@@ -10,10 +10,90 @@
     src: url(fonts/calc/ti-calculator-font.ttf);
   }
 
-  p, button {
+  p, button, .scoreboard * {
     font-family: 'calc', sans-serif;
     font-size: 1rem;
-    line-height: 1rem;
+    line-height: 1.25rem;
+  }
+
+  .scoreboard {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    /* grid-template-areas: 
+      "topLeft  topCenter  topRight"
+      "midLeft  midCenter  midRight"
+      "botLeft  botCenter  botRight"
+    ; */
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
+    justify-items: stretch;
+    gap: 0px;
+  }
+
+  /* .scoreboard .top .topLeft {
+    grid-area: topLeft;
+  }
+
+  .scoreboard .top .topCenter {
+    grid-area: topCenter;
+  }
+
+  .scoreboard .top .topRight {
+    grid-area: topRight;
+  }
+
+  .scoreboard .mid .midLeft {
+    grid-area: midLeft;
+  }
+
+  .scoreboard .mid .midCenter {
+    grid-area: midCenter;
+  }
+
+  .scoreboard .mid .midRight {
+    grid-area: midRight;
+  }
+
+  .scoreboard .bot .botLeft {
+    grid-area: botLeft;
+  }
+
+  .scoreboard.bot.botCenter {
+    grid-area: botCenter;
+  }
+
+  .scoreboard .bot .botRight {
+    grid-area: botRight;
+  } */
+
+  .scoreboard * {
+    border: 1px solid black;
+  }
+  .scoreboard .top, .scoreboard .mid, .scoreboard .bot {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1.5fr 1fr;
+    grid-template-rows: 1fr;
+    align-content: center;
+    justify-content: space-between;
+    align-items: stretch;
+    justify-items: stretch;
+    gap: 10px;
+  }
+
+  .scoreboard .mid .midLeft, .scoreboard .mid .midRight {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: 1fr;
+    align-content: space-between;
+    justify-content: center;
+    align-items: stretch;
+    justify-items: stretch;
+    gap: 10px;
   }
 
   button {
@@ -53,7 +133,7 @@
   
     display: grid;
     grid-template-columns: minmax(10px, 1fr) minmax(10px, 1fr);
-    grid-template-rows: min-content 1fr auto min-content min-content;
+    grid-template-rows: min-content 1fr min-content min-content min-content;
     gap: 1px;
   }
 
@@ -73,9 +153,11 @@
   }
 
   .page-subheader {
-    display: none;
-    grid-column: 1 / -1;
+    /* display: none; */
+    grid-column: 2 / -1;
     /* background: #bbdefb; */
+    overflow: scroll;
+    max-height: 100%;
   }
   
   .page-main {
@@ -115,9 +197,7 @@
   }
   
   @media (max-width: 768px) {
-    .page-subheader {
-        display: block;
-    }
+
 
     .page-wrap {
         grid-template-columns: 100%;
@@ -126,8 +206,13 @@
 
     .page-wrap > * {
         grid-column: 1 / -1 !important;
-        grid-row: auto !important;
+        grid-row: auto;
     }
+
+    .page-subheader {
+      display: block;
+      min-height: 100px;
+  }
     
     /* .page-sidebar {
         display: none;
