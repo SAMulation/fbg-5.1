@@ -23,6 +23,8 @@
     border-radius: 10%;
     padding: 10px;
     margin: 10px;
+    /* max-width: 33%; */
+    line-height: 1.5rem;
   }
 
   button:hover {
@@ -143,4 +145,20 @@
 
   input {
     text-align: center;
+  }
+
+  .selection.pl1 {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
+    grid-auto-flow: column;
+    /* grid-auto-rows: 50%; play with this to change height of the children, 50% will fill half */
+    /* grid-template-columns: unset; do not set template columns and rows */
+    /* grid-template-rows: unset; */
+    overflow: scroll;
+  }
+
+  .selection.pl1.reg {
+    justify-content: left;
   }
