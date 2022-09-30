@@ -148,13 +148,15 @@ export default class Run {
             game.ot_poss = Math.abs(game.ot_poss) - 1;
         } else if (mode === 'pnt') {
             game.spot = 100 - game.spot;  // Switch side of field
+            game.down = 0;
         } else if (mode === 'fg') {
             if (!game.isOT()) {
-                if (game.spot + 7 <= 20) {  // By an obscure NFL rule, essentially a touchback
+                if ((100 - game.spot) + 7 <= 20) {  // By an obscure NFL rule, essentially a touchback
                     game.spot = 20;
                 } else {  // Take over at spot of kick
                 game.spot = 100 - game.spot + 7;
                 }
+                game.down = 0;
             }
         }
     
@@ -298,7 +300,7 @@ export default class Run {
             this.alertBox('Deep kick!');
             // moveBall('c');
         } else {
-            this.alertBox(oName + ' kicks...');
+            this.alertBox(oName + ' kick...');
             game.thisPlay.dist = kickDist;
             // moveBall('k');
             game.spot += kickDist;
@@ -306,11 +308,11 @@ export default class Run {
     
         if (kickType === 'OK') {
             if (okResult) {
-                this.alertBox(oName + ' recovers!');
+                this.alertBox(oName + ' recover!');
                 possession = false;
                 retDist = -retDist;
             } else {
-                this.alertBox(dName + ' recovers!');
+                this.alertBox(dName + ' recover!');
             }
         }
     
@@ -326,9 +328,9 @@ export default class Run {
                 tmp = game.spot;  // Nec?
             
                 if (possession) {
-                    msg += dName + ' returns...\n';
+                    msg += dName + ' return...\n';
                 } else {
-                    msg += oName + ' returns...\n';
+                    msg += oName + ' return...\n';
                 }
     
                 if (game.spot + retDist >= 100) {
@@ -1251,7 +1253,7 @@ export default class Run {
                 this.changePoss(game, 'pnt');
             }
         } else {
-            this.alertBox(dName + ' muffed the kick!\n' + oName + ' recovers the ball...');
+            this.alertBox(dName + ' muffed the kick!\n' + oName + ' recover the ball...');
             // addRecap( muffed punt )
             // record turnover to def_num
         }
@@ -1291,7 +1293,7 @@ export default class Run {
                 // moveBall('k');
                 game.spot += retDist;
     
-                msg += dName + ' returns for ' + retDist + ' yards.';
+                msg += dName + ' return for ' + retDist + ' yards.';
             }
         } else if (touchback) {
             msg += dName + ' takes a touchback...';
@@ -1586,7 +1588,13 @@ export default class Run {
             game.two_point = true;
         } else {
             // printDown('XP');
-            const die = Utils.rollDie();
+            let die = Utils.rollDie();
+            if (die === 6) {
+                die = Utils.coinFlip();
+                if (!die) {
+                    die = 6;
+                }
+            }
             // printFG(die !== 6);
 
             if (die !== 6) {
@@ -1920,7 +1928,7 @@ export default class Run {
             }
 
             game.qtr++;
-            // printTime(game);
+            document.querySelector('.page-selection2').innerText = this.showBoard();
 
             // LATER: Set qtr score
             // Could update the spot and/or print new qtr
