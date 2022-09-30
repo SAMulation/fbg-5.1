@@ -886,13 +886,13 @@ export default class Run {
         if (game.away === game.off_num) {
         board.querySelector('.topLeft').innerText = '🏈';
         } else {
-        board.querySelector('.topLeft').innerHTML = '<wbr>';
+        board.querySelector('.topLeft').innerHTML = '&nbsp;';
         }
 
         if (game.home === game.off_num) {
         board.querySelector('.topRight').innerText = '🏈';
         } else {
-        board.querySelector('.topRight').innerHTML = '<wbr>';
+        board.querySelector('.topRight').innerHTML = '&nbsp;';
         }
 
         // Name (This should really only be done once)
