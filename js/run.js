@@ -52,6 +52,10 @@ export default class Run {
         document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play';
         document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play';
         // document.querySelector('.playButton').disabled = true;
+        this.showBoard(document.querySelector('.scoreboard'));
+        document.querySelector('.page-wrap').classList.add('game');  // LATER: When completely done with game, remove this
+        document.querySelector('.scoreboard').classList.remove('hidden');
+        document.querySelector('.page-subheader').classList.remove('hidden');
 
         await this.gameLoop(this.game, 0);
     
@@ -869,10 +873,43 @@ export default class Run {
         return options;
     };
 
-    showBoard() {
-        let text = (game.off_num === 1 ? '> ' : '') + game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + (game.off_num === 2 ? ' <' : '') + '\n';
-        text += game.down + this.ending(game.down) + ' & ' + this.downDist(game.fst_down, game.spot) + ' | ' + game.qtr + this.ending(game.qtr) + ' | ' + this.printTime(game.current_time) + ' | Ball on: ' + this.printSpot(game, game.spot) + '\n';
-        return text;
+    showBoard(board) {
+        // let text = (game.off_num === 1 ? '> ' : '') + game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + (game.off_num === 2 ? ' <' : '') + '\n';
+        // text += game.down + this.ending(game.down) + ' & ' + this.downDist(game.fst_down, game.spot) + ' | ' + game.qtr + this.ending(game.qtr) + ' | ' + this.printTime(game.current_time) + ' | Ball on: ' + this.printSpot(game, game.spot) + '\n';
+        // return text;
+        
+        // Possession
+        if (game.away === game.off_num) {
+        board.querySelector('.topLeft').innerText = '🏈';
+        } else {
+        board.querySelector('.topLeft').innerHTML = '<wbr>';
+        }
+
+        if (game.home === game.off_num) {
+        board.querySelector('.topRight').innerText = '🏈';
+        } else {
+        board.querySelector('.topRight').innerHTML = '<wbr>';
+        }
+
+        // Name (This should really only be done once)
+        board.querySelector('.homeAbrv').innerText = game.players[game.home].team.abrv;
+        board.querySelector('.awayAbrv').innerText = game.players[game.away].team.abrv;
+
+        // Score
+        board.querySelector('.homeScore').innerText = game.players[game.home].score;
+        board.querySelector('.awayScore').innerText = game.players[game.away].score;
+
+        // Time
+        board.querySelector('.time').innerText = this.printTime(game.current_time);
+
+        // First Down
+        board.querySelector(game.away === game.off_num ? '.botLeft' : '.botRight').innerText = game.down + this.ending(game.down) + ' & ' + this.downDist(game.fst_down, game.spot);
+
+        // Ball Spot
+        board.querySelector(game.away === game.off_num ? '.botRight' : '.botLeft').innerText = this.printSpot(game, game.spot);
+
+        // Qtr
+        board.querySelector('.botCenter').innerText = game.qtr + this.ending(game.qtr);
     }
     
     ending(num) {
@@ -1675,7 +1712,8 @@ export default class Run {
         }
 
         // print_down(game);
-        document.querySelector('.page-selection2').innerText = this.showBoard();
+        // document.querySelector('.page-selection2').innerText = this.showBoard();
+        this.showBoard(document.querySelector('.scoreboard'));
     };
 
     timeChange(game) {
@@ -1700,7 +1738,8 @@ export default class Run {
         if (game.qtr > 4 && game.ot_poss === 0) {
             game.current_time = -0.5;
         }
-        document.querySelector('.page-selection2').innerText = this.showBoard();
+        // document.querySelector('.page-selection2').innerText = this.showBoard();
+        this.showBoard(document.querySelector('.scoreboard'));
     };
 
     async gameCtrl(game) {
@@ -1882,7 +1921,8 @@ export default class Run {
 
         if (!game.over) {
             if (!game.isOT()) {
-                document.querySelector('.page-selection2').innerText = this.showBoard();
+                // document.querySelector('.page-selection2').innerText = this.showBoard();
+                this.showBoard(document.querySelector('.scoreboard'));
             }
 
             if (game.qtr === 3 && game.off_num !== game.rec_first) {
@@ -1928,7 +1968,8 @@ export default class Run {
             }
 
             game.qtr++;
-            document.querySelector('.page-selection2').innerText = this.showBoard();
+            // document.querySelector('.page-selection2').innerText = this.showBoard();
+            this.showBoard(document.querySelector('.scoreboard'));
 
             // LATER: Set qtr score
             // Could update the spot and/or print new qtr

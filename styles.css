@@ -16,11 +16,16 @@
     line-height: 1.25rem;
   }
 
+  p.tiny {
+    font-size: .5rem;
+    line-height: .75rem;
+  }
+
   .scoreboard {
     display: grid;
     grid-auto-flow: row;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
+    grid-template-rows: min-content min-content min-content;
     /* grid-template-areas: 
       "topLeft  topCenter  topRight"
       "midLeft  midCenter  midRight"
@@ -120,23 +125,26 @@
   }
 
   button {
-    border: rgb(195, 195, 195) solid 2px;
-    background-color: rgb(75, 75, 75);
-    color: white;
-    border-radius: 10%;
+    /* border: rgb(195, 195, 195) solid 2px; */
+    /* background-color: rgb(75, 75, 75); */
+    border: 2px solid black;
+    background-color: rgb(183, 205, 168);
+    color: black;
+    /* border-radius: 10%; */
     padding: 10px;
-    margin: 10px;
+    margin: 2px;
     /* max-width: 33%; */
     line-height: 1.5rem;
   }
 
-  button:hover {
+  /* button:hover {
     background-color: #9c9c9c;
-  }
+  } */
 
   button:disabled {
-    background-color: #9c9c9c;
-    color: rgb(40, 40, 40);
+    /* background-color: #9c9c9c; */
+    /* color: rgb(40, 40, 40); */
+    color: #9c9c9c;
   }
 
   body {
@@ -149,6 +157,7 @@
     font: 500 100% system-ui, sans-serif;
     /* text-transform: uppercase; */
   }
+
   .page-wrap {
     /* background: white; */
     height: calc(100vh - 10px);
@@ -156,8 +165,12 @@
   
     display: grid;
     grid-template-columns: minmax(10px, 1fr) minmax(10px, 1fr);
-    grid-template-rows: min-content 1fr min-content min-content min-content;
+    grid-template-rows: min-content 1fr min-content min-content;
     gap: 1px;
+  }
+
+  .page-wrap.game {
+    grid-template-rows: min-content minmax(10px, 20%) 1fr min-content min-content;
   }
 
   .page-wrap > * {
@@ -180,7 +193,13 @@
     grid-column: 2 / -1;
     /* background: #bbdefb; */
     overflow: scroll;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+     scrollbar-width: none;  /* Firefox */
     max-height: 100%;
+  }
+
+  .page-subheader::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
   }
   
   .page-main {
@@ -268,6 +287,12 @@
     /* grid-template-columns: unset; do not set template columns and rows */
     /* grid-template-rows: unset; */
     overflow: scroll;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .selection.pl1::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
   }
 
   .selection.pl1.reg {
