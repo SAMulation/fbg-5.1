@@ -251,10 +251,14 @@
         grid-row: auto;
     }
 
-    .page-subheader {
+    .page-wrap.game {
+      grid-template-rows: min-content min-content 15% 1fr min-content min-content;
+    }
+
+    /* .page-subheader {
       display: block;
       min-height: 100px;
-  }
+  } */
     
     /* .page-sidebar {
         display: none;
