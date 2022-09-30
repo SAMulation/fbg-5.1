@@ -32,7 +32,8 @@
   }
 
   button:disabled {
-    display: none;
+    background-color: #9c9c9c;
+    color: rgb(40, 40, 40);
   }
 
   body {
