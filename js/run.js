@@ -1985,6 +1985,18 @@ export default class Run {
         }
     };
 
+    ot_qtr_switch(game) {
+        const qtrEven = !(game.qtr % 2);
+        const offRecdFirst = game.off_num === game.rec_first;
+        let swtch = false;
+
+        if ((!qtrEven && !offRecdFirst && game.ot_poss === 2) || (qtrEven && offRecdFirst && game.ot_poss == 2)) {
+            swtch = true;
+        }
+
+        return swtch;
+    }
+
     endGame(game) {
         const winner = (game.players[1].score > game.players[2].score) ? 1 : 2;
         const wName = game.players[winner].team.name;
