@@ -264,7 +264,7 @@ const submitTeams = (submit) => {
             value[t] = el.selectedIndex;
             console.log("val: " + value[t]);
             // console.log("nan: " + NaN(value[t]));
-            if (value[t] === 0) {
+            if (value[t] === -1) {
                 valid = false;
             } else {
                 console.log('P' + (t + 1) + ' picked: ' + TEAMS[value[t]].name);
@@ -274,7 +274,7 @@ const submitTeams = (submit) => {
             console.log('add some message to user warning of invalid choices');
         }
 
-        if (valid && value[0] !== 0 && value[1] !== 0) {
+        if (valid && value[0] !== -1 && value[1] !== -1) {
             //let team1 = TEAMS[value[0]--];
             //console.log(team1['name']);
             //game = new Game(new Team(TEAMS[value[0]--]['name'], TEAMS[value[0]--]['city'], TEAMS[value[0]--]['abrv']), new Team(TEAMS[value[1]--].name, TEAMS[value[1]--].city, TEAMS[value[0]--].abrv), 'reg', 1, 2, 1);
