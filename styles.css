@@ -10,7 +10,7 @@
     src: url(fonts/calc/ti-calculator-font.ttf);
   }
 
-  p, button, .scoreboard * {
+  p, button, .scoreboard *, .to1 *, .to2 * {
     font-family: 'calc', sans-serif;
     font-size: 1rem;
     line-height: 1.25rem;
@@ -177,6 +177,15 @@
       padding: 1rem;
       text-align: center;
       border: 2px solid black;
+  }
+
+  .to1, .to2, .to1 *, .to2 * {
+    font-size: .5rem;
+  }
+
+  .sideby {
+    display: grid;
+    grid-auto-flow: column;
   }
   
 
