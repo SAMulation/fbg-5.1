@@ -50,7 +50,8 @@ export default class Run {
         document.querySelector('.selection.pl1').innerHTML = '';
         document.querySelector('.selection.pl2').innerHTML = '';
         document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play';
-        document.querySelector('.page-main .to1').innerText = 'TO';
+        document.querySelector('.page-main .to1').innerHTML = 'Timeout? (<span>' + game.players[1].timeouts + '</span>)';
+        document.querySelector('.page-main .to1').classList.remove('hidden');
         document.querySelector('.page-sidebar .to2').innerText = 'TO';
         document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play';
         // document.querySelector('.playButton').disabled = true;
@@ -417,7 +418,7 @@ export default class Run {
     
         if ((game.qtr === 2 || game.qtr === 4) && game.current_time === 2) {
             this.two_min_check(game);
-        }   
+        }
     };
     
     two_min_check(game) {
@@ -444,6 +445,15 @@ export default class Run {
         // console.log('pickPlay');
         for (let p = 1; p <= 2; p++) {
             game.players[p].currentPlay = '';
+
+            if (this.time_change === 0 && game.isReal(p)) {
+                document.querySelector('.page-main .to' + p).addEventListener('click', event => {
+                    this.timeout(game, p);
+                    if (this.time_change === 4) {
+                        event.target.removeEventListener;
+                    }
+                })
+            }
     
             // Computer Stuff
             if (game.status !== 999 && p === 2 && !game.isReal(2)) {
@@ -464,6 +474,8 @@ export default class Run {
                     this.cpuPages(game);  // It used to say 'plrs' for second param investigate
                 }
             }
+
+
             
         }
     
