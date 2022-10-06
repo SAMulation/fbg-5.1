@@ -311,3 +311,8 @@
   .selection.pl1.reg, .selection.pl2.reg {
     justify-content: left;
   }
+
+  .page-footer {
+    display: grid;
+    grid-auto-flow: row;
+  }
