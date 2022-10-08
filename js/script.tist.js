@@ -5,7 +5,7 @@ import Game from './game.js';
 import Site from './site.js';
 // import Run from './run.js';
 import TextInput from './text.js';
-import Kickoff from './kickoff.test.js';
+import Kickoff from './kickoff.tist.js';
 
 
 

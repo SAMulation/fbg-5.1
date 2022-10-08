@@ -1,3 +1,9 @@
+import random from 'random'
+// import seedrandom from 'seedrandom'
+
+// random.use('footbored')
+// random.patch()
+
 export default {
 
     randInt(min, max) {
