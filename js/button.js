@@ -130,77 +130,121 @@ const DEF_PLAYS = {
         'abrv': '2',
         'count': -1,
         'type': 'kickDecOT'
+    },
+    'TO': {
+        'name': 'Timeout',
+        'abrv': 'TO',
+        'count': 3,
+        'type': 'all'
+    },
+    'Y': {
+        'name': 'Yes!!! Call timeout!',
+        'abrv': 'Y',
+        'count': -1,
+        'type': 'last'
+    },
+    'N': {
+        'name': 'Nah... End this!',
+        'abrv': 'N',
+        'count': -1,
+        'type': 'last'
     }
 }
 
 export default class ButtonInput {
+    constructor(type = 'button') {
+        this.type = type;  // 'text' for text input, 'button' for default, 'mock' for testing
+    }
+
     async getText (game, p, msg, type) {
-        this.makeButtons(game, type, p);
+        // Make the buttons
+        this.makeChoices(game, type, p);
         
+        // .reg left aligns buttons and allows scrolling, without center
         if (type === 'reg') {
             document.querySelector('.selection.pl' + p).classList.add('reg');
         } else {
             document.querySelector('.selection.pl' + p).classList.remove('reg');
         }
         
-        // Play abbreviation
+        // Return play abbreviation when clicked
         return new Promise((resolve, reject) => {
-            this.bindButtons(document.querySelector('.selection.pl' + p), resolve, p);
+            this.bindButtons(document.querySelectorAll('button.play'), resolve, p);
         });
     }
 
-    bindButtons (rootElement, resolve, p) {
-        const buttons = rootElement.querySelectorAll('button.play');
-    
+    bindButtons (buttons, resolve, p) {
         buttons.forEach(button => {
             button.addEventListener('click', event => {
-                let valid = true;
-                // resolve(event.target.getAttribute("data-playType"));
-                if (DEF_PLAYS[event.target.getAttribute("data-playType")]['type'] === 'reg') {
-                    const errorMsg = game.run.playValid(game, p, event.target.getAttribute("data-playType"));
-                    if (errorMsg) {
-                        game.run.alertBox(errorMsg);
-                        valid = false;
-                    } // else {makeButtons()}
-                }
-                if (valid) {
-                    resolve(event.target.getAttribute("data-playType"));
-                    event.target.parentElement.innerHTML = '';
-                }
+                resolve(event.target.getAttribute("data-playType"));
+                event.target.parentElement.innerHTML = '';
             });
         })
     }
 
-    makeButtons(game, type, p) {
-        let store = []; 
-        let count = 0;
+    makeChoices(game, type, p) {
+        let storage = []  // Temporary storage
+        let count = 0   // Number of plays stored
 
+        // Loop through DEF_PLAYS and add to storage array if legal
         for (let key in DEF_PLAYS) {
-                if (DEF_PLAYS[key]['type'] === type) {
-                    // add count here
-                    store[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
-                    count++;
-                }
+            if (game.run.playLegal(p, type, DEF_PLAYS[key]['abrv'], DEF_PLAYS[key]['type'])) {
+                storage[count] = { 'name': DEF_PLAYS[key]['name'], 'abrv': DEF_PLAYS[key]['abrv'] };
+                count++
+            }
         }
 
-        console.log(store);
+        // Add timeout for reg, kick, ret
+        if (type === 'reg' || type === 'kick' || type === 'ret') {
+            storage[count] = { 'name': 'Timeout', 'abrv': 'TO' };
+            count++;
+        }
 
-        const buttonArea = document.querySelector('.selection.pl' + p);
-        buttonArea.innerHTML = '';
+        console.log(storage)  // What's the storage array look like?
 
-        for (let i = 0; i < store.length; i++) {
-            const btn = document.createElement("button");
-            const t = document.createTextNode(store[i]['name']);
-            btn.appendChild(t);
-            btn.classList.add('play');
-            // Set data-playType to play abrv, used throughout
-            btn.setAttribute('data-playType', store[i]['abrv'])
-            // Set the button to disabled if count is zero (prevents negatives)
-            if (game.players[p].plays.hasOwnProperty(store[i]['abrv']) && game.players[p].plays[store[i]['abrv']]['count'] === 0) {
-                btn.setAttribute('disabled', '')
+        if (this.type === 'text') {
+            // Output possible choices using storage
+            // text input that can reference storage for validity
+        } else if (this.type === 'mock') {
+            // Coming later
+        } else {
+            // Cache the DOM element that will store play and timeout buttons
+            const buttonArea = document.querySelector('.selection.pl' + p)
+            const timeout = document.querySelector('.to' + p)
+            
+            // Clear buttonArea and timeout
+            buttonArea.innerText = ''
+            timeout.innerText = ''
+
+            // Loop through storage and add buttons
+            for (let i = 0; i < storage.length; i++) {
+                const btn = document.createElement("button")
+                const t = document.createTextNode(storage[i]['name'])
+                btn.appendChild(t)
+                btn.classList.add('play')
+                // Set data-playType to play abrv, used throughout
+                btn.setAttribute('data-playType', storage[i]['abrv'])
+                // Set the button to disabled if count is zero (prevents negatives)
+                // if (game.players[p].plays.hasOwnProperty(storage[i]['abrv']) && game.players[p].plays[storage[i]['abrv']]['count'] === 0 ||
+                //     storage[i]['abrv'] === 'HM' && game.players[p].hm) {
+                //     btn.setAttribute('disabled', '')
+                // }
+                if (storage[i]['abrv'] === 'TO') {
+                    if (game.players[p].timeouts === 0 || game.time_change) {
+                        btn.setAttribute('disabled', '')
+                    }
+                    timeout.appendChild(btn)
+                } else {
+                    buttonArea.appendChild(btn)
+                }
             }
-            // More validation can go here (for FG, PUNT)
-            buttonArea.appendChild(btn);
         }
     }
+
+    // disableTimeout(p) {
+    //     if (this.type === 'button') {
+    //         const timeoutButton = document.querySelector('.to' + p + ' button.play')
+    //         // timeoutButton.setAttribute('disabled', '')
+    //     }
+    // }
 }
