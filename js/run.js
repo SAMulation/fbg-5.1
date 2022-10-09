@@ -198,23 +198,30 @@ export default class Run {
         // const oName = game.players[oNum].team.name;
         // printDown('KICK');
         // let kckDec = null;
-    
-        if (game.isReal(oNum)) {
-            await this.playPages(game, oNum, 'kick');
-        } else {
-            this.cpuPages(game, 'kick');
+        while (game.players[oNum].currentPlay === '' && game.status !== 999) {
+            if (game.isReal(oNum)) {
+                await this.playPages(game, oNum, 'kick');
+            } else {
+                this.cpuPages(game, 'kick');
+            }
+
+            if (game.players[oNum].currentPlay === 'TO') {
+                this.timeout(game, oNum);
+            }
         }
-    
-        // game.players[oNum].currentPlay = kckDec;
     }
     
     async returnPage(game, dNum, pick = null) {
-        // const dName = game.players[dNum].team.name;
-    
-        if (game.isReal(dNum)) {
-            await this.playPages(game, dNum, 'ret', pick);
-        } else {
-            this.cpuPages(game, 'ret', pick);
+        while (game.players[dNum].currentPlay === '' && game.status !== 999) {
+            if (game.isReal(dNum)) {
+                await this.playPages(game, dNum, 'ret', pick);
+            } else {
+                this.cpuPages(game, 'ret', pick);
+            }
+
+            if (game.players[dNum].currentPlay === 'TO') {
+                this.timeout(game, dNum);
+            }
         }
     }
     
@@ -362,7 +369,7 @@ export default class Run {
             // moveBall('s');
             // Return Timeout
             if (game.time_change === 4) {
-                this.returnTime(last_call_to);
+                this.returnTime(game.last_call_to);
             }
             if (game.two_min) {
                 game.two_min = false;
@@ -377,6 +384,28 @@ export default class Run {
         }
     };
 
+    async lastChance(game) {
+        let selection;
+
+        // Very end of the game
+        if (game.status < 900 && ((game.qtr === 2 || game.qtr === 4) && game.current_time === 0) && !game.time_change) {
+            for (let p = 1; p <= 2; p++) {
+                // Real and have a timeout, one's not been called
+                if (game.isReal(p) && game.players[p].timeouts && !game.time_change) {
+                    this.alert('The ' + (game.qtr === 2 ? 'half': 'game') + ' is about to end!\nWould the ' + game.players[p].team.name + ' like to call a timeout?')
+
+                    selection = await this.input.getText(game, p, 'msg', 'last')
+
+                    if (selection === 'Y') {
+                        this.timeout(game, p)
+                    }
+                }
+            }
+        }
+
+        return selection;
+    };
+
     async playMechanism(game) {
         let stat, ono, p1, p2;
     
@@ -389,10 +418,14 @@ export default class Run {
         p2 = game.players[2].currentPlay;
         // console.log(stat);
         if (stat !== 999) {
-            // lastChanceTO(stat, game.qtr, game.current_time, game.time_change);
+            test(game);
             this.doPlay(game, stat, ono, p1, p2);
         }
     };
+
+    test(game) {
+        return game.spot;
+    }
     
     prePlay(game, stat) {
         console.log(game);  // LATER: Suppress this ASAP
@@ -403,6 +436,8 @@ export default class Run {
         game.thisPlay.multiplier = 999;
         game.thisPlay.dist = 999;
         game.thisPlay.bonus = 0;
+        game.players[1].currentPlay = '';
+        game.players[2].currentPlay = '';
     
         if (!game.two_point || game.time_change !== 4) {
             game.time_change = 0;
@@ -417,11 +452,11 @@ export default class Run {
         game.status = stat;
     
         if ((game.qtr === 2 || game.qtr === 4) && game.current_time === 2) {
-            this.two_min_check(game);
+            this.twoMinCheck(game);
         }
     };
     
-    two_min_check(game) {
+    twoMinCheck(game) {
         let two_min = game.two_minute;
         let tim_chg;
     
@@ -434,7 +469,7 @@ export default class Run {
         } else {
             tim_chg = 9;
             two_min = true;
-            console.log('Two-minute warning...');
+            this.alertBox('Two-minute warning...');
         }
     
         game.time_change = tim_chg;
@@ -446,14 +481,14 @@ export default class Run {
         for (let p = 1; p <= 2; p++) {
             game.players[p].currentPlay = '';
 
-            if (this.time_change === 0 && game.isReal(p)) {
-                document.querySelector('.page-main .to' + p).addEventListener('click', event => {
-                    this.timeout(game, p);
-                    if (this.time_change === 4) {
-                        event.target.removeEventListener;
-                    }
-                })
-            }
+            // if (this.time_change === 0 && game.isReal(p)) {
+            //     document.querySelector('.page-main .to' + p).addEventListener('click', event => {
+            //         this.timeout(game, p);
+            //         if (this.time_change === 4) {
+            //             event.target.removeEventListener;
+            //         }
+            //     })
+            // }
     
             // Computer Stuff
             if (game.status !== 999 && p === 2 && !game.isReal(2)) {
@@ -472,6 +507,10 @@ export default class Run {
                     await this.playPages(game, p);
                 } else {
                     this.cpuPages(game);  // It used to say 'plrs' for second param investigate
+                }
+
+                if (game.players[p].currentPlay === 'TO') {
+                    this.timeout(game, p);
                 }
             }
 
@@ -524,7 +563,7 @@ export default class Run {
                 kick = (qtr == 4 && ctim <= .5 && game.status == -3 && p2s < p1s);
             }
             if (endHalf || lastMin || ballBack || kick) {
-                game.callTime(2);
+                this.timeout(game, 2);
                 // print_timeout()
             }
         }
@@ -548,6 +587,9 @@ export default class Run {
                 game.last_call_to = p;
                 game.time_change = 4;
                 msg = 'Timeout called by ' + game.players[p].team.name;
+                
+                // Disable button mid-play
+                // this.input.disableTimeout(p);
                 // LATER: Print timeout change
             // No timeouts left
             } else {
@@ -558,6 +600,7 @@ export default class Run {
         }
     
         this.alertBox(msg);
+        game.players[p].currentPlay = '';
     };
     
     cpuPlay(game) {
@@ -820,6 +863,10 @@ export default class Run {
 
         game.players[p].currentPlay = selection;
         // debugger
+
+        // if (game.players[p].currentPlay === 'TO') {
+        //     this.timeout(game, p);
+        // }
     };
     
     playValid(game, p, sel) {
@@ -871,6 +918,66 @@ export default class Run {
     
         return msg;
     };
+
+    // Determine if passed play is valid for this play
+    playLegal(p, passedType, abrv, thisType) {
+        let legal = false
+        if (passedType !== 'reg' && passedType === thisType) {
+            legal = true
+        } else if (passedType === 'reg' && thisType === 'reg') {
+            const playIndex = "SR,LR,SP,LP,TP,HM,FG,PT".indexOf(abrv) / 3
+            let totalPlays = 0
+            legal = true  // Assume that the pick is valid
+        
+            // Get total plays left
+            if (abrv === 'FG' || abrv === 'PT') {
+                totalPlays = -1
+            } else if (abrv === 'HM') {
+                totalPlays = game.players[p].hm
+            } else if (playIndex !== -1) {
+                totalPlays = game.players[p].plays[abrv]['count']
+            }
+        
+            // Out of plays
+            if (playIndex >= 0 && playIndex <= 5) {
+                if (totalPlays === 0) {
+                    legal = false
+                }
+            }
+        
+            // Illegal play choice
+            if (legal && playIndex === -1) {
+                legal = false
+            }
+        
+            // HM or kick on defense
+            if (legal && playIndex >= 5 && playIndex <= 7 && game.def_num === p) {
+                legal = false
+            }
+
+            // Super long FG
+            if (legal && abrv === 'FG' && game.spot < 30) {
+                legal = false
+            }
+        
+            // Punt on not fourth
+            if (legal && abrv === 'PT' && game.down !== 4) {
+                legal = false
+            }
+
+            // Punt in OT        
+            if (legal && abrv === 'PT' && game.isOT()) {
+                legal = false
+            }
+        
+            // Kick on two-point conversion
+            if (legal && totalPlays === -1 && game.two_point) {
+                legal = false
+            }
+        }
+    
+        return legal
+    }
     
     loadPlay(p, state = 'reg') {
         let options = game.players[1].team.abrv + ' ' + game.players[1].score + " | " + game.players[2].team.abrv + ' ' + game.players[2].score + '\n';
@@ -1438,7 +1545,7 @@ export default class Run {
             await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist);
 
             console.log('Updating scoreboard...');
-            if (!game.isOT() && game.ot_poss < 0 && !game.two_point && game.status < 15 || game.status == 17) {
+            if (!game.isOT() && game.ot_poss < 0 && !game.two_point && (game.status < 15 || game.status == 17)) {
                 this.updateDown(game);
             }
 
@@ -1609,6 +1716,7 @@ export default class Run {
     async touchdown(game) {
         this.alertBox(game.players[game.off_num].team.name + ' scored a touchdown!!!');
         this.scoreChange(game, game.off_num, 6);
+        this.showBoard(document.querySelector('.scoreboard'));
 
         // addRecap ( touchdown )
         // debugger
