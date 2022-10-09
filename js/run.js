@@ -384,28 +384,6 @@ export default class Run {
         }
     };
 
-    async lastChance(game) {
-        let selection;
-
-        // Very end of the game
-        if (game.status < 900 && ((game.qtr === 2 || game.qtr === 4) && game.current_time === 0) && !game.time_change) {
-            for (let p = 1; p <= 2; p++) {
-                // Real and have a timeout, one's not been called
-                if (game.isReal(p) && game.players[p].timeouts && !game.time_change) {
-                    this.alert('The ' + (game.qtr === 2 ? 'half': 'game') + ' is about to end!\nWould the ' + game.players[p].team.name + ' like to call a timeout?')
-
-                    selection = await this.input.getText(game, p, 'msg', 'last')
-
-                    if (selection === 'Y') {
-                        this.timeout(game, p)
-                    }
-                }
-            }
-        }
-
-        return selection;
-    };
-
     async playMechanism(game) {
         let stat, ono, p1, p2;
     
@@ -418,14 +396,31 @@ export default class Run {
         p2 = game.players[2].currentPlay;
         // console.log(stat);
         if (stat !== 999) {
-            test(game);
+            await this.lastChanceTO(game);
             this.doPlay(game, stat, ono, p1, p2);
         }
     };
 
-    test(game) {
-        return game.spot;
-    }
+    async lastChanceTO(game) {
+        let selection;
+
+        // Very end of the game
+        if (game.status < 900 && ((game.qtr === 2 || game.qtr === 4) && game.current_time === 0) && !game.time_change) {
+            for (let p = 1; p <= 2; p++) {
+                // Real and have a timeout, one's not been called
+                if (game.isReal(p) && game.players[p].timeouts && !game.time_change) {
+                    alert('The ' + (game.qtr === 2 ? 'half': 'game') + ' is about to end!\nWould the ' + game.players[p].team.name + ' like to call a timeout?')
+
+                    selection = await this.input.getText(game, p, 'msg', 'last')
+
+                    if (selection === 'Y') {
+                        this.timeout(game, p)
+                    }
+                }
+            }
+
+        }
+    };
     
     prePlay(game, stat) {
         console.log(game);  // LATER: Suppress this ASAP
