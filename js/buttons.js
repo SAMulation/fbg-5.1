@@ -79,11 +79,6 @@ export const BUTTONS = {
             'name': 'Ball 2nd'
         }
     },
-    'all': {
-        'TO': {
-            'name': 'Timeout'
-        }
-    },
     'last': {
         'Y': {
             'name': 'Yes!!! Call timeout!'

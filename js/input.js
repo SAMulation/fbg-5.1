@@ -229,12 +229,10 @@ export default class ButtonInput {
                 btn.classList.add('play')
                 // Set data-playType to play abrv, used throughout
                 btn.setAttribute('data-playType', storage[i]['abrv'])
-                // Set the button to disabled if count is zero (prevents negatives)
-                // if (game.players[p].plays.hasOwnProperty(storage[i]['abrv']) && game.players[p].plays[storage[i]['abrv']]['count'] === 0 ||
-                //     storage[i]['abrv'] === 'HM' && game.players[p].hm) {
-                //     btn.setAttribute('disabled', '')
-                // }
+
+                // Append child to container div
                 if (storage[i]['abrv'] === 'TO') {
+                    // Disable Timeout button if out of timeouts
                     if (game.players[p].timeouts === 0 || game.time_change) {
                         btn.setAttribute('disabled', '')
                     }
@@ -245,11 +243,4 @@ export default class ButtonInput {
             }
         }
     }
-
-    // disableTimeout(p) {
-    //     if (this.type === 'button') {
-    //         const timeoutButton = document.querySelector('.to' + p + ' button.play')
-    //         // timeoutButton.setAttribute('disabled', '')
-    //     }
-    // }
 }
