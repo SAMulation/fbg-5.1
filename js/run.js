@@ -1,4 +1,5 @@
 import Utils from './utils.js'
+import {MULTI, MATCHUP} from './defaults.js'
 
 export default class Run {
     constructor(game, input) {

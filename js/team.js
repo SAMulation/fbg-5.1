@@ -1,3 +1,5 @@
+import { TEAMS } from "./teams.js";
+
 export default class Team {
     constructor(name, city = 'City', abrv = 'FBG') {
         // Allow passing Team objects or objects from TEAMS
@@ -5,6 +7,11 @@ export default class Team {
             abrv = name.abrv;
             city = name.city;
             name = name.name;
+        } else {
+            const index = name;
+            city = TEAMS[index]['city'];
+            abrv = TEAMS[index]['abrv'];
+            name = TEAMS[index]['name'];
         }
         this.name = name;
         this.city = city;
