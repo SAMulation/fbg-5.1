@@ -8,19 +8,6 @@ export default class Run {
         this.alert = 'subhead';  // 'skip' or ''
     }
 
-    // pressPlayButton(button) {
-    //     button.addEventListener('pointerdown', event => {
-    //         playGame(window.game);
-    //         event.target.setAttribute('disabled', '')
-    //     });
-    // };
-    
-    // EnablePlayButton(button) {
-    //     button.innerText = 'Play Again?';
-    //     button.disabled = false;
-    //     this.pressPlayButton(button);
-    // };
-
     alertBox(msg) {
         if (this.alert === 'alert') {
             alert(msg);
@@ -34,16 +21,6 @@ export default class Run {
             console.log(msg);
         }
     };
-
-    legalPlays(p, type, PLAYS) {
-        this.game.players[p].plays[0] = 0;
-        for (let key in PLAYS) {
-            if (PLAYS.hasOwnProperty(key)) {
-               console.log(key, yourobject[key]);
-            }
-         }
-    };
-
 
     async playGame() {
         // this.alertBox("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com");
@@ -409,6 +386,7 @@ export default class Run {
             for (let p = 1; p <= 2; p++) {
                 // Real and have a timeout, one's not been called
                 if (game.isReal(p) && game.players[p].timeouts && !game.time_change) {
+                    console.log('p: ' + p + ' time_change: ' + game.time_change);
                     alert('The ' + (game.qtr === 2 ? 'half': 'game') + ' is about to end!\nWould the ' + game.players[p].team.name + ' like to call a timeout?')
 
                     selection = await this.input.getText(game, p, 'msg', 'last')
@@ -475,21 +453,11 @@ export default class Run {
         // console.log('pickPlay');
         for (let p = 1; p <= 2; p++) {
             game.players[p].currentPlay = '';
-
-            // if (this.time_change === 0 && game.isReal(p)) {
-            //     document.querySelector('.page-main .to' + p).addEventListener('click', event => {
-            //         this.timeout(game, p);
-            //         if (this.time_change === 4) {
-            //             event.target.removeEventListener;
-            //         }
-            //     })
-            // }
     
             // Computer Stuff
             if (game.status !== 999 && p === 2 && !game.isReal(2)) {
                 // This is where the computer can call timeout or pick special play
                 this.alertBox(game.players[2].team.name + ' are picking their play...');
-                // # LATER Print that computer is picking play
                 if (game.time_change === 0) {
                     this.cpuTime(game);
                 }
@@ -501,7 +469,7 @@ export default class Run {
                 if (game.isReal(p)) {
                     await this.playPages(game, p);
                 } else {
-                    this.cpuPages(game);  // It used to say 'plrs' for second param investigate
+                    this.cpuPages(game);
                 }
 
                 if (game.players[p].currentPlay === 'TO') {
@@ -715,21 +683,23 @@ export default class Run {
     cpuPages(game, state = 'reg', pick = null) {
         if (state === 'reg') {
             let total = 0;
-            let play = -1;
+            let playNum = -1;
+            let playAbrv = '';
         
             while (total === 0) {
-                play = Utils.randInt(0, 4);
+                playNum = Utils.randInt(0, 4);
                 
                 // Make it harder to pick Trick Play
-                if (play === 4) {
-                    play = Utils.randInt(0, 4);
+                if (playNum === 4) {
+                    playNum = Utils.randInt(0, 4);
                 }
-        
-                total = game.players[2].plays[play];
+
+                // Translate to abrv
+                playAbrv = "SRLRSPLPTP".substring(2 * playNum, 2 * playNum + 2);
+                total = game.players[2].plays[playAbrv]['count'];
             }
-        
-            // console.log("SRLRSPLPTP".substring(2 * play, 2 * play + 2));
-            game.players[2].currentPlay = "SRLRSPLPTP".substring(2 * play, 2 * play + 2);
+
+            game.players[2].currentPlay = playAbrv;
         } else if (state === 'xp') {
             this.alertBox(game.players[2].team.name + ' selecting PAT type...\n');
             let selection = 'XP';
