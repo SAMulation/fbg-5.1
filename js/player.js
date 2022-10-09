@@ -78,15 +78,6 @@ export default class Player {
 
             console.log('Refilling Play Cards');
         }
-
-        // if (option === 'a') {
-        //     // 3 hail marys by default per half
-        //     this.hm = 3;
-        //     // If OT, only 2 hail marys
-        //     if (qtr > 4) {
-        //         this.hm = 2;
-        //     }
-        // }
     }
 
     decPlays(idx) {

@@ -16,9 +16,6 @@ export default class Game {
         this.num_plr = 1;  // num_plr;
         this.away = away;
         this.home = home;
-        // this.current_time = 7;  // qtr_length;
-        // this.off_num = this.opp(rec_first);  // Because this is the kicking team at initial kickoff
-        // this.def_num = rec_first;
         this.down = 0;
         this.fst_down = 45;
         this.last_call_to = 0;
@@ -44,12 +41,6 @@ export default class Game {
         // Pass input class to game constructor
         this.run = new Run(this, new ButtonInput);
 
-        this.test = true;
-
-        this.buttonPressed = null;
-
-
-
         if (!this.mults) {
             this.fillMults();
         }
@@ -62,22 +53,6 @@ export default class Game {
     async runIt() {
         await this.run.playGame();
     }
-
-    // get(attr) {
-    //     return this[attr];
-    // }
-
-    // getpl(plr, attr) {
-    //     return this.players[plr].get(attr);
-    // }
-
-    // set(attr, value) {
-    //     this[attr] = value;
-    // }
-
-    // setpl(plr, attr, value) {
-    //     this.players[plr].set(attr, value);
-    // }
 
     opp(num) {
         return num === 1 ? 2 : 1;
@@ -174,10 +149,6 @@ export default class Game {
         this.players[p].timeouts--;
     }
 }
-
-// LATER
-//     def call_time(self, pl):
-//         self.set_plr(pl, "timeouts", self.get_plr(pl, "timeouts"))
 
 //     def save(self, filename):
 //         # json_string = json.dumps(self.__dict__)
