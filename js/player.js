@@ -9,11 +9,8 @@ export default class Player {
         this.score = score;
         this.timeouts = time;
         this.plays = plays;
-        // this.mults = mults;  // Move me
-        // this.yards = yards;  // Me too
         this.stats = stats;
         this.currentPlay = '';
-        //this.isReal = true;
         this.hm = hm;  // This is hail mary, I'm moving this here
 
         if (init) {
@@ -29,14 +26,6 @@ export default class Player {
             this.fillPlays('a', this.game.qtr);
         }
 
-        // if (!mults) {
-        //     this.fillMults();
-        // }
-
-        // if (!plays) {
-        //     this.fillYards();
-        // }
-
         // LATER: Come up with Stats class
         // if (!stats) {
         //     this.stats = new Stats();
@@ -47,9 +36,8 @@ export default class Player {
         let hm = (qtr > 4 ? 2 : 3);
 
         if (option === 'a' || option === 'p') {
-            // this.plays = [3, 3, 3, 3, 1];
             if (option === 'p') {  // cache hm
-                hm = this.plays.HM.count
+                hm = this.hm;
             }
 
             this.plays = {
@@ -82,14 +70,12 @@ export default class Player {
                     'abrv': 'TP',
                     'count': 1,
                     'type': 'reg'
-                },
-                'HM': {
-                    'name': 'Hail Mary',
-                    'abrv': 'HM',
-                    'count': hm,
-                    'type': 'reg'
                 }
             }
+
+            // Fill Hail Mary
+            this.hm = hm;
+
             console.log('Refilling Play Cards');
         }
 
@@ -108,27 +94,8 @@ export default class Player {
             this.hm--;
         } else {
             this.plays[idx]['count']--;
-
-            // if (this.plays[idx] <= 0) {
-
-                // const refill = this.plays.every(play => {
-                //     return play <= 0;
-                // });
-                
-                // // Check to see if the plays array is empty
-                // this.plays.forEach(play => {
-                //     if (play > 0) {
-                //         refill = false;
-                //     }
-                // });
-                
-                // if (refill) {
-                //     this.fillPlays('p');
-                // }
-            // if (this.plays.every(play => play['count'] <= 0)) {
-            //     this.fillPlays('p');
-            // }
             let fill = true;
+
             for (let play in this.plays) {
                 if (play !== 'HM' && this.plays[play]['count'] > 0) {
                     fill = false;
@@ -142,26 +109,4 @@ export default class Player {
             // }
         }
     }
-
-        // NEXT get, set, dec
-
-    // fillMults() {
-    //     this.mults = [4, 4, 4, 3];
-    // }
-
-    // // NEXT get, set, dec
-
-    // fillYards() {
-    //     this.yards = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    // }
-
-    //     // NEXT get, set, dec
-
-    // get(attr) {
-    //     return this[attr];
-    // }
-
-    // set(attr, value) {
-    //     this[attr] = value;
-    // }
 }
