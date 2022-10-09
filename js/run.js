@@ -1282,7 +1282,7 @@ export default class Run {
         let make = true;
         let spt = 100 - game.spot;
         let fdst = spt + 17;
-        const die = Utils.rollDie();
+        let die = Utils.rollDie();
         
         this.alertBox(name + ' attempting a ' + fdst + '-yard field goal...');
         
