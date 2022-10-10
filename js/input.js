@@ -28,12 +28,27 @@ export default class ButtonInput {
             // promised = this.setupTextInput(game, storage, p);
             const abrvs = this.setupTextInput(game, storage, p)
             promised = new Promise((resolve, reject) => {
-                resolve(this.bindSubmitButton(document.getElementById('pl' + p + 'submit'), resolve, abrvs));
+                this.bindSubmitButton(document.getElementById('pl' + p + 'submit'), resolve, abrvs);
             });
-        } else if (this.type === 'console') {
+        } else if (this.type === 'prompt') {
             promised = new Promise((resolve, reject) => {
-                resolve(this.getConsoleInput(game, storage, p));
-            });
+                setTimeout(() => {
+                    const {msg, abrvs} = this.setupPromptInput(game, storage, p)
+                    let selection = ''
+        
+                    while (selection === '') {
+                        selection = prompt(msg)
+                        if (!selection) {
+                            game.status = 999
+                            selection = 'EXIT'
+                        } else {
+                            selection = abrvs.includes(selection.toUpperCase()) ? selection.toUpperCase() : ''
+                        }
+                    }
+        
+                    resolve(selection)
+                }, 1)
+            })
         }
 
         // Return play abbreviation when clicked
@@ -55,38 +70,53 @@ export default class ButtonInput {
     bindSubmitButton (button, resolve, abrvs) {
         button.addEventListener('submit', event => {
             event.preventDefault()
-            if (abrvs.includes(event.target.value.toUpperCase())) {
+            if (abrvs.includes(event.target.input.value.toUpperCase())) {
                 resolve(event.target.value)
                 event.target.parentElement.innerHTML = ''
             } else {
-                event.target.value = ''
+                event.target.input.value = ''
             }
         })
     }
 
     makeChoices(game, type, p, textSelection = null) {
         let storage = []  // Temporary storage
-        let count = 0   // Number of plays stored
 
         // Return appropriate set of buttons
-        const buttons = BUTTONS[type];
+        const buttons = BUTTONS[type]
 
         // Loop through DEF_PLAYS and add to storage array if legal
         for (let key in buttons) {
             if (game.run.playLegal(p, type, key, type)) {
-                storage[count] = { 'name': buttons[key]['name'], 'abrv': key };
-                count++
+                storage.push({ 'name': buttons[key]['name'], 'abrv': key })
             }
         }
 
         // Add timeout for reg, kick, ret
         if (type === 'reg' || type === 'kick' || type === 'ret') {
-            storage[count] = { 'name': 'Timeout', 'abrv': 'TO' };
-            count++;
+            storage.push({ 'name': 'Timeout', 'abrv': 'TO' })
         }
 
         // console.log(storage)  // What's the storage array look like?
-        return storage;
+        return storage
+    }
+
+    setupPromptInput(game, storage, p) {
+        let msg = game.players[p].team.name + ' pick a play from the following:\n';
+        let plays = '';
+        // let selection = '';
+        let abrvs = [];
+
+        for (let i = 0; i < storage.length; i++) {
+            abrvs[i] = storage[i]['abrv'];
+            if (i !== 0) {
+                plays += ', ';
+            }
+            plays += storage[i]['abrv'];
+        }
+
+        msg += '[ ' + plays + ' ]:\n';
+        return {msg, abrvs};
     }
 
     setupTextInput(game, storage, p) {

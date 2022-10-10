@@ -10,6 +10,7 @@ export default class Run {
     }
 
     alertBox(msg) {
+        msg = this.printTime(this.game.current_time) + ' | ' + msg
         if (this.alert === 'alert') {
             alert(msg);
         } else if (this.alert === 'subhead') {
@@ -17,7 +18,7 @@ export default class Run {
             const t = document.createTextNode(msg);
             el.appendChild(t);
             // LATER: Add class, if needed // el.classList.add('play');
-            document.querySelector('.page-subheader').appendChild(el);
+            document.querySelector('.page-subheader').prepend(el);
         } else {
             console.log(msg);
         }
@@ -1044,11 +1045,15 @@ export default class Run {
     };
     
     printTime(time) {
-        const min = Math.trunc(time);
-        const sec = (time - min === 0.5) ? '30' : '00';
-        // HW: How would you do other times?
-    
-        return min + ':' + sec;
+        if (time === -0.5) {
+            return 'Start'
+        } else {
+            const min = Math.trunc(time);
+            const sec = (time - min === 0.5) ? '30' : '00';
+            // HW: How would you do other times?
+        
+            return min + ':' + sec;
+        }
     };
     
     printSpot(game, s) {

@@ -39,7 +39,7 @@ export default class Game {
         this.yards = yards;
 
         // Pass input class to game constructor
-        this.run = new Run(this, new ButtonInput('button'));
+        this.run = new Run(this, new ButtonInput('text'));
 
         if (!this.mults) {
             this.fillMults();
