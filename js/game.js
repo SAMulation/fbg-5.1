@@ -1,153 +1,152 @@
 import Player from './player.js'
 import Play from './play.js'
 import Run from './run.js'
-import TextInput from './text.js';
-import ButtonInput from './input.js';
+import TextInput from './text.js'
+import ButtonInput from './input.js'
 
 export default class Game {
-    constructor(team1, team2, game_type, num_plr, away, home, mults = null, yards = null) {
-        //                  qtr_length, rec_first, qtr=1, score1=0,
-        //                  score2=0,
-        //                  time1=3, time2=3, plays1=None, plays2=None,
-        //                  mults1=None, mults2=None, yards1=None,
-        //                  yards2=None,
-        //                  stats1=None, stats2=None) {
-        this.game_type = game_type;
-        this.num_plr = 1;  // num_plr;
-        this.away = away;
-        this.home = home;
-        this.down = 0;
-        this.fst_down = 45;
-        this.last_call_to = 0;
-        this.ot_poss = -1;
-        this.over = false;
-        this.qtr = 0;
-        this.qtr_length = 7;
-        this.rec_first = 2;
-        this.spot = 35;
-        this.status = 0 ; // Defined elsewhere, diff nums for diff plays
-        this.time_change = 0;  // Define later
-        this.turnover = false;
-        this.two_min = false;
-        this.two_point = false;
-        this.off_num = this.opp(this.rec_first);
-        this.def_num = this.rec_first;
-        this.current_time = this.qtr_length;
-        this.thisPlay = new Play();
-        this.players = {1: new Player(this, team1), 2: new Player(this, team2)};  // Object {1: ..., 2: ...}
-        this.mults = mults;
-        this.yards = yards;
+  constructor (team1, team2, game_type, num_plr, away, home, mults = null, yards = null) {
+    //                  qtr_length, rec_first, qtr=1, score1=0,
+    //                  score2=0,
+    //                  time1=3, time2=3, plays1=None, plays2=None,
+    //                  mults1=None, mults2=None, yards1=None,
+    //                  yards2=None,
+    //                  stats1=None, stats2=None) {
+    this.game_type = game_type
+    this.num_plr = 1 // num_plr;
+    this.away = away
+    this.home = home
+    this.down = 0
+    this.fst_down = 45
+    this.last_call_to = 0
+    this.ot_poss = -1
+    this.over = false
+    this.qtr = 0
+    this.qtr_length = 7
+    this.rec_first = 2
+    this.spot = 35
+    this.status = 0 // Defined elsewhere, diff nums for diff plays
+    this.time_change = 0 // Define later
+    this.turnover = false
+    this.two_min = false
+    this.two_point = false
+    this.off_num = this.opp(this.rec_first)
+    this.def_num = this.rec_first
+    this.current_time = this.qtr_length
+    this.thisPlay = new Play()
+    this.players = { 1: new Player(this, team1), 2: new Player(this, team2) } // Object {1: ..., 2: ...}
+    this.mults = mults
+    this.yards = yards
 
-        // Pass input class to game constructor
-        this.run = new Run(this, new ButtonInput('text'));
+    // Pass input class to game constructor
+    this.run = new Run(this, new ButtonInput('text'))
 
-        if (!this.mults) {
-            this.fillMults();
-        }
-
-        if (!this.plays) {
-            this.fillYards();
-        }
+    if (!this.mults) {
+      this.fillMults()
     }
 
-    async runIt() {
-        await this.run.playGame();
+    if (!this.plays) {
+      this.fillYards()
     }
+  }
 
-    opp(num) {
-        return num === 1 ? 2 : 1;
-    }
+  async runIt () {
+    await this.run.playGame()
+  }
 
-    isReal(num) {
-        return num === 1 || this.num_plr === 2;
-    }
+  opp (num) {
+    return num === 1 ? 2 : 1
+  }
 
-    isOT() {
-        return this.qtr > 4;
-    }
+  isReal (num) {
+    return num === 1 || this.num_plr === 2
+  }
 
-    fillMults() {
-        this.mults = [4, 4, 4, 3];
-    }
+  isOT () {
+    return this.qtr > 4
+  }
 
-    randInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1) + min); // The maximum is inclusive and the minimum is inclusive
-    }
+  fillMults () {
+    this.mults = [4, 4, 4, 3]
+  }
 
-    decMults() {
-        let card = -1;
-      
-        while (card === -1) {
-            card = this.randInt(0, 3);
-            // Out of this card, try again
-            if (!this.mults[card]) {
-                card = -1;
-            } else {
-                this.mults[card]--;
+  randInt (min, max) {
+    min = Math.ceil(min)
+    max = Math.floor(max)
+    return Math.floor(Math.random() * (max - min + 1) + min) // The maximum is inclusive and the minimum is inclusive
+  }
 
-                // Check if mults is empty
-                if (this.mults[card] <= 0) {
-                    let refill = true;
-                    // Check to see if the plays array is empty
-                    this.mults.forEach(mult => {
-                        if (mult > 0) {
-                            refill = false;
-                        }
-                    });
-                    
-                    if (refill) {
-                        this.fillMults();
-                    }
-                }
+  decMults () {
+    let card = -1
+
+    while (card === -1) {
+      card = this.randInt(0, 3)
+      // Out of this card, try again
+      if (!this.mults[card]) {
+        card = -1
+      } else {
+        this.mults[card]--
+
+        // Check if mults is empty
+        if (this.mults[card] <= 0) {
+          let refill = true
+          // Check to see if the plays array is empty
+          this.mults.forEach(mult => {
+            if (mult > 0) {
+              refill = false
             }
+          })
+
+          if (refill) {
+            this.fillMults()
+          }
         }
-
-        const cards = ["King", "Queen", "Jack", "10"];
-
-        return {'card': cards[card], 'num': card + 1}
+      }
     }
 
-    decYards() {
-        let card = -1;
+    const cards = ['King', 'Queen', 'Jack', '10']
 
-        while (card === -1) {
-            card = this.randInt(0,9);
+    return { card: cards[card], num: card + 1 }
+  }
 
-            if (!this.yards[card]) {
-                card = -1;
-            } else {
-                this.yards[card]--;
+  decYards () {
+    let card = -1
 
-                // Check if yards is empty
-                if (this.yards[card] <= 0) {
-                    let refill = true;
-                    // Check to see if the plays array is empty
-                    this.yards.forEach(yard => {
-                        if (yard > 0) {
-                            refill = false;
-                        }
-                    });
-                    
-                    if (refill) {
-                        this.fillYards();
-                    }
-                }
+    while (card === -1) {
+      card = this.randInt(0, 9)
+
+      if (!this.yards[card]) {
+        card = -1
+      } else {
+        this.yards[card]--
+
+        // Check if yards is empty
+        if (this.yards[card] <= 0) {
+          let refill = true
+          // Check to see if the plays array is empty
+          this.yards.forEach(yard => {
+            if (yard > 0) {
+              refill = false
             }
+          })
+
+          if (refill) {
+            this.fillYards()
+          }
         }
-
-        return card + 1;
+      }
     }
 
+    return card + 1
+  }
 
-    fillYards() {
-        this.yards = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    }
+  fillYards () {
+    this.yards = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  }
 
-    callTime(p) {
-        this.players[p].timeouts--;
-    }
+  callTime (p) {
+    this.players[p].timeouts--
+  }
 }
 
 //     def save(self, filename):
