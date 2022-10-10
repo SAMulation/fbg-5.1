@@ -5,7 +5,7 @@ export default class ButtonInput {
     this.type = type // 'text' for text input, 'button' for default, 'mock' for testing
   }
 
-  async getText (game, p, msg, type) {
+  async getInput (game, p, msg, type) {
     let textSelection
     let promised
     let storage = []

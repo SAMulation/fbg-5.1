@@ -1,7 +1,9 @@
 import Team from './team.js'
 import Game from './game.js'
 import Site from './site.js'
-import ButtonInput from './input.js'
+import ButtonInput from './buttonInput.js'
+import PromptInput from './promptInput.js'
+import FormInput from './formInput.js'
 import { TEAMS } from './teams.js'
 
 // FIX: REMOVE LATER - Set to window for easy access
@@ -9,6 +11,7 @@ const site = new Site(document)
 let game = null
 window.site = site
 window.game = game
+window.inputType = 'button'
 
 // FUNCTION DEFINITIONS
 // THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
@@ -85,7 +88,14 @@ const EnablePlayButton = (button) => {
 }
 
 const initGame = (site) => {
-  return new Game(site.team1, site.team2, site.gamtyp, site.numplr, 1, 2)
+  if (window.inputType === 'prompt') {
+    window.inputType = new PromptInput()
+  } else if (window.inputType === 'form') {
+    window.inputType = new FormInput()
+  } else {
+    window.inputType = new ButtonInput()
+  }
+  return new Game(site.team1, site.team2, site.gamtyp, site.numplr, 1, 2, window.inputType)
 }
 
 // MAIN FUNCTION CALLS

@@ -1,11 +1,11 @@
 import Player from './player.js'
 import Play from './play.js'
 import Run from './run.js'
-import TextInput from './text.js'
-import ButtonInput from './input.js'
+// import ButtonInput from './input.js'
+import ButtonInput from './buttonInput.js'
 
 export default class Game {
-  constructor (team1, team2, game_type, num_plr, away, home, mults = null, yards = null) {
+  constructor (team1, team2, game_type, num_plr, away, home, input, mults = null, yards = null) {
     //                  qtr_length, rec_first, qtr=1, score1=0,
     //                  score2=0,
     //                  time1=3, time2=3, plays1=None, plays2=None,
@@ -39,7 +39,7 @@ export default class Game {
     this.yards = yards
 
     // Pass input class to game constructor
-    this.run = new Run(this, new ButtonInput('button'))
+    this.run = new Run(this, input)
 
     if (!this.mults) {
       this.fillMults()

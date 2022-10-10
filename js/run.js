@@ -389,7 +389,7 @@ export default class Run {
           console.log('p: ' + p + ' time_change: ' + game.time_change)
           alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end!\nWould the ' + game.players[p].team.name + ' like to call a timeout?')
 
-          selection = await this.input.getText(game, p, 'msg', 'last')
+          selection = await this.input.getInput(game, p, 'last')
 
           if (selection === 'Y') {
             this.timeout(game, p)
@@ -769,28 +769,24 @@ export default class Run {
 
   async playPages (game, p, state = 'reg', pick = null) {
     let selection = null
-    let options = 'SRLRSPLPTPHMFGPT'
-    // LATER: Use status to change validity based on play type
-    if (state === 'xp') {
-      options = 'XP2P'
-    } else if (state === 'kick') {
-      options = 'RKSKOK'
-    } else if (state === 'ret') {
-      options = 'RRORTB'
-    }
+    // let options = 'SRLRSPLPTPHMFGPT'
+    // // LATER: Use status to change validity based on play type
+    // if (state === 'xp') {
+    //   options = 'XP2P'
+    // } else if (state === 'kick') {
+    //   options = 'RKSKOK'
+    // } else if (state === 'ret') {
+    //   options = 'RRORTB'
+    // }
 
-    // this.makeButtons(options, p);
+    // const msg = this.loadPlay(p, state)
+    // const errorMsg = null
 
-    // Get message to display
-    const msg = this.loadPlay(p, state)
-    // const options = loadPlay(state);  // LATER
-    const errorMsg = null
-
-    selection = await this.input.getText(game, p, msg, state)
+    selection = await this.input.getInput(game, p, state)
 
     // Get user input
     // do {
-    // selection = this.input.getText(game, options, 'Put abbreviation here (e.g., "sr" for Short Run)');
+    // selection = this.input.getInput(game, options, 'Put abbreviation here (e.g., "sr" for Short Run)');
     // debugger
 
     // selection = await this.waitForSelection(game, p, options, state);
@@ -1036,7 +1032,7 @@ export default class Run {
 
   printTime (time) {
     if (time === -0.5) {
-      return 'Start'
+      return 'End'
     } else {
       const min = Math.trunc(time)
       const sec = (time - min === 0.5) ? '30' : '00'
@@ -1886,7 +1882,7 @@ export default class Run {
       // this.makeButtons('H,T', game.away)
       // do {
       //     // debugger
-      coinPick = await this.input.getText(game, game.away, 'Coin Toss\n' + awayName + ' choose, [H]eads or [T]ails?\n', 'coin')
+      coinPick = await this.input.getInput(game, game.away, 'coin')
       //     if (typeof(coinPick) === 'string') {
       //         coinPick = coinPick.toUpperCase();
       //     } else {
@@ -1911,14 +1907,14 @@ export default class Run {
       result = (actFlip === coinPick ? awayName : homeName) + ' choose, '
       // do {
       // MOVE THIS TO TEXT INPUT CLASS
-      if (game.qtr >= 4) {
-        result += 'Ball [1]st or Ball [2]nd?\n'
-      } else {
-        result += '[K]ick of [R]eceive?\n'
-      }
+      // if (game.qtr >= 4) {
+      //   result += 'Ball [1]st or Ball [2]nd?\n'
+      // } else {
+      //   result += '[K]ick of [R]eceive?\n'
+      // }
 
       // debugger
-      decPick = await this.input.getText(game, (actFlip === coinPick ? game.away : game.home), result, (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
+      decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
       // if (typeof(decPick) === 'string') {
       // if (game.qtr >= 4 && (decPick === '1' || decPick === '2')) {
       //     decPick = Number(decPick);
