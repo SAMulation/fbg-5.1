@@ -1,178 +1,46 @@
 import {BUTTONS} from './buttons.js'
 
-// const DEF_PLAYS = {
-//     'SR': {
-//         'name': 'Short Run',
-//         'abrv': 'SR',
-//         'count': 3,
-//         'type': 'reg'
-//     },
-//     'LR': {
-//         'name': 'Long Run',
-//         'abrv': 'LR',
-//         'count': 3,
-//         'type': 'reg'
-//     },
-//     'SP': {
-//         'name': 'Short Pass',
-//         'abrv': 'SP',
-//         'count': 3,
-//         'type': 'reg'
-//     },
-//     'LP': {
-//         'name': 'Long Pass',
-//         'abrv': 'LP',
-//         'count': 3,
-//         'type': 'reg'
-//     },
-//     'TP': {
-//         'name': 'Trick Play',
-//         'abrv': 'TP',
-//         'count': 1,
-//         'type': 'reg'
-//     },
-//     'HM': {
-//         'name': 'Hail Mary',
-//         'abrv': 'HM',
-//         'count': 3,
-//         'type': 'reg'
-//     },
-//     'FG': {
-//         'name': 'Field Goal',
-//         'abrv': 'FG',
-//         'count': -1,
-//         'type': 'reg'
-//     },
-//     'PT': {
-//         'name': 'Punt',
-//         'abrv': 'PT',
-//         'count': -1,
-//         'type': 'reg'
-//     },
-//     'RK': {
-//         'name': 'Regular Kick',
-//         'abrv': 'RK',
-//         'count': -1,
-//         'type': 'kick'
-//     },
-//     'OK': {
-//         'name': 'Onside Kick',
-//         'abrv': 'OK',
-//         'count': -1,
-//         'type': 'kick'
-//     },
-//     'SK': {
-//         'name': 'Squib Kick',
-//         'abrv': 'SK',
-//         'count': -1,
-//         'type': 'kick'
-//     },
-//     'RR': {
-//         'name': 'Regular Return',
-//         'abrv': 'RR',
-//         'count': -1,
-//         'type': 'ret'
-//     },
-//     'OR': {
-//         'name': 'Onside Return',
-//         'abrv': 'OR',
-//         'count': -1,
-//         'type': 'ret'
-//     },
-//     'TB': {
-//         'name': 'Touchback',
-//         'abrv': 'TB',
-//         'count': -1,
-//         'type': 'ret'
-//     },
-//     'XP': {
-//         'name': 'Extra Point',
-//         'abrv': 'XP',
-//         'count': -1,
-//         'type': 'pat'
-//     },
-//     '2P': {
-//         'name': '2-point Conversion',
-//         'abrv': '2P',
-//         'count': -1,
-//         'type': 'pat'
-//     },
-//     'H': {
-//         'name': 'Heads',
-//         'abrv': 'H',
-//         'count': -1,
-//         'type': 'coin'
-//     },
-//     'T': {
-//         'name': 'Tails',
-//         'abrv': 'T',
-//         'count': -1,
-//         'type': 'coin'
-//     },
-//     'K': {
-//         'name': 'Kick',
-//         'abrv': 'K',
-//         'count': -1,
-//         'type': 'kickDecReg'
-//     },
-//     'R': {
-//         'name': 'Receive',
-//         'abrv': 'R',
-//         'count': -1,
-//         'type': 'kickDecReg'
-//     },
-//     '1': {
-//         'name': 'Ball 1st',
-//         'abrv': '1',
-//         'count': -1,
-//         'type': 'kickDecOT'
-//     },
-//     '2': {
-//         'name': 'Ball 2nd',
-//         'abrv': '2',
-//         'count': -1,
-//         'type': 'kickDecOT'
-//     },
-//     'TO': {
-//         'name': 'Timeout',
-//         'abrv': 'TO',
-//         'count': 3,
-//         'type': 'all'
-//     },
-//     'Y': {
-//         'name': 'Yes!!! Call timeout!',
-//         'abrv': 'Y',
-//         'count': -1,
-//         'type': 'last'
-//     },
-//     'N': {
-//         'name': 'Nah... End this!',
-//         'abrv': 'N',
-//         'count': -1,
-//         'type': 'last'
-//     }
-// }
-
 export default class ButtonInput {
     constructor(type = 'button') {
         this.type = type;  // 'text' for text input, 'button' for default, 'mock' for testing
     }
 
     async getText (game, p, msg, type) {
+        let textSelection;
+        let promised;
+        let storage = [];
+
         // Make the buttons
-        this.makeChoices(game, type, p);
+        storage = this.makeChoices(game, type, p, textSelection);
         
-        // .reg left aligns buttons and allows scrolling, without center
-        if (type === 'reg') {
-            document.querySelector('.selection.pl' + p).classList.add('reg');
-        } else {
-            document.querySelector('.selection.pl' + p).classList.remove('reg');
+        if (this.type === 'button') {
+            this.getButtonInput(game, storage, p);
+            // .reg left aligns buttons and allows scrolling, without center
+            if (type === 'reg') {
+                document.querySelector('.selection.pl' + p).classList.add('reg');
+            } else {
+                document.querySelector('.selection.pl' + p).classList.remove('reg');
+            }
+            promised = new Promise((resolve, reject) => {
+                this.bindButtons(document.querySelectorAll('button.play'), resolve, p);
+            });
+        } else if (this.type === 'text') {
+            // promised = this.setupTextInput(game, storage, p);
+            const abrvs = this.setupTextInput(game, storage, p)
+            promised = new Promise((resolve, reject) => {
+                resolve(this.bindSubmitButton(document.getElementById('pl' + p + 'submit'), resolve, abrvs));
+            });
+        } else if (this.type === 'console') {
+            promised = new Promise((resolve, reject) => {
+                resolve(this.getConsoleInput(game, storage, p));
+            });
         }
-        
+
         // Return play abbreviation when clicked
-        return new Promise((resolve, reject) => {
-            this.bindButtons(document.querySelectorAll('button.play'), resolve, p);
-        });
+        // return new Promise((resolve, reject) => {
+        //     this.bindButtons(document.querySelectorAll('button.play'), resolve, p);
+        // });
+        return promised;
     }
 
     bindButtons (buttons, resolve, p) {
@@ -184,7 +52,19 @@ export default class ButtonInput {
         })
     }
 
-    makeChoices(game, type, p) {
+    bindSubmitButton (button, resolve, abrvs) {
+        button.addEventListener('submit', event => {
+            event.preventDefault()
+            if (abrvs.includes(event.target.value.toUpperCase())) {
+                resolve(event.target.value)
+                event.target.parentElement.innerHTML = ''
+            } else {
+                event.target.value = ''
+            }
+        })
+    }
+
+    makeChoices(game, type, p, textSelection = null) {
         let storage = []  // Temporary storage
         let count = 0   // Number of plays stored
 
@@ -205,41 +85,116 @@ export default class ButtonInput {
             count++;
         }
 
-        console.log(storage)  // What's the storage array look like?
+        // console.log(storage)  // What's the storage array look like?
+        return storage;
+    }
 
-        if (this.type === 'text') {
-            // Output possible choices using storage
-            // text input that can reference storage for validity
-        } else if (this.type === 'mock') {
-            // Coming later
-        } else {
-            // Cache the DOM element that will store play and timeout buttons
-            const buttonArea = document.querySelector('.selection.pl' + p)
-            const timeout = document.querySelector('.to' + p)
-            
-            // Clear buttonArea and timeout
-            buttonArea.innerText = ''
-            timeout.innerText = ''
+    setupTextInput(game, storage, p) {
+        // Output possible choices using storage
+        // text input that can reference storage for validity
+        const formArea = document.querySelector('.selection.pl' + p)
+        const formEl = document.createElement('form')
+        const labelEl = document.createElement('label')
+        const textEl = document.createElement('input')
+        textEl.setAttribute('type', 'text')
+        textEl.id = 'pl' + p
+        const submitEl = document.createElement('input')
+        submitEl.setAttribute('type', 'submit')
+        submitEl.id = 'pl' + p + 'submit'
+        let msg = game.players[p].team.name + ' pick a play from the following:\n';
+        let plays = '';
+        // let selection = '';
+        let abrvs = [];
 
-            // Loop through storage and add buttons
-            for (let i = 0; i < storage.length; i++) {
-                const btn = document.createElement("button")
-                const t = document.createTextNode(storage[i]['name'])
-                btn.appendChild(t)
-                btn.classList.add('play')
-                // Set data-playType to play abrv, used throughout
-                btn.setAttribute('data-playType', storage[i]['abrv'])
+        for (let i = 0; i < storage.length; i++) {
+            abrvs[i] = storage[i]['abrv'];
+            if (i !== 0) {
+                plays += ', ';
+            }
+            plays += storage[i]['abrv'];
+        }
 
-                // Append child to container div
-                if (storage[i]['abrv'] === 'TO') {
-                    // Disable Timeout button if out of timeouts
-                    if (game.players[p].timeouts === 0 || game.time_change) {
-                        btn.setAttribute('disabled', '')
-                    }
-                    timeout.appendChild(btn)
-                } else {
-                    buttonArea.appendChild(btn)
+        msg += '[ ' + plays + ' ]:\n';
+        labelEl.innerText = msg
+
+        formEl.appendChild(labelEl)
+        formEl.appendChild(textEl)
+        formEl.appendChild(submitEl)
+
+        formArea.appendChild(formEl)
+
+        // while (selection === '') {
+        //     selection = prompt(msg);
+        //     console.log(abrvs.includes(selection));
+        //     if (!selection) {
+        //         game.status = 999;
+        //         selection = 'EXIT';
+        //     } else {
+        //         selection = abrvs.includes(selection.toUpperCase()) ? selection.toUpperCase() : '';
+        //     }
+        // }
+
+        return abrvs;
+    }
+
+    getConsoleInput(game, storage, p) {
+        // Output possible choices using storage
+        // text input that can reference storage for validity
+        let msg = game.players[p].team.name + ' pick a play from the following:\n';
+        let plays = '';
+        let selection = '';
+        let abrvs = [];
+
+        for (let i = 0; i < storage.length; i++) {
+            abrvs[i] = storage[i]['abrv'];
+            if (i !== 0) {
+                plays += ', ';
+            }
+            plays += storage[i]['abrv'];
+        }
+
+        msg += '[ ' + plays + ' ]\n';
+        msg += 'Enter: "selection = XX" where XX is play abrv\n';
+        while (selection === '') {
+            console.log(msg);
+            if (!selection) {
+                game.status = 999;
+                selection = 'EXIT';
+            } else {
+                selection = abrvs.includes(selection.toUpperCase()) ? selection.toUpperCase() : '';
+            }
+        }
+
+        return selection;
+    }
+
+    getButtonInput(game, storage, p) {
+        // Cache the DOM element that will store play and timeout buttons
+        const buttonArea = document.querySelector('.selection.pl' + p)
+        const timeout = document.querySelector('.to' + p)
+        
+        // Clear buttonArea and timeout
+        buttonArea.innerText = ''
+        timeout.innerText = ''
+
+        // Loop through storage and add buttons
+        for (let i = 0; i < storage.length; i++) {
+            const btn = document.createElement("button")
+            const t = document.createTextNode(storage[i]['name'])
+            btn.appendChild(t)
+            btn.classList.add('play')
+            // Set data-playType to play abrv, used throughout
+            btn.setAttribute('data-playType', storage[i]['abrv'])
+
+            // Append child to container div
+            if (storage[i]['abrv'] === 'TO') {
+                // Disable Timeout button if out of timeouts
+                if (game.players[p].timeouts === 0 || game.time_change) {
+                    btn.setAttribute('disabled', '')
                 }
+                timeout.appendChild(btn)
+            } else {
+                buttonArea.appendChild(btn)
             }
         }
     }
