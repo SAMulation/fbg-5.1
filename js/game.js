@@ -35,11 +35,11 @@ export default class Game {
         this.current_time = this.qtr_length;
         this.thisPlay = new Play();
         this.players = {1: new Player(this, team1), 2: new Player(this, team2)};  // Object {1: ..., 2: ...}
-        this.mults = mults; 
+        this.mults = mults;
         this.yards = yards;
 
         // Pass input class to game constructor
-        this.run = new Run(this, new ButtonInput);
+        this.run = new Run(this, new ButtonInput('button'));
 
         if (!this.mults) {
             this.fillMults();
