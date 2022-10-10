@@ -26,9 +26,9 @@ export default class ButtonInput {
       })
     } else if (this.type === 'text') {
       // promised = this.setupTextInput(game, storage, p);
-      const abrvs = this.setupTextInput(game, storage, p)
+      const { formEl: form, abrvs } = this.setupTextInput(game, storage, p)
       promised = new Promise((resolve, reject) => {
-        this.bindSubmitButton(document.getElementById('pl' + p + 'submit'), resolve, abrvs)
+        this.bindSubmitButton(form, resolve, abrvs)
       })
     } else if (this.type === 'prompt') {
       promised = new Promise((resolve, reject) => {
@@ -67,14 +67,13 @@ export default class ButtonInput {
     })
   }
 
-  bindSubmitButton (button, resolve, abrvs) {
-    button.addEventListener('submit', event => {
+  bindSubmitButton (form, resolve, abrvs) {
+    form.addEventListener('submit', event => {
       event.preventDefault()
-      if (abrvs.includes(event.target.input.value.toUpperCase())) {
-        resolve(event.target.value)
-        event.target.parentElement.innerHTML = ''
-      } else {
-        event.target.input.value = ''
+      const selection = form.elements.formInput.value
+      if (abrvs.includes(selection.toUpperCase())) {
+        resolve(selection.toUpperCase())
+        form.parentNode.removeChild(form)
       }
     })
   }
@@ -126,11 +125,10 @@ export default class ButtonInput {
     const formEl = document.createElement('form')
     const labelEl = document.createElement('label')
     const textEl = document.createElement('input')
-    textEl.setAttribute('type', 'text')
-    textEl.id = 'pl' + p
+    textEl.type = 'text'
+    textEl.name = 'formInput'
     const submitEl = document.createElement('input')
-    submitEl.setAttribute('type', 'submit')
-    submitEl.id = 'pl' + p + 'submit'
+    submitEl.type = 'submit'
     let msg = game.players[p].team.name + ' pick a play from the following:\n'
     let plays = ''
     // let selection = '';
@@ -152,6 +150,7 @@ export default class ButtonInput {
     formEl.appendChild(submitEl)
 
     formArea.appendChild(formEl)
+    textEl.focus()
 
     // while (selection === '') {
     //     selection = prompt(msg);
@@ -164,7 +163,7 @@ export default class ButtonInput {
     //     }
     // }
 
-    return abrvs
+    return { formEl, abrvs }
   }
 
   getConsoleInput (game, storage, p) {
