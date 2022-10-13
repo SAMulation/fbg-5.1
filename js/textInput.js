@@ -4,9 +4,9 @@ export default class TextInput extends BaseInput {
   message = ''
   abrvs = []
 
-  createMessage (game, p) {
+  createMessage (game, p, newText = null) {
     let plays = ''
-    this.message = game.players[p].team.name + ' pick a play from the following:\n'
+    this.message = (newText || game.players[p].team.name + ' pick a play from the following:') + '\n'
 
     for (let i = 0; i < this.legalChoices.length; i++) {
       this.abrvs[i] = this.legalChoices[i].abrv

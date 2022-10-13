@@ -1,7 +1,7 @@
 import TextInput from './textInput.js'
 
 export default class PromptInput extends TextInput {
-  async getInput (game, p, type) {
+  async getInput (game, p, type, newText = null) {
     // Get legal choices
     this.makeChoices(game, type, p)
 
@@ -10,7 +10,7 @@ export default class PromptInput extends TextInput {
         let selection = ''
 
         // Get message ready
-        this.createMessage(game, p)
+        this.createMessage(game, p, newText)
 
         while (selection === '') {
           selection = prompt(this.message)
