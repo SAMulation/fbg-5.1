@@ -1,0 +1,10 @@
+
+
+
+
+Statuses
+
+
+0: gameStart || regStart || otcStart
+
+?: END_HALF (2) || END_REG (4) || END_QTR (1, 3) || END_OT (5+)

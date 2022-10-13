@@ -47,12 +47,18 @@ export default class Run {
   };
 
   async gameLoop (game, test = 11) {
+    // Pass status into gameLoop for testing purposes
     game.status = test
+    // gameStart, so set time to 0.5
     if (test === 0) {
       game.current_time = -0.5 // LATER: Remember to check
     }
 
+    // This is the game loop
     while (game.status < 900) {
+      if (game.status < 900) {
+        await this.gameControl(game)
+      }
       while (game.current_time >= 0 && game.status !== 999) {
         // game.save('as-' + datetime.now().strftime("%m.%d.%Y-%H.%M.%S"))
         if (game.status < 0) {
@@ -64,10 +70,6 @@ export default class Run {
         if (game.status !== 999) {
           await this.endPlay(game)
         }
-      }
-
-      if (game.status < 900) {
-        await this.gameCtrl(game)
       }
     }
 
@@ -1681,20 +1683,23 @@ export default class Run {
     this.showBoard(document.querySelector('.scoreboard'))
   };
 
-  async gameCtrl (game) {
-    if (game.status === 0) {
+  async gameControl (game) {
+    // The game just started
+    if (game.status === 0) { // if (game.state === REG_START || game.state === OTC_START) {
       await this.coinToss(game)
 
-      if (!game.isOT() || game.game_type === 'otc') {
+      if (!game.isOT() || game.game_type === 'otc') { // if (game.state === OTC_START) {
         this.resetVar(game)
       }
     } else {
       // End of half
+      // if (game.state === END_QTR && game.qtr === 3) {
       if (game.status === 0 || (!(game.qtr % 2))) {
         await this.resetVar(game)
       }
 
-      // End of odd quarter (1st, 3rd, OT)
+      // End of odd quarter (1st, 3rd, OT) || But do we need this for OTC?
+      // if (game.state === END_QTR || (game.state === END_OT && game.qtr % 2)
       if (game.qtr % 2 && game.current_time !== game.qtr_length) {
         if (!game.isOT() || (game.isOT() && game.ot_poss !== 2)) {
           this.resetTime(game) // CHECK: This was a band-aid
@@ -1702,8 +1707,10 @@ export default class Run {
       }
     }
 
+    // Skip if exited during Coin Toss
     if (game.status < 900) {
       // Set up OT Challenge
+      // if (game.state === OTC_START) {
       if (game.qtr === 5 && game.game_type === 'otc' && game.rec_first !== game.off_num) {
         this.changePoss(game)
         // print_needle(-game.off_num);
@@ -1721,7 +1728,7 @@ export default class Run {
     let decPick = null
     let recFirst = 'away'
     if (game.isReal(game.away)) {
-      coinPick = await this.input.getInput(game, game.away, 'coin')
+      coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
     } else { // Computer picking
       this.alertBox('Coin Toss\n' + awayName + ' choosing...\n')
       coinPick = Utils.coinFlip() ? 'H' : 'T'

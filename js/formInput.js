@@ -3,12 +3,12 @@ import TextInput from './textInput.js'
 export default class FormInput extends TextInput {
   form = ''
 
-  async getInput (game, p, type) {
+  async getInput (game, p, type, newText = null) {
     // Get legal choices
     this.makeChoices(game, type, p)
 
     // Get message ready
-    this.createMessage(game, p)
+    this.createMessage(game, p, newText)
     this.setupTextInput(p)
 
     return new Promise((resolve, reject) => {
@@ -16,7 +16,7 @@ export default class FormInput extends TextInput {
     })
   }
 
-  setupTextInput (p) {
+  setupTextInput (p, newText = null) {
     // Create HTML elements
     const formArea = document.querySelector('.selection.pl' + p)
     const formEl = document.createElement('form')
