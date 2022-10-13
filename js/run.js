@@ -24,8 +24,7 @@ export default class Run {
     }
   };
 
-  async playGame () {
-    // this.alertBox("You're about to start playing, but there really isn't a lot going on.\nIf you have questions, email me at samulation.dev@gmail.com");
+  prepareHTML () {
     document.querySelector('.selection.pl1').innerHTML = ''
     document.querySelector('.selection.pl2').innerHTML = ''
     document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play'
@@ -33,11 +32,14 @@ export default class Run {
     document.querySelector('.page-main .to1').classList.remove('hidden')
     document.querySelector('.page-sidebar .to2').innerText = 'TO'
     document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play'
-    // document.querySelector('.playButton').disabled = true;
     this.showBoard(document.querySelector('.scoreboard'))
     document.querySelector('.page-wrap').classList.add('game') // LATER: When completely done with game, remove this
     document.querySelector('.scoreboard').classList.remove('hidden')
     document.querySelector('.page-subheader').classList.remove('hidden')
+  }
+
+  async playGame () {
+    this.prepareHTML()
 
     await this.gameLoop(this.game, 0)
 
