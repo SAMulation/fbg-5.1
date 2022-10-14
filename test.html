@@ -52,7 +52,7 @@
           border-radius: 2vw; */
           z-index: -1;
         }
-        .away.bg, .away-msg, .bl-msg {
+        .away.bg, .away.msg, .bl.msg {
           background: rgb(2,0,36);
           background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
         }
@@ -60,7 +60,7 @@
           grid-column: 1 / 4;
           /* background: blue; */
         }
-        .home.bg, .home-msg, .br-msg {
+        .home.bg, .home.msg, .br.msg {
           background: rgb(36,20,0);
           background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
         }
@@ -130,37 +130,37 @@
         .away .to1 {
           background: none;
         }
-        .away-msg, .home-msg, .bl-msg, .br-msg {
+        .away.msg, .home.msg, .bl.msg, .br.msg {
           font-size: 1.8vw;
           text-align: center;
           line-height: 3vw;
           z-index: -2;
         }
-        .away-msg, .bl-msg {
+        .away.msg, .bl.msg {
           padding-right: 10vw;
         }
-        .home-msg, .br-msg {
+        .home.msg, .br.msg {
           padding-left: 10vw;
         }
-        .away-msg {
+        .away.msg {
           position: static;
           grid-column: 1 / 4;
           grid-row: 1 / 2;
           border-radius: 2vw 0 0 0;
         }
-        .home-msg {
+        .home.msg {
           position: static;
           grid-column: 4 / 7;
           grid-row: 1 / 2;
           border-radius: 0 2vw 0 0;
         }
-        .bl-msg {
+        .bl.msg {
           position: static;
           grid-column: 1 / 4;
           grid-row: 5 / 6;
           border-radius:  0 0 0 2vw;
         }
-        .br-msg {
+        .br.msg {
           position: static;
           grid-column: 4 / 7;
           grid-row: 5 / 6;
@@ -194,6 +194,123 @@
           grid-row: 1;
           margin-top: 10px;
         }
+
+        .msg.bot-down {
+          animation: .5s linear forwards bot-down; 
+        }
+        .msg.bot-up {
+          animation: .5s linear forwards bot-up; 
+        }
+        .msg.top-up {
+          animation: .5s linear forwards top-up;
+        }
+        .msg.top-down {
+          animation: .5s linear forwards top-down;
+        }
+        .bg.top-sharp {
+          animation: .5s top-sharp;
+          border-radius: 0;
+        }
+        .bg.top-round {
+          animation: .5s top-round;
+          border-radius: 2vw 0;
+        }
+        .bg.bot-sharp {
+          animation: .5s bot-sharp;
+          border-radius: 0;
+        }
+        .bg.bot-round {
+          animation: .5s bot-round;
+          border-radius: 0 2vw;
+        }
+
+        @keyframes top-sharp {
+          0% {
+            border-radius: 2vw 0;
+          }
+
+          70% {
+            border-radius: 0;
+          }
+        }
+
+        @keyframes top-round {
+          0% {
+            border-radius: 0;
+          }
+
+          70% {
+            border-radius: 2vw 0;
+          }
+        }
+
+        @keyframes bot-sharp {
+          0% {
+            border-radius: 0 2vw;
+          }
+
+          70% {
+            border-radius: 0;
+          }
+        }
+
+        @keyframes bot-round {
+          0% {
+            border-radius: 0;
+          }
+
+          70% {
+            border-radius: 0 2vw;
+          }
+        }
+
+        @keyframes bot-down {
+          0% {
+            transform: translate(0, -110%);
+          }
+
+          100% {
+            transform: translate(0);
+          }
+        }
+
+        @keyframes bot-up {
+          0% {
+            transform: translate(0);
+          }
+
+          100% {
+            transform: translate(0, -110%);
+          }
+        }
+
+        @keyframes top-up {
+          0% {
+            transform: translate(0, 110%);
+          }
+
+          70% {
+            
+          }
+
+          100% {
+            transform: translate(0, 0);
+          }
+        }
+
+        @keyframes top-down {
+          0% {
+            transform: translate(0, 0);
+          }
+
+          70% {
+            
+          }
+
+          100% {
+            transform: translate(0, 110%); 
+          }
+        }
         
         .field {
           background: greenyellow;
@@ -212,8 +329,8 @@
 <body>
     <main>
         <section class="scoreboard-container">
-            <div class="away bg"></div>
-            <div class="home bg"></div>
+            <div class="away bg top-sharp bot-sharp"></div>
+            <div class="home bg top-sharp bot-sharp"></div>
             <div class="home hm">
               <span class="hm3">&nbsp;</span>
               <span class="hm2">&nbsp;</span>
@@ -243,10 +360,10 @@
               <span class="time">7:30</span>
               <span class="qtr">1ST</span>
             </div>
-            <div class="away-msg">Pick your play</div>
-            <div class="home-msg">Last Play: LR v SR</div>
-            <div class="bl-msg">1st & 10</div>
-            <div class="br-msg">Ball on CIN 42</div>
+            <div class="away msg top-up">Pick your play</div>
+            <div class="home msg top-up">Last Play: LR v SR</div>
+            <div class="bl msg bot-down">1st & 10</div>
+            <div class="br msg bot-down">Ball on CIN 42</div>
         </section>
         <section class="board-container">
     
@@ -258,6 +375,7 @@
     
         </section>
         <button class="toggle">toggle</button>
+        <button class="toggle-msg">msgs</button>
         <script>
           document.querySelector('.toggle').addEventListener('click', event => {
             document.querySelector('.scoreboard-container').classList.toggle('hide')
@@ -267,6 +385,58 @@
             if (left > 500) left = 10;
             ball.style.left = `${left}px`
           })
+
+          const boardMessages = document.querySelectorAll('.bot-down');
+          const bgEls = document.querySelectorAll('.bg');
+
+          const upDownMessage = function(event) {
+            boardMessages.forEach(message => {
+              let bgElement;
+              const bottom = message.classList.contains('bot-down')
+              if(message.classList.contains('top-down')) {
+                message.classList.remove('top-down');
+                message.classList.add('top-up');
+              } else if (message.classList.contains('top-up')) {
+                message.classList.remove('top-up');
+                message.classList.add('top-down');
+              } else if (message.classList.contains('bot-up')) {
+                message.classList.remove('bot-up');
+                message.classList.add('bot-down');
+              } else if (message.classList.contains('bot-down')) {
+                message.classList.remove('bot-down');
+                message.classList.add('bot-up');
+              }
+
+              if (message.classList.contains('home')) {
+                bgElement = document.querySelector('.home.bg')
+              } else {
+                bgElement = document.querySelector('.away.bg')
+              }
+
+              if (bottom) {
+                if (bgElement.classList.contains('bot-sharp')) {
+                bgElement.classList.remove('bot-sharp');
+                bgElement.classList.add('bot-round');
+                } else if (bgElement.classList.contains('bot-round')) {
+                bgElement.classList.remove('bot-round');
+                bgElement.classList.add('bot-sharp');
+                }
+              } else {
+                if (bgElement.classList.contains('top-sharp')) {
+                bgElement.classList.remove('top-sharp');
+                bgElement.classList.add('top-round');
+                } else if (bgElement.classList.contains('top-round')) {
+                bgElement.classList.remove('top-round');
+                bgElement.classList.add('bot-sharp');
+                }
+              }
+            })
+          }
+
+          // boardMessages.forEach(message => {
+          //   message.addEventListener('click', upDownMessage)
+          // })
+          document.querySelector('.toggle-msg').addEventListener('click', upDownMessage)
         </script>
         
         <section class="field">
