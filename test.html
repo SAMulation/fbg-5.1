@@ -18,7 +18,7 @@
           height: 25%;
           margin: 0 auto;
           /* outline: 1px solid red; */
-          grid-template: 16% 2% 64% 2% 16% / 3fr 2fr minmax(auto, 10vw) minmax(auto, 10vw) 2fr 3fr;
+          grid-template: 15% 3% 64% 3% 15% / 3fr 2fr minmax(auto, 10vw) minmax(auto, 10vw) 2fr 3fr;
           /* grid-template: 15% 70% 15% / 2fr 1fr 150px 150px 1fr 2fr; */
           grid-template-areas:
             "tl-margin tl-margin   clock clock   tr-margin tr-margin"
@@ -26,12 +26,16 @@
             "away-team away-score  clock clock  home-score home-team"
             "away-to   away-to     clock clock      home-to  home-to"
             "bl-margin bl-margin   clock clock   br-margin br-margin";
-          align-items: center;
+          align-items: stretch;
           justify-content: center;
           align-content: stretch;
           justify-items: stretch;
           
           transition: all .5s;
+        }
+        .scoreboard-container * {
+          font-family: sans-serif;
+          color: white;
         }
         .scoreboard-container.hide {
           transform: translateX(150%);
@@ -40,17 +44,21 @@
           grid-row: 2 / span 3;
           color: white;
           font: bold 6vw sans-serif;
+          align-self: center;
         }
         .bg {
           height: 100%;
-          border-radius: 2vw;
+          /* LATER: Transform radius on animation
+          border-radius: 2vw; */
+          z-index: -1;
+        }
+        .away.bg, .away-msg, .bl-msg {
+          background: rgb(2,0,36);
+          background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
         }
         .away.bg {
           grid-column: 1 / 4;
           /* background: blue; */
-          background: rgb(2,0,36);
-          background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
-          
         }
         .home.bg {
           grid-column: 4 / 7;
@@ -80,19 +88,28 @@
           grid-column: 2;
         }
         .home.score {
+          align-self: center;
           grid-column: 5;
         }
         .away.to {
-          grid-area: away-to;
+          /* grid-area: away-to; */
+          grid-column: 1 / 3;
+          grid-row: 2 / 3;
         }
         .home.to {
-          grid-area: home-to;
+          /* grid-area: home-to; */
+          grid-column: 5 / 7;
+          grid-row: 2 / 3;
         }
         .away.hm {
-          grid-area: away-hm;
+          /* grid-area: away-hm; */
+          grid-column: 1 / 3;
+          grid-row: 4 / 5;
         }
         .home.hm {
-          grid-area: home-hm;
+          /* grid-area: home-hm; */
+          grid-column: 5 / 7;
+          grid-row: 4 / 5;
         }
         .hm span, .to span {
           background: white;
@@ -104,9 +121,33 @@
           justify-content: space-evenly;
           justify-items: stretch;
           font-size: .5vw;
+          z-index: 2;
+          margin: 0 5%;
+          align-self: stretch;
         }
         .away .to1 {
           background: none;
+        }
+        .away-msg, .home-msg, .bl-msg, .br-msg {
+          font-size: 1.8vw;
+          text-align: center;
+        }
+        .away-msg {
+          position: static;
+          grid-column: 1 / 4;
+          grid-row: 1 / 2;
+          z-index: -2;
+          text-align: center;
+          border-radius: 2vw 0 0 0;
+        }
+        .home-msg {
+          grid-area: home-msg;
+        }
+        .bl-msg {
+          grid-area: bl-msg;
+        }
+        .br-msg {
+          grid-area: br-msg;
         }
         .clock {
           grid-area: clock;
@@ -129,12 +170,10 @@
         .logo, .qtr {
           font: bold 2.5vw sans-serif;
         }
-
         .qtr {
           grid-row: 3;
           margin-bottom: 10px;
         }
-
         .logo {
           grid-row: 1;
           margin-top: 10px;
@@ -188,6 +227,10 @@
               <span class="time">7:30</span>
               <span class="qtr">1ST</span>
             </div>
+            <div class="away-msg">Pick your play</div>
+            <div class="home-msg">Last Play: LR v SR</div>
+            <div class="bl-msg">1st & 10</div>
+            <div class="br-msg">Ball on CIN 42</div>
         </section>
         <section class="board-container">
     
