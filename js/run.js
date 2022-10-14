@@ -393,7 +393,7 @@ export default class Run {
   };
 
   prePlay (game, stat) {
-    console.log(game) // LATER: Suppress this ASAP
+    // console.log(game) // LATER: Suppress this ASAP
     // console.log('prePlay');
     game.thisPlay.multiplier_card = 999
     game.thisPlay.multiplier_num = 999
@@ -422,23 +422,23 @@ export default class Run {
   };
 
   twoMinCheck (game) {
-    let two_min = game.two_minute
-    let tim_chg
+    let twoMin = game.two_minute
+    let timChg
 
     // Two-minute warning just ended
-    if (two_min) {
-      tim_chg = 0
-      two_min = false
+    if (twoMin) {
+      timChg = 0
+      twoMin = false
 
       // Two-minute warning needs to start
     } else {
-      tim_chg = 9
-      two_min = true
+      timChg = 9
+      twoMin = true
       this.alertBox('Two-minute warning...')
     }
 
-    game.time_change = tim_chg
-    game.two_minute = two_min
+    game.time_change = timChg
+    game.two_minute = twoMin
   };
 
   async pickPlay (game) {
@@ -1727,6 +1727,8 @@ export default class Run {
     let actFlip = null
     let decPick = null
     let recFirst = 'away'
+
+    // Coin toss decision
     if (game.isReal(game.away)) {
       coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
     } else { // Computer picking
@@ -1789,6 +1791,7 @@ export default class Run {
     }
   };
 
+  // What ALL is this function doing?
   async resetVar (game) {
     if (game.qtr === 0 || (game.qtr === 4 && game.game_type === 'otc')) {
       // displayBoard()
@@ -1808,6 +1811,7 @@ export default class Run {
       // Make a spot to store the scores for each qtr
 
       // OT Challenge Stuff
+      // This could be more elegant
       if (game.qtr === 4) {
         game.down = 0
         this.updateDown(game) // Forces game to set itself up
@@ -1825,6 +1829,7 @@ export default class Run {
     // printTO();
 
     if (game.qtr <= 3) {
+      // Ready to kickoff
       game.status = -1
       // BAND-AID
       // game.qtr = 1;
@@ -1852,11 +1857,14 @@ export default class Run {
     }
   };
 
+  // What all is THIS function doing
   resetTime (game) {
     const over = game.qtr >= 4 && game.players[1].score !== game.players[2].score
 
+    // Is the game over?
     if (over) {
       this.endGame(game)
+    // No, then let's increase the quarter
     } else {
       if (game.qtr !== 0 && !(game.qtr === 4 && game.game_type === 'otc')) {
         // LATER: Record quarter score here

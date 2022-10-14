@@ -22,9 +22,6 @@ export default class PromptInput extends TextInput {
           }
         }
 
-        this.abrvs = []
-        this.legalChoices = []
-        this.message = ''
         resolve(selection)
       }, 1)
     })

@@ -53,7 +53,6 @@ export default class ButtonInput extends BaseInput {
       button.addEventListener('click', event => {
         resolve(event.target.getAttribute('data-playType'))
         event.target.parentElement.innerHTML = ''
-        this.legalChoices = []
       })
     })
   }
