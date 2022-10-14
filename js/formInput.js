@@ -1,8 +1,6 @@
 import TextInput from './textInput.js'
 
 export default class FormInput extends TextInput {
-  form = ''
-
   async getInput (game, p, type, newText = null) {
     // Get legal choices
     this.makeChoices(game, type, p)
@@ -44,10 +42,6 @@ export default class FormInput extends TextInput {
       if (this.abrvs.includes(selection)) {
         resolve(selection)
         this.form.parentNode.removeChild(this.form)
-        this.form = ''
-        this.abrvs = []
-        this.legalChoices = []
-        this.message = ''
       }
     })
   }

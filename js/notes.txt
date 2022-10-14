@@ -2,9 +2,32 @@
 
 
 
-Statuses
+States  // No longer 'status'
 
-
-0: gameStart || regStart || otcStart
+999: EXIT
+902: P2_WINS
+901: P1_WINS
+102: SAFETY
+101: TOUCHDOWN
+21: TURN_HAPPENED
+20: TURN_HAPPENING
+19: TWO_PT
+18: PAT
+17: HM
+16: PUNT
+15: FG
+14: SAME_PLAY
+13: DEF_TRICK
+12: OFF_TRICK
+11: REG_PLAY
+0: GAME_START || NORM_START || OTC_START
+-1: FIRST_KICK
+-3: NORM_KICK     // _KCKDEC, _RETDEC, _RETURN, _POST
+-4: SAFE_KICK
 
 ?: END_HALF (2) || END_REG (4) || END_QTR (1, 3) || END_OT (5+)
+
+To-Do Data Structures:
+- stats object in players (class?)
+- quarterScores array(object?) in game
+

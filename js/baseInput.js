@@ -1,11 +1,11 @@
 import { BUTTONS } from './buttons.js'
 
 export default class BaseInput {
-  legalChoices = []
-
   makeChoices (game, type, p) {
     // Return appropriate set of buttons
     const buttons = BUTTONS[type]
+
+    this.legalChoices = []
 
     // Loop through DEF_PLAYS and add to storage array if legal
     for (const key in buttons) {
