@@ -2,7 +2,7 @@ import { BUTTONS } from './buttons.js'
 
 export default class ButtonInput {
   constructor (type = 'button') {
-    this.type = 'whatevz'
+    this.type = type // 'text' for text input, 'button' for default, 'mock' for testing
   }
 
   async getInput (game, p, msg, type) {
