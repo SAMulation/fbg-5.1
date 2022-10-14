@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoreboard Demo</title>
+    <style>
+        * {
+          box-sizing: border-box;
+        }
+        body {
+          background: rgb(225, 225, 225);
+        }
+        .scoreboard-container {
+          display: grid;
+          width: 90%;
+          height: 25%;
+          margin: 0 auto;
+          /* outline: 1px solid red; */
+          grid-template: 16% 2% 64% 2% 16% / 3fr 2fr minmax(auto, 10vw) minmax(auto, 10vw) 2fr 3fr;
+          /* grid-template: 15% 70% 15% / 2fr 1fr 150px 150px 1fr 2fr; */
+          grid-template-areas:
+            "tl-margin tl-margin   clock clock   tr-margin tr-margin"
+            "away-hm   away-hm     clock clock      home-hm  home-hm"
+            "away-team away-score  clock clock  home-score home-team"
+            "away-to   away-to     clock clock      home-to  home-to"
+            "bl-margin bl-margin   clock clock   br-margin br-margin";
+          align-items: center;
+          justify-content: center;
+          align-content: stretch;
+          justify-items: stretch;
+          
+          transition: all .5s;
+        }
+        .scoreboard-container.hide {
+          transform: translateX(150%);
+        }
+        .away, .home {
+          grid-row: 2 / span 3;
+          color: white;
+          font: bold 6vw sans-serif;
+        }
+        .bg {
+          height: 100%;
+          border-radius: 2vw;
+        }
+        .away.bg {
+          grid-column: 1 / 4;
+          /* background: blue; */
+          background: rgb(2,0,36);
+          background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
+          
+        }
+        .home.bg {
+          grid-column: 4 / 7;
+          /* background: orange; */
+          background: rgb(36,20,0);
+          background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
+        }
+        .score {
+          text-align: center;
+          font-size: 9vw;
+        }
+        .home.team {
+          text-align: left;
+          border-left: gray;
+        }
+        .away.team {
+          text-align: right;
+        }
+        .away.team {
+          grid-column: 1;
+          text-decoration: underline;
+        }
+        .home.team {
+          grid-column: 6;
+        }
+        .away.score {
+          grid-column: 2;
+        }
+        .home.score {
+          grid-column: 5;
+        }
+        .away.to {
+          grid-area: away-to;
+        }
+        .home.to {
+          grid-area: home-to;
+        }
+        .away.hm {
+          grid-area: away-hm;
+        }
+        .home.hm {
+          grid-area: home-hm;
+        }
+        .hm span, .to span {
+          background: white;
+        }
+        .to, .hm {
+          display: grid;
+          grid-template: 1fr / 20% 20% 20%;
+          gap: 10%;
+          justify-content: space-evenly;
+          justify-items: stretch;
+          font-size: .5vw;
+        }
+        .away .to1 {
+          background: none;
+        }
+        .clock {
+          grid-area: clock;
+          background: rgb(60, 60, 60);
+          color: white;
+          border-radius: 50%;
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+          aspect-ratio: 1 / 1;
+          display: grid;
+          grid-template: 25% 50% 25% / 1fr;
+          justify-items: center;
+          align-items: center;
+
+          border: .75vw solid white;
+        }
+        .time {
+          grid-row: 2;
+          font: bold 7vw sans-serif;
+        }
+        .logo, .qtr {
+          font: bold 2.5vw sans-serif;
+        }
+
+        .qtr {
+          grid-row: 3;
+          margin-bottom: 10px;
+        }
+
+        .logo {
+          grid-row: 1;
+          margin-top: 10px;
+        }
+        
+        .field {
+          background: greenyellow;
+          width: 500px;
+          height: 200px;
+          position: relative;
+        }
+        .ball {
+          position: absolute;
+          top: 50px;
+          left: 80px;
+          transition: all 1s;
+        }
+      </style>
+</head>
+<body>
+    <main>
+        <section class="scoreboard-container">
+            <div class="away bg"></div>
+            <div class="home bg"></div>
+            <div class="home hm">
+              <span class="hm3">&nbsp;</span>
+              <span class="hm2">&nbsp;</span>
+              <span class="hm1">&nbsp;</span>
+            </div>
+            <div class="home to">
+              <span class="to3">&nbsp;</span>
+              <span class="to2">&nbsp;</span>
+              <span class="to1">&nbsp;</span>
+            </div>
+            <div class="away team">LAR</div>
+            <div class="away score">13</div>
+            <div class="away hm">
+              <span class="hm1">&nbsp;</span>
+              <span class="hm2">&nbsp;</span>
+              <span class="hm3">&nbsp;</span>
+            </div>
+            <div class="away to">
+              <span class="to1">&nbsp;</span>
+              <span class="to2">&nbsp;</span>
+              <span class="to3">&nbsp;</span>
+            </div>
+            <div class="home team">CIN</div>
+            <div class="home score">6</div>
+            <div class="clock">
+              <span class="logo">FBG</span>  
+              <span class="time">7:30</span>
+              <span class="qtr">1ST</span>
+            </div>
+        </section>
+        <section class="board-container">
+    
+        </section>
+        <section class="field-container">
+            
+        </section>
+        <section class="button-container">
+    
+        </section>
+        <button class="toggle">toggle</button>
+        <script>
+          document.querySelector('.toggle').addEventListener('click', event => {
+            document.querySelector('.scoreboard-container').classList.toggle('hide')
+            const ball = document.querySelector('.ball')
+            let left = parseInt(ball.style.left) || 10
+            left += 100;
+            if (left > 500) left = 10;
+            ball.style.left = `${left}px`
+          })
+        </script>
+        
+        <section class="field">
+          <div class="ball">🏈</div>
+        </section>
+    </main>
+</body>
+</html>
