@@ -1,5 +1,5 @@
 
-
+canvas element that lets you draw
 
 
 States  // No longer 'status'
