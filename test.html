@@ -60,11 +60,13 @@
           grid-column: 1 / 4;
           /* background: blue; */
         }
+        .home.bg, .home-msg, .br-msg {
+          background: rgb(36,20,0);
+          background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
+        }
         .home.bg {
           grid-column: 4 / 7;
           /* background: orange; */
-          background: rgb(36,20,0);
-          background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
         }
         .score {
           text-align: center;
@@ -131,23 +133,38 @@
         .away-msg, .home-msg, .bl-msg, .br-msg {
           font-size: 1.8vw;
           text-align: center;
+          line-height: 3vw;
+          z-index: -2;
+        }
+        .away-msg, .bl-msg {
+          padding-right: 10vw;
+        }
+        .home-msg, .br-msg {
+          padding-left: 10vw;
         }
         .away-msg {
           position: static;
           grid-column: 1 / 4;
           grid-row: 1 / 2;
-          z-index: -2;
-          text-align: center;
           border-radius: 2vw 0 0 0;
         }
         .home-msg {
-          grid-area: home-msg;
+          position: static;
+          grid-column: 4 / 7;
+          grid-row: 1 / 2;
+          border-radius: 0 2vw 0 0;
         }
         .bl-msg {
-          grid-area: bl-msg;
+          position: static;
+          grid-column: 1 / 4;
+          grid-row: 5 / 6;
+          border-radius:  0 0 0 2vw;
         }
         .br-msg {
-          grid-area: br-msg;
+          position: static;
+          grid-column: 4 / 7;
+          grid-row: 5 / 6;
+          border-radius: 0 0 2vw 0;
         }
         .clock {
           grid-area: clock;
@@ -160,7 +177,6 @@
           grid-template: 25% 50% 25% / 1fr;
           justify-items: center;
           align-items: center;
-
           border: .75vw solid white;
         }
         .time {
