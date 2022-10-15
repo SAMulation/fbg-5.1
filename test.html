@@ -208,20 +208,16 @@
           animation: .5s linear forwards top-down;
         }
         .bg.top-sharp {
-          animation: .5s top-sharp;
-          border-radius: 0;
+          animation: .5s linear forwards top-sharp;
         }
         .bg.top-round {
-          animation: .5s top-round;
-          border-radius: 2vw 0;
+          animation: .5s linear forwards top-round;
         }
         .bg.bot-sharp {
-          animation: .5s bot-sharp;
-          border-radius: 0;
+          animation: .5s linear forwards bot-sharp;
         }
         .bg.bot-round {
-          animation: .5s bot-round;
-          border-radius: 0 2vw;
+          animation: .5s linear forwards bot-round;
         }
 
         @keyframes top-sharp {
@@ -229,7 +225,7 @@
             border-radius: 2vw 0;
           }
 
-          70% {
+          100% {
             border-radius: 0;
           }
         }
@@ -275,10 +271,6 @@
         }
 
         @keyframes bot-up {
-          0% {
-            transform: translate(0);
-          }
-
           100% {
             transform: translate(0, -110%);
           }
@@ -286,29 +278,21 @@
 
         @keyframes top-up {
           0% {
-            transform: translate(0, 110%);
-          }
-
-          70% {
-            
+            transform: translate(0, 4vw);
           }
 
           100% {
-            transform: translate(0, 0);
+            transform: translate(0);
           }
         }
 
         @keyframes top-down {
           0% {
-            transform: translate(0, 0);
-          }
-
-          70% {
-            
+            transform: translate(0);
           }
 
           100% {
-            transform: translate(0, 110%); 
+            transform: translate(0, 4vw); 
           }
         }
         
@@ -329,8 +313,8 @@
 <body>
     <main>
         <section class="scoreboard-container">
-            <div class="away bg top-sharp bot-sharp"></div>
-            <div class="home bg top-sharp bot-sharp"></div>
+            <div class="away bg top-round bot-sharp"></div>
+            <div class="home bg top-round bot-sharp"></div>
             <div class="home hm">
               <span class="hm3">&nbsp;</span>
               <span class="hm2">&nbsp;</span>
@@ -376,6 +360,10 @@
         </section>
         <button class="toggle">toggle</button>
         <button class="toggle-msg">msgs</button>
+
+        <button class="top-up-butt">top-up</button>
+
+        <button class="top-down-butt">top-down</button>
         <script>
           document.querySelector('.toggle').addEventListener('click', event => {
             document.querySelector('.scoreboard-container').classList.toggle('hide')
@@ -386,7 +374,25 @@
             ball.style.left = `${left}px`
           })
 
-          const boardMessages = document.querySelectorAll('.bot-down');
+          document.querySelector('.top-up-butt').addEventListener('click', event => {
+            const boardMessage = document.querySelector('.top-up')
+            const bg = document.querySelector('.bg')
+            boardMessage.classList.remove('top-up')
+            boardMessage.classList.add('top-down')
+            boardMessage.classList.remove('top-sharp')
+            boardMessage.classList.add('top-round')
+          })
+
+          document.querySelector('.top-down-butt').addEventListener('click', event => {
+            const boardMessage = document.querySelector('.top-down');
+            const bg = document.querySelector('.bg')
+            boardMessage.classList.remove('top-down')
+            boardMessage.classList.add('top-up')
+            boardMessage.classList.remove('top-round')
+            boardMessage.classList.add('top-sharp')
+          })
+
+          const boardMessages = document.querySelectorAll('.top-up');
           const bgEls = document.querySelectorAll('.bg');
 
           const upDownMessage = function(event) {
