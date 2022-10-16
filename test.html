@@ -53,6 +53,7 @@
           z-index: -1;
         }
         .away.bg, .away.msg, .bl.msg {
+          font: 2vw sans-serif;
           background: rgb(2,0,36);
           background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
         }
@@ -61,6 +62,7 @@
           /* background: blue; */
         }
         .home.bg, .home.msg, .br.msg {
+          font: 2vw sans-serif;
           background: rgb(36,20,0);
           background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
         }
@@ -212,6 +214,7 @@
         }
         .bg.top-round {
           animation: .5s linear forwards top-round;
+
         }
         .bg.bot-sharp {
           animation: .5s linear forwards bot-sharp;
@@ -219,10 +222,25 @@
         .bg.bot-round {
           animation: .5s linear forwards bot-round;
         }
+        .bg.both-round {
+          animation: .5s linear forwards both-round;
+        }
 
+        @keyframes both-sharp {
+          100% {
+            border-radius: 0;
+          }
+        }
+
+        @keyframes both-round {
+          100% {
+            border-radius: 2vw;
+          }
+          
+        }
         @keyframes top-sharp {
           0% {
-            border-radius: 2vw 0;
+            border-radius: 2vw 2vw 0 0;
           }
 
           100% {
@@ -235,14 +253,14 @@
             border-radius: 0;
           }
 
-          70% {
-            border-radius: 2vw 0;
+          100% {
+            border-radius: 2vw 2vw 0 0;
           }
         }
 
         @keyframes bot-sharp {
           0% {
-            border-radius: 0 2vw;
+            border-radius: 0 0 2vw 2vw;
           }
 
           70% {
@@ -255,8 +273,8 @@
             border-radius: 0;
           }
 
-          70% {
-            border-radius: 0 2vw;
+          100% {
+            border-radius: 0 0 2vw 2vw;
           }
         }
 
@@ -313,29 +331,29 @@
 <body>
     <main>
         <section class="scoreboard-container">
-            <div class="away bg top-round bot-sharp"></div>
-            <div class="home bg top-round bot-sharp"></div>
+            <div class="away bg"></div>
+            <div class="home bg"></div>
             <div class="home hm">
-              <span class="hm3">&nbsp;</span>
-              <span class="hm2">&nbsp;</span>
-              <span class="hm1">&nbsp;</span>
+              <span class="hm3"></span>
+              <span class="hm2"></span>
+              <span class="hm1"></span>
             </div>
             <div class="home to">
-              <span class="to3">&nbsp;</span>
-              <span class="to2">&nbsp;</span>
-              <span class="to1">&nbsp;</span>
+              <span class="to3"></span>
+              <span class="to2"></span>
+              <span class="to1"></span>
             </div>
             <div class="away team">LAR</div>
             <div class="away score">13</div>
             <div class="away hm">
-              <span class="hm1">&nbsp;</span>
-              <span class="hm2">&nbsp;</span>
-              <span class="hm3">&nbsp;</span>
+              <span class="hm1"></span>
+              <span class="hm2"></span>
+              <span class="hm3"></span>
             </div>
             <div class="away to">
-              <span class="to1">&nbsp;</span>
-              <span class="to2">&nbsp;</span>
-              <span class="to3">&nbsp;</span>
+              <span class="to1"></span>
+              <span class="to2"></span>
+              <span class="to3"></span>
             </div>
             <div class="home team">CIN</div>
             <div class="home score">6</div>
@@ -428,17 +446,126 @@
                 bgElement.classList.add('bot-sharp');
                 }
               } else {
-                if (bgElement.classList.contains('top-sharp')) {
-                bgElement.classList.remove('top-sharp');
-                bgElement.classList.add('top-round');
-                } else if (bgElement.classList.contains('top-round')) {
-                bgElement.classList.remove('top-round');
-                bgElement.classList.add('bot-sharp');
+                if (bgElement.classList.contains('both-sharp')) {
+                bgElement.classList.remove('both-sharp');
+                bgElement.classList.add('both-round');
+                } else if (bgElement.classList.contains('both-round')) {
+                bgElement.classList.remove('both-round');
+                bgElement.classList.add('both-sharp');
                 }
               }
             })
           }
 
+          const scoreboardMsgUpAll = (awy, hom, aTop, hTop, aBot, hBot) => {
+            // Away tl
+            aTop.classList.toggle('top-up')
+            aTop.classList.toggle('top-down')
+            
+            hTop.classList.toggle('top-down')
+            aBot.classList.toggle('bot-up')
+            hBot.classList.toggle('bot-up')
+
+
+            awy.classList.toggle('both-round')
+            awy.classList.toggle('both-sharp')
+            
+            hTop.classList.toggle('top-up')
+            aBot.classList.toggle('bot-down')
+            hBot.classList.toggle('bot-down')
+
+            hom.classList.toggle('both-sharp')
+            hom.classList.toggle('both-round')
+          }
+
+          // const scoreboardMsgUpAll = (awy, hom, aTop, hTop, aBot, hBot) => {
+          //   aTop.classList.remove('top-down')
+          //   hTop.classList.remove('top-down')
+          //   aBot.classList.remove('bot-up')
+          //   hBot.classList.remove('bot-up')
+
+          //   aTop.classList.add('top-up')
+          //   hTop.classList.add('top-up')
+          //   aBot.classList.add('bot-down')
+          //   hBot.classList.add('bot-down')
+
+          //   awy.classList.remove('both-sharp')
+          //   hom.classList.remove('both-sharp')
+          //   awy.classList.add('both-round')
+          //   hom.classList.add('both-round')
+          // }
+
+          const scoreboardMsgDownAll = (awy, hom, aTop, hTop, aBot, hBot) => {
+            awy.classList.toggle('both-round')
+            awy.classList.toggle('both-sharp')
+            hom.classList.toggle('both-round')
+            hom.classList.toggle('both-sharp')
+            aTop.classList.toggle('top-up')
+            aTop.classList.toggle('top-down')
+            hTop.classList.toggle('top-up')
+            hTop.classList.toggle('top-down')
+            aBot.classList.toggle('bot-down')
+            aBot.classList.toggle('bot-up')
+            hBot.classList.toggle('bot-down')
+            hBot.classList.toggle('bot-up')
+          }
+
+          const topMessageDown = (aTop, hTop) => {
+            if (aTop.classList.contains('top-up')) {
+              aTop.classList.remove('top-up')
+            }
+            if (hTop.classList.contains('top-up')) {
+              hTop.classList.remove('top-up')
+            }
+            aTop.classList.add('top-down')
+            hTop.classList.add('top-down')
+          }
+
+          const topMessageUp = (aTop, hTop) => {
+            if (aTop.classList.contains('top-down')) {
+              aTop.classList.remove('top-down')
+            }
+            if (hTop.classList.contains('top-down')) {
+              hTop.classList.remove('top-down')
+            }
+            aTop.classList.add('top-up')
+            hTop.classList.add('top-up')
+          }
+
+          const bottomMessageDown = (aBot, hBot) => {
+            if (aBot.classList.contains('bot-up')) {
+              aBot.classList.remove('bot-up')
+            }
+            if (hBot.classList.contains('bot-up')) {
+              hBot.classList.remove('bot-up')
+            }
+            aBot.classList.add('bot-down')
+            hBot.classList.add('bot-down')
+          }
+
+          const bottomMessageUp = (aBot, hBot) => {
+            if (aBot.classList.contains('bot-down')) {
+              aBot.classList.remove('bot-down')
+            }
+            if (hBot.classList.contains('bot-down')) {
+              hBot.classList.remove('bot-down')
+            }
+            aBot.classList.add('bot-up')
+            hBot.classList.add('bot-up')
+          }
+
+          const awayMsg = document.querySelector('.away.msg')
+          const homeMsg = document.querySelector('.home.msg')
+          const blMsg = document.querySelector('.bl.msg')
+          const brMsg = document.querySelector('.br.msg')
+
+
+          topMessageDown(document.querySelector('.away.msg'), document.querySelector('.home.msg'))
+          topMessageUp(document.querySelector('.away.msg'), document.querySelector('.home.msg'))
+          bottomMessageUp(document.querySelector('.bl.msg'), document.querySelector('.br.msg'))
+          bottomMessageDown(document.querySelector('.bl.msg'), document.querySelector('.br.msg'))
+
+          // scoreboardMsgUpAll(document.querySelector('.away.bg'), document.querySelector('.home.bg'), document.querySelector('.away.msg'), document.querySelector('.home.msg'), document.querySelector('.away.bl'), document.querySelector('.home.bl'))
           // boardMessages.forEach(message => {
           //   message.addEventListener('click', upDownMessage)
           // })
