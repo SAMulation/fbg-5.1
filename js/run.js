@@ -32,9 +32,9 @@ export default class Run {
     document.querySelector('.page-main .to1').classList.remove('hidden')
     document.querySelector('.page-sidebar .to2').innerText = 'TO'
     document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play'
-    this.showBoard(document.querySelector('.scoreboard'))
+    this.showBoard(document.querySelector('.scoreboard-container'))
     document.querySelector('.page-wrap').classList.add('game') // LATER: When completely done with game, remove this
-    document.querySelector('.scoreboard').classList.remove('hidden')
+    document.querySelector('.scoreboard-container').classList.remove('hidden')
     document.querySelector('.page-subheader').classList.remove('hidden')
   }
 
@@ -811,38 +811,109 @@ export default class Run {
   }
 
   showBoard (board) {
+    // Cache pieces
+    const awayMsg = document.querySelector('.away.msg')
+    const homeMsg = document.querySelector('.home.msg')
+    const blMsg = document.querySelector('.bl.msg')
+    const brMsg = document.querySelector('.br.msg')
+    const awayBg = document.querySelector('.away.bg')
+    const homeBg = document.querySelector('.home.bg')
+    const awayTeam = document.querySelector('.away.team')
+    const homeTeam = document.querySelector('.home.team')
+    const awayScore = document.querySelector('.away.score')
+    const homeScore = document.querySelector('.home.score')
+    const clockTime = document.querySelector('.clock .time')
+    const clockQtr = document.querySelector('.clock .qtr')
+
+    // Animate board up and down
+    const topMessageDown = (aTop, hTop) => {
+      if (aTop.classList.contains('top-up')) {
+        aTop.classList.remove('top-up')
+      }
+      if (hTop.classList.contains('top-up')) {
+        hTop.classList.remove('top-up')
+      }
+      aTop.classList.add('top-down')
+      hTop.classList.add('top-down')
+    }
+
+    const topMessageUp = (aTop, hTop) => {
+      if (aTop.classList.contains('top-down')) {
+        aTop.classList.remove('top-down')
+      }
+      if (hTop.classList.contains('top-down')) {
+        hTop.classList.remove('top-down')
+      }
+      aTop.classList.add('top-up')
+      hTop.classList.add('top-up')
+    }
+
+    const bottomMessageDown = (aBot, hBot) => {
+      if (aBot.classList.contains('bot-up')) {
+        aBot.classList.remove('bot-up')
+      }
+      if (hBot.classList.contains('bot-up')) {
+        hBot.classList.remove('bot-up')
+      }
+      aBot.classList.add('bot-down')
+      hBot.classList.add('bot-down')
+    }
+
+    const bottomMessageUp = (aBot, hBot) => {
+      if (aBot.classList.contains('bot-down')) {
+        aBot.classList.remove('bot-down')
+      }
+      if (hBot.classList.contains('bot-down')) {
+        hBot.classList.remove('bot-down')
+      }
+      aBot.classList.add('bot-up')
+      hBot.classList.add('bot-up')
+    }
+
     // Possession
     if (this.game.away === this.game.off_num) {
-      board.querySelector('.topLeft').innerText = '🏈'
+      if (homeTeam.classList.contains('poss')) {
+        homeTeam.classList.remove('poss')
+      }
+      awayTeam.classList.add('poss')
     } else {
-      board.querySelector('.topLeft').innerHTML = '&nbsp;'
+      if (awayTeam.classList.contains('poss')) {
+        awayTeam.classList.remove('poss')
+      }
+      homeTeam.classList.add('poss')
     }
 
-    if (this.game.home === this.game.off_num) {
-      board.querySelector('.topRight').innerText = '🏈'
-    } else {
-      board.querySelector('.topRight').innerHTML = '&nbsp;'
-    }
+    // if (this.game.home === this.game.off_num) {
+    //   board.querySelector('.topRight').innerText = '🏈'
+    // } else {
+    //   board.querySelector('.topRight').innerHTML = '&nbsp;'
+    // }
 
     // Name (This should really only be done once)
-    board.querySelector('.homeAbrv').innerText = this.game.players[this.game.home].team.abrv
-    board.querySelector('.awayAbrv').innerText = this.game.players[this.game.away].team.abrv
+    homeTeam.innerText = this.game.players[this.game.home].team.abrv
+    awayTeam.innerText = this.game.players[this.game.away].team.abrv
 
     // Score
-    board.querySelector('.homeScore').innerText = this.game.players[this.game.home].score
-    board.querySelector('.awayScore').innerText = this.game.players[this.game.away].score
+    homeScore.innerText = this.game.players[this.game.home].score
+    awayScore.innerText = this.game.players[this.game.away].score
 
     // Time
-    board.querySelector('.time').innerText = this.printTime(this.game.current_time)
+    clockTime.innerText = this.printTime(this.game.current_time)
+
+    topMessageDown(awayMsg, homeMsg)
+    bottomMessageUp(blMsg, brMsg)
 
     // First Down
-    board.querySelector(this.game.away === this.game.off_num ? '.botLeft' : '.botRight').innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.fst_down, this.game.spot)
+    board.querySelector(this.game.away === this.game.off_num ? '.bl.msg' : '.br.msg').innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.fst_down, this.game.spot)
 
     // Ball Spot
-    board.querySelector(this.game.away === this.game.off_num ? '.botRight' : '.botLeft').innerText = this.printSpot(this.game, this.game.spot)
+    board.querySelector(this.game.away === this.game.off_num ? '.br.msg' : '.bl.msg').innerText = this.printSpot(this.game, this.game.spot)
+
+    topMessageUp(awayMsg, homeMsg)
+    bottomMessageDown(blMsg, brMsg)
 
     // Qtr
-    board.querySelector('.botCenter').innerText = this.showQuarter(this.game.qtr)
+    clockQtr.innerText = this.showQuarter(this.game.qtr)
   }
 
   showQuarter (qtr) {
@@ -1517,7 +1588,7 @@ export default class Run {
   async touchdown (game) {
     this.alertBox(game.players[game.off_num].team.name + ' scored a touchdown!!!')
     this.scoreChange(game, game.off_num, 6)
-    this.showBoard(document.querySelector('.scoreboard'))
+    this.showBoard(document.querySelector('.scoreboard-container'))
 
     // addRecap ( touchdown )
     // debugger
@@ -1654,7 +1725,7 @@ export default class Run {
 
     // print_down(game);
     // document.querySelector('.page-selection2').innerText = this.showBoard();
-    this.showBoard(document.querySelector('.scoreboard'))
+    this.showBoard(document.querySelector('.scoreboard-container'))
   };
 
   timeChange (game) {
@@ -1845,7 +1916,7 @@ export default class Run {
     if (!game.over) {
       if (!game.isOT()) {
         // document.querySelector('.page-selection2').innerText = this.showBoard();
-        this.showBoard(document.querySelector('.scoreboard'))
+        this.showBoard(document.querySelector('.scoreboard-container'))
       }
 
       if (game.qtr === 3 && game.off_num !== game.rec_first) {
@@ -1894,7 +1965,7 @@ export default class Run {
 
       game.qtr++
       // document.querySelector('.page-selection2').innerText = this.showBoard();
-      this.showBoard(document.querySelector('.scoreboard'))
+      this.showBoard(document.querySelector('.scoreboard-container'))
 
       // LATER: Set qtr score
       // Could update the spot and/or print new qtr
