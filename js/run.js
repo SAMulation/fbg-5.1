@@ -28,9 +28,9 @@ export default class Run {
     document.querySelector('.selection.pl1').innerHTML = ''
     document.querySelector('.selection.pl2').innerHTML = ''
     document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play'
-    document.querySelector('.page-main .to1').innerHTML = 'Timeout? (<span>' + this.game.players[1].timeouts + '</span>)'
-    document.querySelector('.page-main .to1').classList.remove('hidden')
-    document.querySelector('.page-sidebar .to2').innerText = 'TO'
+    document.querySelector('.page-main .to-butt1').innerHTML = 'Timeout? (<span>' + this.game.players[1].timeouts + '</span>)'
+    document.querySelector('.page-main .to-butt1').classList.remove('hidden')
+    document.querySelector('.page-sidebar .to-butt2').innerText = 'TO'
     document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play'
     this.showBoard(document.querySelector('.scoreboard-container'))
     document.querySelector('.page-wrap').classList.add('game') // LATER: When completely done with game, remove this
@@ -450,6 +450,7 @@ export default class Run {
       if (game.status !== 999 && p === 2 && !game.isReal(2)) {
         // This is where the computer can call timeout or pick special play
         this.alertBox(game.players[2].team.name + ' are picking their play...')
+        document.querySelector('.' + (game.away === game.off_num ? 'away.msg' : 'home.msg')).innerText = game.players[2].team.name + ' are picking their play...'
         if (game.time_change === 0) {
           this.cpuTime(game)
         }
@@ -904,10 +905,18 @@ export default class Run {
     bottomMessageUp(blMsg, brMsg)
 
     // First Down
-    board.querySelector(this.game.away === this.game.off_num ? '.bl.msg' : '.br.msg').innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.fst_down, this.game.spot)
+    if (this.game.away === this.game.off_num) {
+      blMsg.innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.fst_down, this.game.spot)
+    } else {
+      brMsg.innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.fst_down, this.game.spot)
+    }
 
     // Ball Spot
-    board.querySelector(this.game.away === this.game.off_num ? '.br.msg' : '.bl.msg').innerText = this.printSpot(this.game, this.game.spot)
+    if (this.game.away === this.game.off_num) {
+      brMsg.innerText = this.printSpot(this.game, this.game.spot)
+    } else {
+      blMsg.innerText = this.printSpot(this.game, this.game.spot)
+    }
 
     topMessageUp(awayMsg, homeMsg)
     bottomMessageDown(blMsg, brMsg)
@@ -1502,7 +1511,9 @@ export default class Run {
     const times = game.thisPlay.multiplier === 999 ? '/' : null
     const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card
 
-    this.alertBox('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up.') // Press Enter...\n');
+    document.querySelector('.' + (game.away === game.off_num ? 'home.msg' : 'away.msg')).innerText = 'Last play: ' + p1 + ' v ' + p2
+    document.querySelector('.' + (game.home === game.off_num ? 'home.msg' : 'away.msg')).innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
+    this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
     // alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
   };
 
