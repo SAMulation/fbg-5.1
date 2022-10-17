@@ -508,32 +508,32 @@
   }
 
   .msg.bot-down {
-    animation: .5s linear forwards bot-down; 
+    animation: 4s linear forwards bot-down; 
   }
   .msg.bot-up {
-    animation: .5s linear forwards bot-up; 
+    animation: 4s linear forwards bot-up; 
   }
   .msg.top-up {
-    animation: .5s linear forwards top-up;
+    animation: 4s linear forwards top-up;
   }
   .msg.top-down {
-    animation: .5s linear forwards top-down;
+    animation: 4s linear forwards top-down;
   }
   .bg.top-sharp {
-    animation: .5s linear forwards top-sharp;
+    animation: 4s linear forwards top-sharp;
   }
   .bg.top-round {
-    animation: .5s linear forwards top-round;
+    animation: 4s linear forwards top-round;
 
   }
   .bg.bot-sharp {
-    animation: .5s linear forwards bot-sharp;
+    animation: 4s linear forwards bot-sharp;
   }
   .bg.bot-round {
-    animation: .5s linear forwards bot-round;
+    animation: 4s linear forwards bot-round;
   }
   .bg.both-round {
-    animation: .5s linear forwards both-round;
+    animation: 4s linear forwards both-round;
   }
 
   @keyframes both-sharp {
