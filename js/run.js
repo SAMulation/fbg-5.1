@@ -811,6 +811,28 @@ export default class Run {
     return legal
   }
 
+  topMessageDown (aTop, hTop) {
+    if (aTop.classList.contains('top-up')) {
+      aTop.classList.remove('top-up')
+    }
+    if (hTop.classList.contains('top-up')) {
+      hTop.classList.remove('top-up')
+    }
+    aTop.classList.add('top-down')
+    hTop.classList.add('top-down')
+  }
+
+  topMessageUp (aTop, hTop) {
+    if (aTop.classList.contains('top-down')) {
+      aTop.classList.remove('top-down')
+    }
+    if (hTop.classList.contains('top-down')) {
+      hTop.classList.remove('top-down')
+    }
+    aTop.classList.add('top-up')
+    hTop.classList.add('top-up')
+  }
+
   showBoard (board) {
     // Cache pieces
     const awayMsg = document.querySelector('.away.msg')
