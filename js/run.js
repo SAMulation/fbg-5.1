@@ -84,7 +84,7 @@ export default class Run {
     game.down = 0
     game.fst_down = 0
 
-    this.prePlay(game, game.status) // NOW: Check on this
+    await this.prePlay(game, game.status) // NOW: Check on this
 
     if (game.status === -4) {
       this.punt(game, oNum, -4) // Safety Kick
@@ -361,7 +361,7 @@ export default class Run {
   };
 
   async playMechanism (game) {
-    this.prePlay(game, 11)
+    await this.prePlay(game, 11)
     await this.pickPlay(game)
 
     // console.log(stat);
@@ -392,7 +392,7 @@ export default class Run {
     }
   };
 
-  prePlay (game, stat) {
+  async prePlay (game, stat) {
     // console.log(game) // LATER: Suppress this ASAP
     // console.log('prePlay');
     game.thisPlay.multiplier_card = 999
@@ -403,6 +403,9 @@ export default class Run {
     game.thisPlay.bonus = 0
     game.players[1].currentPlay = ''
     game.players[2].currentPlay = ''
+
+    // Make sure board is showing
+    await this.slideBoard()
 
     if (!game.two_point || game.time_change !== 4) {
       game.time_change = 0
@@ -450,7 +453,8 @@ export default class Run {
       if (game.status !== 999 && p === 2 && !game.isReal(2)) {
         // This is where the computer can call timeout or pick special play
         this.alertBox(game.players[2].team.name + ' are picking their play...')
-        document.querySelector('.' + (game.away === game.off_num ? 'away.msg' : 'home.msg')).innerText = game.players[2].team.name + ' are picking their play...'
+        document.querySelector('.' + (game.away === game.off_num ? 'away-msg' : 'home-msg') + '.top-msg').innerText = game.players[2].team.name + ' are picking their play...'
+        // await this.slideBoard()
         if (game.time_change === 0) {
           this.cpuTime(game)
         }
@@ -469,6 +473,7 @@ export default class Run {
           this.timeout(game, p)
         }
       }
+      await this.slideBoard('collapse')
     }
 
     // Making sure you didn't exit
@@ -484,6 +489,28 @@ export default class Run {
       // console.log(game);
     }
   };
+
+  async slideBoard (option = 'uncollapse', el = document.querySelector('.scoreboard-container')) {
+    return new Promise(resolve => {
+      const onTransitionEnd = () => {
+        el.removeEventListener('transitionend', onTransitionEnd)
+        resolve()
+      }
+      el.addEventListener('transitionend', onTransitionEnd)
+
+      if (option === 'uncollapse') {
+        if (el.classList.contains('collapsed')) {
+          el.classList.remove('collapsed')
+          // resolve()
+        } else {
+          resolve()
+        }
+      } else {
+        el.classList.add('collapsed')
+        // resolve()
+      }
+    })
+  }
 
   cpuTime (game) {
     const toCount = game.players[2].timeouts
@@ -746,6 +773,8 @@ export default class Run {
   async playPages (game, p, state = 'reg', pick = null) {
     let selection = null
 
+    // await this.slideBoard()
+
     selection = await this.input.getInput(game, p, state)
 
     game.players[p].currentPlay = selection
@@ -835,12 +864,10 @@ export default class Run {
 
   showBoard (board) {
     // Cache pieces
-    const awayMsg = document.querySelector('.away.msg')
-    const homeMsg = document.querySelector('.home.msg')
-    const blMsg = document.querySelector('.bl.msg')
-    const brMsg = document.querySelector('.br.msg')
-    const awayBg = document.querySelector('.away.bg')
-    const homeBg = document.querySelector('.home.bg')
+    const awayMsg = document.querySelector('.away-msg.top-msg')
+    const homeMsg = document.querySelector('.home-msg.top-msg')
+    const blMsg = document.querySelector('.away-msg.bot-msg')
+    const brMsg = document.querySelector('.home-msg.bot-msg')
     const awayTeam = document.querySelector('.away.team')
     const homeTeam = document.querySelector('.home.team')
     const awayScore = document.querySelector('.away.score')
@@ -849,49 +876,49 @@ export default class Run {
     const clockQtr = document.querySelector('.clock .qtr')
 
     // Animate board up and down
-    const topMessageDown = (aTop, hTop) => {
-      if (aTop.classList.contains('top-up')) {
-        aTop.classList.remove('top-up')
-      }
-      if (hTop.classList.contains('top-up')) {
-        hTop.classList.remove('top-up')
-      }
-      aTop.classList.add('top-down')
-      hTop.classList.add('top-down')
-    }
+    // const topMessageDown = (aTop, hTop) => {
+    //   if (aTop.classList.contains('top-up')) {
+    //     aTop.classList.remove('top-up')
+    //   }
+    //   if (hTop.classList.contains('top-up')) {
+    //     hTop.classList.remove('top-up')
+    //   }
+    //   aTop.classList.add('top-down')
+    //   hTop.classList.add('top-down')
+    // }
 
-    const topMessageUp = (aTop, hTop) => {
-      if (aTop.classList.contains('top-down')) {
-        aTop.classList.remove('top-down')
-      }
-      if (hTop.classList.contains('top-down')) {
-        hTop.classList.remove('top-down')
-      }
-      aTop.classList.add('top-up')
-      hTop.classList.add('top-up')
-    }
+    // const topMessageUp = (aTop, hTop) => {
+    //   if (aTop.classList.contains('top-down')) {
+    //     aTop.classList.remove('top-down')
+    //   }
+    //   if (hTop.classList.contains('top-down')) {
+    //     hTop.classList.remove('top-down')
+    //   }
+    //   aTop.classList.add('top-up')
+    //   hTop.classList.add('top-up')
+    // }
 
-    const bottomMessageDown = (aBot, hBot) => {
-      if (aBot.classList.contains('bot-up')) {
-        aBot.classList.remove('bot-up')
-      }
-      if (hBot.classList.contains('bot-up')) {
-        hBot.classList.remove('bot-up')
-      }
-      aBot.classList.add('bot-down')
-      hBot.classList.add('bot-down')
-    }
+    // const bottomMessageDown = (aBot, hBot) => {
+    //   if (aBot.classList.contains('bot-up')) {
+    //     aBot.classList.remove('bot-up')
+    //   }
+    //   if (hBot.classList.contains('bot-up')) {
+    //     hBot.classList.remove('bot-up')
+    //   }
+    //   aBot.classList.add('bot-down')
+    //   hBot.classList.add('bot-down')
+    // }
 
-    const bottomMessageUp = (aBot, hBot) => {
-      if (aBot.classList.contains('bot-down')) {
-        aBot.classList.remove('bot-down')
-      }
-      if (hBot.classList.contains('bot-down')) {
-        hBot.classList.remove('bot-down')
-      }
-      aBot.classList.add('bot-up')
-      hBot.classList.add('bot-up')
-    }
+    // const bottomMessageUp = (aBot, hBot) => {
+    //   if (aBot.classList.contains('bot-down')) {
+    //     aBot.classList.remove('bot-down')
+    //   }
+    //   if (hBot.classList.contains('bot-down')) {
+    //     hBot.classList.remove('bot-down')
+    //   }
+    //   aBot.classList.add('bot-up')
+    //   hBot.classList.add('bot-up')
+    // }
 
     // Possession
     if (this.game.away === this.game.off_num) {
@@ -923,8 +950,8 @@ export default class Run {
     // Time
     clockTime.innerText = this.printTime(this.game.current_time)
 
-    topMessageDown(awayMsg, homeMsg)
-    bottomMessageUp(blMsg, brMsg)
+    // topMessageDown(awayMsg, homeMsg)
+    // bottomMessageUp(blMsg, brMsg)
 
     // First Down
     if (this.game.away === this.game.off_num) {
@@ -940,8 +967,8 @@ export default class Run {
       blMsg.innerText = this.printSpot(this.game, this.game.spot)
     }
 
-    topMessageUp(awayMsg, homeMsg)
-    bottomMessageDown(blMsg, brMsg)
+    // topMessageUp(awayMsg, homeMsg)
+    // bottomMessageDown(blMsg, brMsg)
 
     // Qtr
     clockQtr.innerText = this.showQuarter(this.game.qtr)
@@ -1441,7 +1468,7 @@ export default class Run {
       this.calcDist(game, p1, p2)
 
       console.log('Play over - ball is moving...')
-      this.reportPlay(game, p1, p2)
+      await this.reportPlay(game, p1, p2)
 
       // if (!game.two_point && game.status < 15 || game.status > 16) {
       //     saveDist(game.off_num)  // LATER: When we have stats
@@ -1529,12 +1556,13 @@ export default class Run {
     return MULTI[multIdx - 1][match - 1]
   };
 
-  reportPlay (game, p1, p2) {
+  async reportPlay (game, p1, p2) {
     const times = game.thisPlay.multiplier === 999 ? '/' : null
     const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card
 
-    document.querySelector('.' + (game.away === game.off_num ? 'home.msg' : 'away.msg')).innerText = 'Last play: ' + p1 + ' v ' + p2
-    document.querySelector('.' + (game.home === game.off_num ? 'home.msg' : 'away.msg')).innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
+    document.querySelector('.' + (game.away === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
+    document.querySelector('.' + (game.home === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
+    await this.slideBoard()
     this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
     // alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
   };

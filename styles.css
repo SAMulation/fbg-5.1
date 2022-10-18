@@ -445,7 +445,7 @@
     text-align: center;
     line-height: 3vw;
     z-index: -2;
-    transition: transform 5s;
+    transition: transform .5s;
   }
   .top-msg {
     grid-row: top / mid;
