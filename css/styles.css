@@ -1,0 +1,177 @@
+  @import url(scoreboard.css);
+  @import url(cards.css);
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+  }
+
+  @font-face {
+    font-family: 'calc';
+    src: url(../fonts/calc/ti-calculator-font.ttf);
+  }
+
+  /* Page Layout */
+  body {
+    background: #e4e4e4;
+    /* background-color: rgb(183, 205, 168); */
+    padding: 5px;
+    height: 100vh;
+    margin: 0;
+
+    font: 500 100% system-ui, sans-serif;
+    /* text-transform: uppercase; */
+  }
+
+  .page-wrap {
+    /* background: white; */
+    height: calc(100vh - 10px);
+    box-shadow: 0 0 3px rgba(black, 0.33);
+
+    display: grid;
+    grid-template-columns: minmax(10px, 1fr) minmax(10px, 1fr);
+    grid-template-rows: min-content 1fr min-content min-content;
+    gap: 1px;
+  }
+
+  .page-wrap.game {
+    grid-template-rows: min-content minmax(10px, 20%) 1fr min-content min-content;
+  }
+
+  .page-wrap > * {
+      padding: 1rem;
+      text-align: center;
+      border: 2px solid black;
+  }
+
+  .sideby {
+    display: grid;
+    grid-auto-flow: column;
+  }
+    
+  .page-header {
+    grid-column: 1 / -1;
+    /* background: #ffcdd2; */
+    /* position: sticky; */
+    top: 0;
+  }
+
+  .page-subheader {
+    /* display: none; */
+    grid-column: 2 / -1;
+    /* background: #bbdefb; */
+    overflow: scroll;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+      scrollbar-width: none;  /* Firefox */
+    max-height: 100%;
+  }
+
+  .page-subheader::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+  }
+
+  .page-main {
+    grid-row: span 1;
+    grid-column: 1 / 2;
+    /* background: #dcedc8; */
+  }
+
+  .page-sidebar {
+    grid-column: 2 / 3;
+    grid-row: span 1;
+    /* background: #e1bee7; */
+  }
+
+  .page-selection2 {
+    grid-column: 1 / -1;
+    grid-row: span 1;
+    /* background: #c5fffb; */
+  }
+
+  .page-main *, .page-sidebar * {
+    margin-bottom: 10px;;
+  }
+
+  .page-subfooter {
+    grid-column: 1 / -1;
+    /* background: #caa15f; */
+  }
+  .page-footer {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-auto-flow: row;
+  }
+
+  /* Page Elements */
+  .to-butt1, .to-butt2, .tp-butt1 *, .to-butt2 * {
+    font-size: .5rem;
+  }
+
+  p, button, .to-butt1 *, .to-butt2 * {
+    font-family: 'calc', sans-serif;
+    font-size: 1rem;
+    line-height: 1.25rem;
+  }
+
+  p.tiny {
+    font-size: .5rem;
+    line-height: .75rem;
+  }
+
+  details p {
+    text-transform: none;
+    text-align: left;
+  }
+
+  h1 {
+    font-size: 2em;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .show {
+    display: block;
+  }
+
+  input {
+    text-align: center;
+  }
+
+  .away .to-butt1 {
+    background: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-wrap {
+        grid-template-columns: 100%;
+        grid-template-rows: auto;
+    }
+
+    .page-wrap > * {
+        grid-column: 1 / -1 !important;
+        grid-row: auto;
+    }
+
+    .page-wrap.game {
+      grid-template-rows: min-content min-content 15% 1fr min-content min-content;
+    }
+  }
+
+  /* Upcoming styles */
+  .field {
+    background: greenyellow;
+    width: 500px;
+    height: 200px;
+    position: relative;
+  }
+  .ball {
+    position: absolute;
+    top: 50px;
+    left: 80px;
+    transition: all 1s;
+  }

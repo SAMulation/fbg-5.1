@@ -1,0 +1,38 @@
+  /* Card Selection Area */
+  .selection.pl1, .selection.pl2 {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
+    grid-auto-flow: column;
+    /* grid-auto-rows: 50%; play with this to change height of the children, 50% will fill half */
+    /* grid-template-columns: unset; do not set template columns and rows */
+    /* grid-template-rows: unset; */
+    overflow: scroll;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .selection.pl1::-webkit-scrollbar, .selection.pl2::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+  }
+
+  .selection.pl1.reg, .selection.pl2.reg {
+    justify-content: left;
+  }
+
+  /* Cards */
+  
+  button {
+    background-color: rgb(75, 75, 75);
+    border: 2px solid black;
+    color: black;
+    padding: 10px;
+    margin: 2px;
+    line-height: 1.5rem;
+  }
+
+  button:disabled {
+    color: #9c9c9c;
+  }
+

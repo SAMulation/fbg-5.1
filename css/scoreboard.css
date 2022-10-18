@@ -1,0 +1,215 @@
+  /* Score Board */
+  .scoreboard-container {
+    --rad: 2vw;
+    grid-column: span 2;
+    grid-row: span 1;
+    display: grid;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    grid-template:
+      [top] 15% [hm] 3% [content-top] 32% [mid] 32% [content-bot] 3% [to] 15% [bot]
+      /
+      [left] var(--rad) [away] 3fr [away-score] 2fr [clockl] minmax(auto, 10vw) [mid] minmax(auto, 10vw) [clockr] 2fr [home-score] 3fr [home] var(--rad) [right];
+    align-items: stretch;
+    justify-content: center;
+    align-content: stretch;
+    justify-items: stretch;
+  }
+
+  .scoreboard-container * {
+    font-family: sans-serif;
+    color: white;
+  }
+
+  /* This is for slide away, might not need this, but it could come in handy */
+  .scoreboard-container.hide {
+    transform: translateX(150%);
+  }
+
+  .away, .home {
+    grid-row: hm / to;
+    color: white;
+    font: bold 6vw sans-serif;
+  }
+  
+  .bg {
+    grid-row: hm / to;
+    z-index: -1;
+  }
+
+  .away.bg {
+    grid-column: left / mid;
+    background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
+    border-radius: var(--rad) 0 0 var(--rad);
+  }
+  
+  .home.bg {
+    grid-column: mid / right;
+    background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
+    border-radius: 0 var(--rad) var(--rad) 0;
+  }
+
+  .score {
+    text-align: center;
+    font-size: 9vw;
+    align-self: center;
+  }
+
+  .team {
+    align-self: center;
+    text-decoration: none;
+  }
+
+  .home.team {
+    text-align: left;
+    border-left: gray;
+    grid-column: home-score / home;
+  }
+
+  .away.team {
+    grid-column: away / away-score;
+    text-align: right;
+  }
+
+  .team.poss {
+    text-decoration: underline;
+  }
+
+  .home.score {
+    grid-column: clockr / home-score;
+    align-self: center;
+  }
+
+  .away.score {
+    grid-column: away-score / clockl;
+    align-self: center;
+  }
+
+  .away.to-pills {
+    grid-area: content-bot / away / to / clockl;
+  }
+
+  .home.to-pills {
+    grid-area: content-bot / clockr / to / home;
+  }
+
+  .away.hm {
+    grid-area: hm / away / content-top / clockl;
+  }
+
+  .home.hm {
+    grid-area: hm / clockr / content-top / home;
+  }
+
+  .hm span, .to-pills span {
+    background: white;
+    transition: background 2s;
+  }
+
+  .hm span.called, .to-pills span.called {
+    background: none;
+  }
+
+  .to-pills, .hm {
+    display: grid;
+    grid-template: 1fr / 20% 20% 20%;
+    gap: 10%;
+    justify-content: space-evenly;
+    justify-items: stretch;
+    font-size: .5vw;
+    z-index: 2;
+    margin: 0 5%;
+    align-self: stretch;
+  }
+  
+  .away-msg, .home-msg {
+    font-size: 1.8vw;
+    text-align: center;
+    line-height: 3vw;
+    z-index: -2;
+    /* Here's the slideBoard() animation */
+    transition: transform .33s;
+  }
+
+  .top-msg {
+    grid-row: top / mid;
+  }
+
+  .bot-msg {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    grid-row: mid / bot;
+  }
+
+  .collapsed .top-msg {
+    transform: translateY(30%);
+  }
+
+  .collapsed .bot-msg {
+    transform: translateY(-30%);
+  }
+
+  .home-msg {
+    grid-column: mid / right;
+    padding-left: 10vw;
+    background: rgb(36,20,0);
+    background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
+  }
+
+  .away-msg {
+    grid-column: left / mid;
+    padding-right: 10vw;
+    background: rgb(2,0,36);
+    background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
+  }
+
+  .top-msg.home-msg {
+    border-radius: 0 var(--rad) 0 0;
+  }
+
+  .top-msg.away-msg {
+    border-radius: var(--rad) 0 0 0;
+  }
+
+  .bot-msg.home-msg {
+    border-radius: 0 0 var(--rad) 0;
+  }
+
+  .bot-msg.away-msg {
+    border-radius:  0 0 0 var(--rad);
+  }
+
+  .clock {
+    grid-area: top / clockl / bot / clockr;
+    background: rgb(60, 60, 60);
+    color: white;
+    border-radius: 50%;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    aspect-ratio: 1 / 1;
+    display: grid;
+    grid-template: 25% 50% 25% / 1fr;
+    justify-items: center;
+    align-items: center;
+    border: .75vw solid white;
+  }
+
+  .time {
+    grid-row: 2;
+    font: bold 7vw sans-serif;
+  }
+
+  .logo, .qtr {
+    font: bold 2.5vw sans-serif;
+  }
+
+  .qtr {
+    grid-row: 3;
+    margin-bottom: 10px;
+  }
+
+  .logo {
+    grid-row: 1;
+    margin-top: 10px;
+  }

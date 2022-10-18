@@ -563,11 +563,11 @@ export default class Run {
     } else if (tChg !== 4) {
       // Call timeout
       if (toCount > 0) {
-        game.callTime(p)
+        const to = game.callTime(p)
         game.last_call_to = p
         game.time_change = 4
         msg = 'Timeout called by ' + game.players[p].team.name
-
+        document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + to).classList.add('called')
         // Disable button mid-play
         // this.input.disableTimeout(p);
         // LATER: Print timeout change
@@ -1430,6 +1430,7 @@ export default class Run {
     let dst = 0
 
     this.alertBox(game.players[game.off_num].team.name + ' hail mary!')
+    document.querySelector('.' + (game.away === game.off_num ? 'away' : 'home') + ' .hm' + game.players[game.off_num].hm).classList.add('called')
 
     if (die === 1) {
       msg = 'BIG SACK!'
@@ -1953,12 +1954,33 @@ export default class Run {
     // Need the equivalent of fillBoard to add all cards
 
     let to = 3
+    let hm = 3
     if (game.qtr >= 4) {
       to = 1
+      hm = 2
     }
     game.players[1].timeouts = to
     game.players[2].timeouts = to
-    // printTO();
+    game.players[1].hm = hm
+    game.players[2].hm = hm
+
+    // Refill timeout pills
+    for (let t = 1; t <= to; t++) {
+      for (let p = 1; p <= 2; p++) {
+        if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.contains('called')) {
+          document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.remove('called')
+        }
+      }
+    }
+
+    // Refill hail mary pills
+    for (let h = 1; h <= hm; h++) {
+      for (let p = 1; p <= 2; p++) {
+        if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.contains('called')) {
+          document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.remove('called')
+        }
+      }
+    }
 
     if (game.qtr <= 3) {
       // Ready to kickoff

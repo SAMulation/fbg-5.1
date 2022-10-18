@@ -146,6 +146,7 @@ export default class Game {
 
   callTime (p) {
     this.players[p].timeouts--
+    return this.players[p].timeouts + 1 // Stop showing this timeout
   }
 }
 

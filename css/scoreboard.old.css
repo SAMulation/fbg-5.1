@@ -1,0 +1,102 @@
+.scoreboard {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content min-content min-content;
+    /* grid-template-areas: 
+      "topLeft  topCenter  topRight"
+      "midLeft  midCenter  midRight"
+      "botLeft  botCenter  botRight"
+    ; */
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
+    justify-items: stretch;
+    gap: 0px;
+  }
+
+  /* .scoreboard .top .topLeft {
+    grid-area: topLeft;
+  }
+
+  .scoreboard .top .topCenter {
+    grid-area: topCenter;
+  }
+
+  .scoreboard .top .topRight {
+    grid-area: topRight;
+  }
+
+  .scoreboard .mid .midLeft {
+    grid-area: midLeft;
+  }
+
+  .scoreboard .mid .midCenter {
+    grid-area: midCenter;
+  }
+
+  .scoreboard .mid .midRight {
+    grid-area: midRight;
+  }
+
+  .scoreboard .bot .botLeft {
+    grid-area: botLeft;
+  }
+
+  .scoreboard.bot.botCenter {
+    grid-area: botCenter;
+  }
+
+  .scoreboard .bot .botRight {
+    grid-area: botRight;
+  } */
+
+  .scoreboard * {
+    line-height: 1.5rem;
+  }
+
+  .scoreboard > * {
+    border-top: 2px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+  }
+
+  .scoreboard .bot {
+    border-bottom: 2px solid black;
+  }
+
+  .topLeft, .midLeft, .botLeft {
+    border-right: 2px solid black;
+  }
+
+  .topRight, .midRight, .botRight {
+    border-left: 2px solid black;
+  }
+
+  .awayAbrv, .homeScore {
+    border-right: 2px solid black;
+  }
+
+  .scoreboard .top, .scoreboard .mid, .scoreboard .bot {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+    justify-items: stretch;
+    gap: 0px;
+  }
+
+  .scoreboard .mid .midLeft, .scoreboard .mid .midRight {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    align-content: space-between;
+    justify-content: center;
+    align-items: center;
+    justify-items: stretch;
+    gap: 5px;
+  }
