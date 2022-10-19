@@ -8,7 +8,7 @@
     height: 100%;
     margin: 0 auto;
     grid-template:
-      [top] 15% [hm] 3% [content-top] 32% [mid] 32% [content-bot] 3% [to] 15% [bot]
+      [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot]
       /
       [left] var(--rad) [away] 3fr [away-score] 2fr [clockl] minmax(auto, 10vw) [mid] minmax(auto, 10vw) [clockr] 2fr [home-score] 3fr [home] var(--rad) [right];
     align-items: stretch;
