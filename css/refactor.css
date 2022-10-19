@@ -131,7 +131,7 @@ input {
   background: rgb(0, 81, 0);
   border: 1.5vw solid white;
   z-index: 1;
-  transition: z-index1s, opacity .5s;
+  transition: z-index 1s, opacity .5s;
 }
 
 .field-container.slide-away {
@@ -139,6 +139,7 @@ input {
   z-index: -1;
   opacity: 0;
   /* display: none; */
+  transition: z-index 2s, opacity 1s;
 }
 
 .board-container {
