@@ -1,5 +1,6 @@
 @import url(scoreboard.css);
 @import url(cards.css);
+@import url(game-setup.css);
 
 * {
   margin: 0;
@@ -121,6 +122,14 @@ input {
     grid-template-rows: min-content min-content 15% 1fr min-content min-content;
   }
 } */
+
+.game-setup-container {
+  background: dodgerblue;
+  border: 1vw solid white;
+  border-radius: 2vw;
+  grid-area: 1 / 2 / 2 / 3;
+  z-index: 10;
+}
 
 .scoreboard-container {
   grid-area: 2 / 2;

@@ -1,0 +1,73 @@
+.game-setup-container {
+  /* background: white; */
+  height: calc(100vh - 10px);
+  max-width: 100%;
+  box-shadow: 0 0 3px rgba(black, 0.33);
+
+  display: grid;
+  grid-template-columns: 2% 1fr 1fr 2%;
+  grid-template-rows: 1fr auto 1fr 1fr 1fr;
+  align-items: auto;
+  row-gap: 2%;
+}
+
+.game-setup-container > * {
+    padding: 1rem;
+    text-align: center;
+    /* border: 2px solid black; */
+}
+
+/* Page Elements */
+h1, input, p, button, label, .to-butt1 *, .to-butt2 * {
+  font-family: 'calc', sans-serif;
+  font-size: 1rem;
+  line-height: 1.25rem;
+  padding: 1vw;
+}
+
+p.tiny {
+  font-size: .5rem;
+  line-height: .75rem;
+}
+
+details p {
+  text-transform: none;
+  text-align: left;
+}
+
+h1 {
+  font-size: .25rem;
+  line-height: 3rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+input {
+  text-align: center;
+}
+
+.away .to-butt1 {
+  background: none;
+}
+
+.team1 {
+  grid-area: 2 / 2 / 3 / 3;
+}
+
+.team2 {
+  grid-area: 2 / 3 / 3 / 4;
+}
+
+.qtr-length {
+  grid-area: 3 / 2 / 4 / 4;
+}
+
+.play-button {
+  grid-area: 4 / 2 / 5 / 4;
+}

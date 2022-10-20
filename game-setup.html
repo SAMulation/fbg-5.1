@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Bored Game</title>
+    <link rel="stylesheet" href="css/game-setup.css">
+    <!-- <script type="module" src="js/script.js"></script> -->
+</head>
+<body>
+    <div class="game-setup">
+        <section class="team1">
+            <h1>Select Team 1</h1>
+            <div class="selection pl1">
+                <form>
+                  <label for="p1Team">Choose P1 team:</label><br>
+                  <select id="p1Team" class="teamList" name="p1Team">
+                      <option value="">Please select P1's team</option>
+                  </select>
+                  <br>
+                </form>
+                <br>
+            </div>
+            <p class="pl1 hidden">Player 1 selected <span class="pl1">team</span>!</p>
+        </section>
+
+        <section class="team2">
+            <h1>Select Team 2</h1>
+            <div class="selection pl2">
+                <form action="#">
+                    <label for="p2Team">Choose P2 team:</label><br>
+                    <select id="p2Team" class="teamList" name="p2Team">
+                        <option value="-1" selected>Please select P2's team</option>
+                    </select> <br>
+                    <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked disabled>
+                    <label for="cpuSelect"> Computer?</label><br>
+                </form>
+                <br>
+          </div>
+    
+          <p class="pl2 hidden">Player 2 selected <span class="pl2">team</span>!</p>
+        </section>
+
+        <section class="qtr-length">
+            <form id="gameForm">
+                <label for="quantity">Quarter Length (between 1 and 15)</label><br>
+                <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
+                <br>
+                <input class="playSubmit" type="submit" value="Submit">
+              </form>
+        </section>
+
+        <section class="play-button">
+            <button class="playButton" name="button" disabled>Start Playing</button>
+        </section>
+    </div>
+</body>
+</html>

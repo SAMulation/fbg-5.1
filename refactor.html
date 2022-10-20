@@ -10,6 +10,55 @@
 </head>
 <body>
     <div class="page-wrap">
+      <div class="game-setup-container">
+        <section class="team1">
+            <h1>Select Team 1</h1>
+            <br>
+            <div class="selection pl1">
+                <form>
+                  <select id="p1Team" class="teamList" name="p1Team">
+                      <option value="">Please select P1's team</option>
+                  </select>
+                  <br>
+                </form>
+                <br>
+            </div>
+            <p class="pl1 hidden">Player 1 selected <span class="pl1">team</span>!</p>
+        </section>
+
+        <section class="team2">
+            <h1>Select Team 2</h1>
+            <br>
+            <div class="selection pl2">
+                <form action="#">
+                    <select id="p2Team" class="teamList" name="p2Team">
+                        <option value="-1" selected>Please select P2's team</option>
+                    </select>
+                    <br><br>
+                    <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked disabled>
+                    <label for="cpuSelect"> Computer?</label><br>
+                </form>
+                <br>
+          </div>
+    
+          <p class="pl2 hidden">Player 2 selected <span class="pl2">team</span>!</p>
+        </section>
+
+        <section class="qtr-length">
+            <form id="gameForm">
+                <label for="quantity">Quarter Length (between 1-15)</label><br>
+                <br>
+                <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
+                <br>
+                <input class="playSubmit" type="submit" value="Submit">
+              </form>
+        </section>
+
+        <section class="play-button">
+            <button class="playButton" name="button" disabled>Start Playing</button>
+        </section>
+    </div>
+
         <section class="scoreboard-container collapsed">
           <div class="away bg"></div>
           <div class="home bg"></div>
