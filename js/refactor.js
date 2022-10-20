@@ -10,4 +10,17 @@ const hideField = () => {
   })
 }
 
+const moveCard = () => {
+  const cards = document.querySelectorAll('.cards-container button.card')
+  cards.forEach(card => {
+    card.addEventListener('click', event => {
+      const val = event.target.innerText
+      event.target.style.display = 'none'
+      document.querySelector('.pl-card1').innerText = val
+      document.querySelector('.pl-card1').classList.add('picked')
+    })
+  })
+}
+
 hideField()
+moveCard()
