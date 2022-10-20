@@ -1,6 +1,6 @@
 /* Score Board */
   .scoreboard-container {
-    --rad: 2vw; 
+    --rad: 2vw;
     grid-column: span 2;
     grid-row: span 1;
     display: grid;

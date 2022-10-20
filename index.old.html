@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Bored Game</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/script.js"></script>
+</head>
+<body>
+    <div class="page-wrap">
+        <header class="page-header">
+          <h1>Football Bored Game</h1>
+          <p>If you've stumbled upon this, it is <em>very</em> much a work in progess right now. Bear with me...</p>
+          <p class="tiny">KNOWN BUG: Overtime does NOT work yet... sorry...</p>
+          <p class="tiny">KNOWN BUG: To play second game, refresh page... sorry...</p>
+        </header>
+        <section class="scoreboard-container collapsed">
+          <div class="away bg"></div>
+          <div class="home bg"></div>
+          <div class="home hm">
+            <span class="hm1"></span>
+            <span class="hm2"></span>
+            <span class="hm3"></span>
+          </div>
+          <div class="home to-pills">
+            <span class="to1"></span>
+            <span class="to2"></span>
+            <span class="to3"></span>
+          </div>
+          <div class="away team">LAR</div>
+          <div class="away score">13</div>
+          <div class="away hm">
+            <span class="hm3"></span>
+            <span class="hm2"></span>
+            <span class="hm1"></span>
+          </div>
+          <div class="away to-pills">
+            <span class="to3"></span>
+            <span class="to2"></span>
+            <span class="to1"></span>
+          </div>
+          <div class="home team">CIN</div>
+          <div class="home score">6</div>
+          <div class="clock">
+            <span class="logo">FBG</span>  
+            <span class="time">7:30</span>
+            <span class="qtr">1ST</span>
+          </div>
+          <div class="away-msg top-msg">Pick your play</div>
+          <div class="home-msg top-msg">Last Play: LR v SR</div>
+          <div class="away-msg bot-msg">1st & 10</div>
+          <div class="home-msg bot-msg">Ball on CIN 42</div>
+      </section>
+
+        <section class="page-subheader hidden">
+          
+        </section>
+
+        <main class="page-main">
+          <div class="sideby">
+            <h1>Select Team 1</h1>
+            <div class="to-butt1 hidden"></div>
+          </div>
+          <br>
+
+          <div class="selection pl1">
+            <form>
+              <label for="p1Team">Choose P1 team:</label><br>
+              <select id="p1Team" class="teamList" name="p1Team">
+                  <option value="">Please select P1's team</option>
+              </select>
+              <br>
+            </form>
+            <br>
+          </div>
+
+          <p class="pl1 hidden">Player 1 selected <span class="pl1">team</span>!</p>
+        </main>
+
+        <aside class="page-sidebar">
+            <div class="sideby">
+              <h1>Select Team 2</h1>
+              <div class="to-butt2 hidden"></div>
+            </div>
+            <br>
+
+            <div class="selection pl2">
+              <form action="#">
+                <label for="p2Team">Choose P2 team:</label><br>
+                <select id="p2Team" class="teamList" name="p2Team">
+                    <option value="-1" selected>Please select P2's team</option>
+                </select> <br>
+                <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked disabled>
+                <label for="cpuSelect"> Computer?</label><br>
+              </form>
+              <br>
+            </div>
+
+            <p class="pl2 hidden">Player 2 selected <span class="pl2">team</span>!</p>
+        </aside>
+
+        <section class="page-selection2">
+            <form id="gameForm">
+                <label for="quantity">Quarter Length (between 1 and 15)</label><br>
+                <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
+                <br>
+                <input class="playSubmit" type="submit" value="Submit">
+              </form>
+        </section>
+
+        <footer class="page-subfooter">
+            <button class="playButton" name="button" disabled>Start Playing</button>
+          </footer>
+
+        <footer class="page-footer">
+          <!-- <table>
+            <thead>
+              <tr>
+                  <th colspan="5">Play Results</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>V Off / Def ></td>
+                <td>SR</td>
+                <td>LR</td>
+                <td>SP</td>
+                <td>LP</td>
+              </tr>
+              <tr>
+                <td>SR</td>
+                <td>W</td>
+                <td>D</td>
+                <td>D</td>
+                <td>G</td>
+              </tr>
+              <tr>
+                <td>LR</td>
+                <td>G</td>
+                <td>O</td>
+                <td>B</td>
+                <td>G</td>
+              </tr>
+              <tr>
+                <td>SP</td>
+                <td>D</td>
+                <td>G</td>
+                <td>W</td>
+                <td>D</td>
+              </tr>
+              <tr>
+                <td>LP</td>
+                <td>B</td>
+                <td>G</td>
+                <td>G</td>
+                <td>O</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table>
+            <thead>
+              <tr>
+                  <th colspan="6">Multiplier</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>V Card / Qual ></td>
+                <td>B</td>
+                <td>G</td>
+                <td>D</td>
+                <td>O</td>
+                <td>W</td>
+              </tr>
+              <tr>
+                <td>K</td>
+                <td>4</td>
+                <td>3</td>
+                <td>2</td>
+                <td>1.5</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>Q</td>
+                <td>3</td>
+                <td>2</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0.5</td>
+              </tr>
+              <tr>
+                <td>J</td>
+                <td>2</td>
+                <td>1</td>
+                <td>0.5</td>
+                <td>0</td>
+                <td>0</td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>-1</td>
+                <td>-1</td>
+              </tr>
+            </tbody>
+          </table> -->
+          <p>©2020 - 2022 SAMulation</p>
+        </footer>
+      </div>
+</body>
+</html>
