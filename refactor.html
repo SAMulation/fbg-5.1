@@ -6,58 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Football Bored Game</title>
     <link rel="stylesheet" href="css/refactor.css">
-    <script type="module" src="js/refactor.js"></script>
+    <script type="module" src="js/script.js"></script>
 </head>
 <body>
     <div class="page-wrap">
-      <div class="game-setup-container">
-        <section class="team1">
-            <h1>Select Team 1</h1>
-            <br>
-            <div class="selection pl1">
-                <form>
-                  <select id="p1Team" class="teamList" name="p1Team">
-                      <option value="">Please select P1's team</option>
-                  </select>
-                  <br>
-                </form>
-                <br>
-            </div>
-            <p class="pl1 hidden">Player 1 selected <span class="pl1">team</span>!</p>
-        </section>
-
-        <section class="team2">
-            <h1>Select Team 2</h1>
-            <br>
-            <div class="selection pl2">
-                <form action="#">
-                    <select id="p2Team" class="teamList" name="p2Team">
-                        <option value="-1" selected>Please select P2's team</option>
+        <section class="game-setup-container">
+          <section class="team1">
+              <h1>Select Team 1</h1>
+              <br>
+              <div class="selection pl1">
+                  <form>
+                    <select id="p1Team" class="teamList" name="p1Team">
+                        <option value="">Please select P1's team</option>
                     </select>
-                    <br><br>
-                    <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked disabled>
-                    <label for="cpuSelect"> Computer?</label><br>
+                    <br>
+                  </form>
+                  <br>
+              </div>
+              <p class="pl1 hidden">Player 1 selected <span class="pl1">team</span>!</p>
+          </section>
+
+          <section class="team2">
+              <h1>Select Team 2</h1>
+              <br>
+              <div class="selection pl2">
+                  <form action="#">
+                      <select id="p2Team" class="teamList" name="p2Team">
+                          <option value="-1" selected>Please select P2's team</option>
+                      </select>
+                      <br><br>
+                      <input type="checkbox" class="cpuSelect" name="cpuSelect" value="isCPU" checked disabled>
+                      <label for="cpuSelect"> Computer?</label><br>
+                  </form>
+                  <br>
+            </div>
+      
+            <p class="pl2 hidden">Player 2 selected <span class="pl2">team</span>!</p>
+          </section>
+
+          <section class="qtr-length">
+              <form id="gameForm">
+                  <label for="quantity">Quarter Length (between 1-15)</label><br>
+                  <br>
+                  <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
+                  <br>
+                  <input class="playSubmit" type="submit" value="Submit">
                 </form>
-                <br>
-          </div>
-    
-          <p class="pl2 hidden">Player 2 selected <span class="pl2">team</span>!</p>
-        </section>
+          </section>
 
-        <section class="qtr-length">
-            <form id="gameForm">
-                <label for="quantity">Quarter Length (between 1-15)</label><br>
-                <br>
-                <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
-                <br>
-                <input class="playSubmit" type="submit" value="Submit">
-              </form>
+          <section class="play-button">
+              <button class="playButton" name="button" disabled>Start Playing</button>
+          </section>
         </section>
-
-        <section class="play-button">
-            <button class="playButton" name="button" disabled>Start Playing</button>
-        </section>
-    </div>
 
         <section class="scoreboard-container collapsed">
           <div class="away bg"></div>
@@ -72,6 +72,7 @@
             <span class="to2"></span>
             <span class="to3"></span>
           </div>
+          <div class="to-butt1">TO</div>
           <div class="away team">LAR</div>
           <div class="away score">13</div>
           <div class="away hm">
@@ -84,6 +85,7 @@
             <span class="to2"></span>
             <span class="to1"></span>
           </div>
+          <!-- <button class="home to-butt2">TO</button> -->
           <div class="home team">CIN</div>
           <div class="home score">6</div>
           <div class="clock">

@@ -1,4 +1,4 @@
-  /* Score Board */
+/* Score Board */
   .scoreboard-container {
     --rad: 2vw;
     grid-column: span 2;
@@ -8,9 +8,11 @@
     height: 100%;
     margin: 0 auto;
     grid-template:
-      [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot]
+      /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
+      [top] 15% [hm] 3% [content-top] minmax(10%, 1fr) [mid] minmax(10%, 1fr) [content-bot] 3% [to] 15% [bot]
       /
-      [left] var(--rad) [away] 3fr [away-score] 2fr [clockl] minmax(auto, 10vw) [mid] minmax(auto, 10vw) [clockr] 2fr [home-score] 3fr [home] var(--rad) [right];
+      /* Formerly 10vw */
+      [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2fr [clockl] minmax(auto, 2fr) [mid] minmax(auto, 2fr) [clockr] 2fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
     align-items: stretch;
     justify-content: center;
     align-content: stretch;
@@ -212,4 +214,26 @@
   .logo {
     grid-row: 1;
     margin-top: 10px;
+  }
+
+  .to-butt1 {
+    grid-area: content-top / away / content-bot / away-to;
+    z-index: 3;
+    max-height: 10%;
+    align-self: center;
+  }
+
+  .to-butt1 button {
+    /* max-width: 100%;
+    max-height: 100%; */
+    line-height: .5rem;
+    background: rgb(230, 230, 230);
+    color: black;
+    border: 3px solid black;
+    border-radius: 25%;
+    font-size: 90%;
+    font-family: 'calc', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }

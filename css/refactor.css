@@ -137,11 +137,20 @@ input {
 
 .field-container {
   z-index: 2;
+  max-height: 100%;
   grid-area: 3 / 2;
   background: rgb(0, 81, 0);
   border: 1.5vw solid white;
   z-index: 1;
   transition: z-index 1s, opacity .5s;
+
+  overflow: scroll;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.field-container::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
 }
 
 .field-container.slide-away {

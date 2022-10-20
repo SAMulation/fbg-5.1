@@ -51,6 +51,13 @@ export default class Game {
   }
 
   async runIt () {
+    if (document.querySelector('.game-setup-container').classList.contains('slide-away')) {
+      document.querySelector('.game-setup-container').classList.remove('slide-away')
+    //   document.querySelector('.game-setup-container').style.display = 'block'
+    } else {
+      document.querySelector('.game-setup-container').classList.add('slide-away')
+    //   document.querySelector('.game-setup-container').style.display = 'none'
+    }
     await this.run.playGame()
   }
 

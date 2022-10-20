@@ -9,6 +9,16 @@
   grid-template-rows: 1fr auto 1fr 1fr 1fr;
   align-items: auto;
   row-gap: 2%;
+
+  transition: z-index 1s, opacity .5s;
+}
+
+.game-setup-container.slide-away {
+  /* transform: translateX(100%); */
+  z-index: -5;
+  opacity: 0;
+  /* display: none; */
+  transition: z-index 2s, opacity 1s;
 }
 
 .game-setup-container > * {

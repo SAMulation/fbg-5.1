@@ -18,24 +18,29 @@ export default class Run {
       const t = document.createTextNode(msg)
       el.appendChild(t)
       // LATER: Add class, if needed // el.classList.add('play');
-      document.querySelector('.page-subheader').prepend(el)
+      document.querySelector('.field-container').prepend(el)
+      // document.querySelector('.page-subheader').prepend(el)
     } else {
       console.log(msg)
     }
   };
 
+  // prepareHTML () {
+  //   document.querySelector('.selection.pl1').innerHTML = ''
+  //   document.querySelector('.selection.pl2').innerHTML = ''
+  //   document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play'
+  //   document.querySelector('.page-main .to-butt1').innerHTML = 'Timeout? (<span>' + this.game.players[1].timeouts + '</span>)'
+  //   document.querySelector('.page-main .to-butt1').classList.remove('hidden')
+  //   document.querySelector('.page-sidebar .to-butt2').innerText = 'TO'
+  //   document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play'
+  //   this.showBoard(document.querySelector('.scoreboard-container'))
+  //   document.querySelector('.page-wrap').classList.add('game') // LATER: When completely done with game, remove this
+  //   document.querySelector('.scoreboard-container').classList.remove('hidden')
+  //   document.querySelector('.page-subheader').classList.remove('hidden')
+  // }
+
   prepareHTML () {
-    document.querySelector('.selection.pl1').innerHTML = ''
-    document.querySelector('.selection.pl2').innerHTML = ''
-    document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play'
-    document.querySelector('.page-main .to-butt1').innerHTML = 'Timeout? (<span>' + this.game.players[1].timeouts + '</span>)'
-    document.querySelector('.page-main .to-butt1').classList.remove('hidden')
-    document.querySelector('.page-sidebar .to-butt2').innerText = 'TO'
-    document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play'
-    this.showBoard(document.querySelector('.scoreboard-container'))
-    document.querySelector('.page-wrap').classList.add('game') // LATER: When completely done with game, remove this
-    document.querySelector('.scoreboard-container').classList.remove('hidden')
-    document.querySelector('.page-subheader').classList.remove('hidden')
+
   }
 
   async playGame () {
@@ -1565,6 +1570,15 @@ export default class Run {
     document.querySelector('.' + (game.home === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
     await this.slideBoard()
     this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
+
+    if (document.querySelector('.field-container').classList.contains('slide-away')) {
+      document.querySelector('.field-container').classList.remove('slide-away')
+    //   document.querySelector('.field-container').style.display = 'block'
+    } else {
+      document.querySelector('.field-container').classList.add('slide-away')
+    //   document.querySelector('.field-container').style.display = 'none'
+    }
+
     // alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
   };
 

@@ -77,7 +77,7 @@ const pressPlayButton = (button) => {
   button.addEventListener('pointerdown', event => {
     playGame(window.game)
     event.target.setAttribute('disabled', '')
-    // document.querySelector('.page-subheader').innerHTML = ''
+    document.querySelector('.page-subheader').innerHTML = ''
   })
 }
 
