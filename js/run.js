@@ -34,7 +34,7 @@ export default class Run {
   //   document.querySelector('.page-sidebar .to-butt2').innerText = 'TO'
   //   document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play'
   //   this.showBoard(document.querySelector('.scoreboard-container'))
-  //   document.querySelector('.page-wrap').classList.add('game') // LATER: When completely done with game, remove this
+  //   document.querySelector('.main-container').classList.add('game') // LATER: When completely done with game, remove this
   //   document.querySelector('.scoreboard-container').classList.remove('hidden')
   //   document.querySelector('.page-subheader').classList.remove('hidden')
   // }

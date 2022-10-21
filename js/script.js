@@ -6,6 +6,19 @@ import PromptInput from './promptInput.js'
 import FormInput from './formInput.js'
 import { TEAMS } from './teams.js'
 
+// Measure the viewport
+let innerHeight = window.innerHeight
+let innerWidth = window.innerWidth
+document.documentElement.style.setProperty('--height', innerHeight + 'px')
+document.documentElement.style.setProperty('--width', innerWidth + 'px')
+
+window.addEventListener('resize', () => {
+  innerHeight = window.innerHeight
+  innerWidth = window.innerWidth
+  document.documentElement.style.setProperty('--height', innerHeight + 'px')
+  document.documentElement.style.setProperty('--width', innerWidth + 'px')
+})
+
 // FIX: REMOVE LATER - Set to window for easy access
 const site = new Site(document)
 let game = null
@@ -102,4 +115,4 @@ const initGame = (site) => {
 setTeamLists(document.querySelectorAll('.teamList'))
 submitTeams(document.querySelector('#gameForm'))
 pressPlayButton(document.querySelector('.playButton'))
-bindButtons(document.querySelector('.page-wrap'))
+bindButtons(document.querySelector('.main-container'))

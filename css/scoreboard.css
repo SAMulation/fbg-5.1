@@ -1,7 +1,7 @@
 /* Score Board */
   .scoreboard-container {
     --rad: 2vw;
-    grid-area: 1 / 1;
+    grid-area: top-all / left-all / top-board / right-all;
     display: grid;
     grid-template:
       /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */

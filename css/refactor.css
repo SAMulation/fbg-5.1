@@ -9,6 +9,11 @@
   font-family: sans-serif;
 }
 
+/* html {
+  height: var(--height);
+  width: var(--width);
+} */
+
 @font-face {
   font-family: 'calc';
   src: url(../fonts/calc/ti-calculator-font.ttf);
@@ -19,30 +24,36 @@ body {
   background: rgb(80, 80, 80);
   /* background-color: rgb(183, 205, 168); */
   padding: 5px;
-  /* height: 100vh; */
+  height: var(--height);
+  width: var(--width);
   margin: 0;
-  width: 100%;
-
   font: 500 100% system-ui, sans-serif;
   /* text-transform: uppercase; */
 }
 
-.page-wrap {
+.main-container {
   /* background: white; */
-  height: calc(100vh - 10px);
-  max-width: 100%;
+  width: calc(var(--width) - 2%);
+  height: calc(var(--height) - 2%);
+  margin: 0;
   box-shadow: 0 0 3px rgba(black, 0.33);
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: min-content minmax(0, 2fr) minmax(0, 1fr);
+  grid-template: 
+    [top-all] min-content [top-board] minmax(0, 2fr) [top-cards] minmax(0, 1fr) [bot-all]
+    /
+    [left-all] minmax(0, 1fr) [modal-left] minmax(0, 3fr) [modal-right] minmax(0, 1fr) [right-all];
+
+  /* grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: min-content minmax(0, 2fr) minmax(0, 1fr); */
+  
   row-gap: 2%;
 }
 
 /* Responsive */
 @media (min-width: 600px) {
-  .page-wrap {
-      grid-template-rows: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  .main-container {
+    grid-template-rows: [top-all] minmax(0, 1fr) [top-board] minmax(0, 2fr) [top-cards] minmax(0, 1fr) [bot-all];
   }
 }
 
@@ -50,11 +61,11 @@ body {
     grid-column: 2 / 3;
 } */
 
-/* .page-wrap.game {
+/* .main-container.game {
   grid-template-rows: min-content minmax(10px, 20%) 1fr min-content min-content;
 } */
 
-.page-wrap > * {
+.main-container > * {
     padding: 1rem;
     text-align: center;
     /* border: 2px solid black; */
@@ -115,17 +126,17 @@ input {
 
 /* Responsive */
 /* @media (max-width: 768px) {
-  .page-wrap {
+  .main-container {
       grid-template-columns: 100%;
       grid-template-rows: auto;
   }
 
-  .page-wrap > * {
+  .main-container > * {
       grid-column: 1 / -1 !important;
       grid-row: auto;
   }
 
-  .page-wrap.game {
+  .main-container.game {
     grid-template-rows: min-content min-content 15% 1fr min-content min-content;
   }
 } */
@@ -134,13 +145,14 @@ input {
   background: dodgerblue;
   border: 1vw solid white;
   border-radius: 2vw;
-  grid-area: 1 / 1 / 4 / 2;
+  grid-area: top-all / left-all / bot-all / right-all;
   z-index: 10;
+  display: none;
 }
 
 .field-container {
-  grid-area: 2 / 1;
-  z-index: 2;
+  grid-area: top-all / left-all / bot-all / right-all;
+  /* z-index: 2; */
   max-height: 100%;
   background: rgb(0, 81, 0);
   border: 1.5vw solid white;
@@ -150,6 +162,8 @@ input {
   overflow: scroll;
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */
+
+  display: none;
 }
 
 .field-container::-webkit-scrollbar {
@@ -167,7 +181,7 @@ input {
 .board-container {
   background: white;
   border: 1.5vw solid black;
-  grid-area: 2 / 1;
+  grid-area: top-board / left-all / top-cards / right-all;
   height: 100%;
   width: 100%;
 
@@ -232,8 +246,32 @@ input {
 
 
 .cards-container {
-  grid-area: 3 / 1;
+  background: rgb(129, 0, 17);
+  grid-area: top-cards / left-all / bot-all / right-all;
   max-width: 100%;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 15% 85%;
+  row-gap: 3%;
+  padding: 0;
+}
+
+.cards-container .bar {
+  grid-area: 1 / 1;
+  font-size: 1.75vh;
+  background: black;
+  color: white;
+  font-weight: bold;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cards-container .cards {
+  padding: 1rem;
+  grid-area: 2 / 1;
   display: flex;
   overflow-y: hidden;
   overflow-x: scroll;
@@ -244,11 +282,11 @@ input {
   justify-content: space-between;
 }
 
-.cards-container::-webkit-scrollbar {
+.cards-container .cards::-webkit-scrollbar {
   display: none;
 }
 
-.cards-container button.card, .pl-card1.picked, .pl-card2.picked {
+.cards-container .cards button.card, .pl-card1.picked, .pl-card2.picked {
   background: #005A9C;
   color: white;
   font-size: 10vw;
@@ -258,7 +296,7 @@ input {
   justify-content: center;
 }
 
-.cards-container button.card {
+.cards-container .cards button.card {
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: 25%;
