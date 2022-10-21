@@ -19,7 +19,7 @@ body {
   background: rgb(80, 80, 80);
   /* background-color: rgb(183, 205, 168); */
   padding: 5px;
-  height: 100vh;
+  /* height: 100vh; */
   margin: 0;
   width: 100%;
 
@@ -34,14 +34,21 @@ body {
   box-shadow: 0 0 3px rgba(black, 0.33);
 
   display: grid;
-  grid-template-columns: 2% 1fr 2%;
-  grid-template-rows: 2% 1fr 2fr 1fr 2%;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: min-content minmax(0, 2fr) minmax(0, 1fr);
   row-gap: 2%;
 }
 
-.scoreboard-container, .field-container, .board-container, .cards-container {
-    grid-column: 2 / 3;
+/* Responsive */
+@media (min-width: 600px) {
+  .page-wrap {
+      grid-template-rows: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  }
 }
+
+/* .scoreboard-container, .field-container, .board-container, .cards-container {
+    grid-column: 2 / 3;
+} */
 
 /* .page-wrap.game {
   grid-template-rows: min-content minmax(10px, 20%) 1fr min-content min-content;
@@ -127,18 +134,14 @@ input {
   background: dodgerblue;
   border: 1vw solid white;
   border-radius: 2vw;
-  grid-area: 1 / 2 / 2 / 3;
+  grid-area: 1 / 1 / 4 / 2;
   z-index: 10;
 }
 
-.scoreboard-container {
-  grid-area: 2 / 2;
-}
-
 .field-container {
+  grid-area: 2 / 1;
   z-index: 2;
   max-height: 100%;
-  grid-area: 3 / 2;
   background: rgb(0, 81, 0);
   border: 1.5vw solid white;
   z-index: 1;
@@ -164,7 +167,7 @@ input {
 .board-container {
   background: white;
   border: 1.5vw solid black;
-  grid-area: 3 / 2;
+  grid-area: 2 / 1;
   height: 100%;
   width: 100%;
 
@@ -229,7 +232,7 @@ input {
 
 
 .cards-container {
-  grid-area: 4 / 2 / 5 / 3;
+  grid-area: 3 / 1;
   max-width: 100%;
   display: flex;
   overflow-y: hidden;

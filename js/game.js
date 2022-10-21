@@ -51,12 +51,16 @@ export default class Game {
   }
 
   async runIt () {
-    if (document.querySelector('.game-setup-container').classList.contains('slide-away')) {
-      document.querySelector('.game-setup-container').classList.remove('slide-away')
-    //   document.querySelector('.game-setup-container').style.display = 'block'
+    const gameSetup = document.querySelector('.game-setup-container')
+    gameSetup.addEventListener('transitionend', () => {
+      gameSetup.style.display = 'none'
+    }, { once: true })
+    if (gameSetup.classList.contains('slide-away')) {
+      gameSetup.classList.remove('slide-away')
+    //   gameSetup.style.display = 'block'
     } else {
-      document.querySelector('.game-setup-container').classList.add('slide-away')
-    //   document.querySelector('.game-setup-container').style.display = 'none'
+      gameSetup.classList.add('slide-away')
+    //   gameSetup.style.display = 'none'
     }
     await this.run.playGame()
   }

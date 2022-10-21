@@ -1,23 +1,28 @@
 /* Score Board */
   .scoreboard-container {
     --rad: 2vw;
-    grid-column: span 2;
-    grid-row: span 1;
+    grid-area: 1 / 1;
     display: grid;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
     grid-template:
       /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
-      [top] 15% [hm] 3% [content-top] minmax(10%, 1fr) [mid] minmax(10%, 1fr) [content-bot] 3% [to] 15% [bot]
+      [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
       /
-      /* Formerly 10vw */
-      [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2fr [clockl] minmax(auto, 2fr) [mid] minmax(auto, 2fr) [clockr] 2fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
-    align-items: stretch;
-    justify-content: center;
-    align-content: stretch;
-    justify-items: stretch;
+      /* Formerly 10vh */
+      [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2fr [clockl] 2fr [mid] 2fr [clockr] 2fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
+    align-items: center;
   }
+
+  /* Responsive */
+@media (min-width: 600px) {
+  .scoreboard-container {
+    grid-template:
+    /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
+    [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
+    /
+    /* Formerly 10vh */
+    [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2fr [clockl] auto [mid] auto [clockr] 2fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
+  }
+}
 
   .scoreboard-container * {
     font-family: sans-serif;
@@ -38,6 +43,7 @@
   .bg {
     grid-row: hm / to;
     z-index: -1;
+    align-self: stretch;
   }
 
   .away.bg {

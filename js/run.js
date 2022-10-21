@@ -1571,12 +1571,16 @@ export default class Run {
     await this.slideBoard()
     this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
 
-    if (document.querySelector('.field-container').classList.contains('slide-away')) {
-      document.querySelector('.field-container').classList.remove('slide-away')
-    //   document.querySelector('.field-container').style.display = 'block'
+    const field = document.querySelector('.field-container')
+    // field.addEventListener('transitionend', () => {
+
+    // })
+    if (field.classList.contains('slide-away')) {
+      field.classList.remove('slide-away')
+    //   field.style.display = 'block'
     } else {
-      document.querySelector('.field-container').classList.add('slide-away')
-    //   document.querySelector('.field-container').style.display = 'none'
+      field.classList.add('slide-away')
+    //   field.style.display = 'none'
     }
 
     // alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
