@@ -8,7 +8,7 @@
       [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
       /
       /* Formerly 10vh */
-      [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2fr [clockl] 2fr [mid] 2fr [clockr] 2fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
+      [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2.5fr [clockl] 2fr [mid] 2fr [clockr] 2.5fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
     align-items: center;
   }
 

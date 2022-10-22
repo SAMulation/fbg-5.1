@@ -16,7 +16,9 @@ window.addEventListener('resize', () => {
   innerHeight = window.innerHeight
   innerWidth = window.innerWidth
   document.documentElement.style.setProperty('--height', innerHeight + 'px')
-  document.documentElement.style.setProperty('--width', innerWidth + 'px')
+  if (innerWidth < 600) {
+    document.documentElement.style.setProperty('--width', innerWidth + 'px')
+  }
 })
 
 // FIX: REMOVE LATER - Set to window for easy access

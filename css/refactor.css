@@ -51,9 +51,11 @@ body {
 }
 
 /* Responsive */
-@media (min-width: 600px) {
-  .main-container {
+@media (min-width: 601px) {
+  div.main-container {
     grid-template-rows: [top-all] minmax(0, 1fr) [top-board] minmax(0, 2fr) [top-cards] minmax(0, 1fr) [bot-all];
+    width: 600;
+    margin: 0 auto;
   }
 }
 
@@ -289,7 +291,7 @@ input {
 .cards-container .cards button.card, .pl-card1.picked, .pl-card2.picked {
   background: #005A9C;
   color: white;
-  font-size: 10vw;
+  font-size: 8vw;
   font-family: 'calc', sans-serif;
   display: flex;
   align-items: center;
