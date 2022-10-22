@@ -9,6 +9,14 @@ export default class Run {
     this.alert = 'subhead' // 'skip' or ''
   }
 
+  moveBall () {
+    const ball = document.querySelector('.field-container .ball')
+    let left = parseInt(ball.style.left) || 10
+    left += 100
+    if (left > 500) left = 10
+    ball.style.left = `${left}px`
+  }
+
   alertBox (msg) {
     msg = this.printTime(this.game.current_time) + ' | ' + msg
     if (this.alert === 'alert') {
@@ -39,8 +47,20 @@ export default class Run {
   //   document.querySelector('.page-subheader').classList.remove('hidden')
   // }
 
-  prepareHTML () {
+  setBallSpot (val) {
+    // Basically need to calculate the time based on the last play and async await animation based on that
+    // Longer plays will move quickly, shorter plays slower
+    // Maybe add a little inflation of ball as it moves - but that can be later, focus on function
+    document.documentElement.style.setProperty('--ball-spot', (document.querySelector('.field').offsetHeight / 100 * ((100 - this.game.spot) + 44)) + 'px')
+    const ballSpot = document.documentElement.style.getPropertyValue('--ball-spot')
+    console.log(ballSpot)
+    console.log(document.querySelector('.field').offsetHeight)
+    console.log((144 + (100 - this.game.spot)))
+    console.log(document.querySelector('.field').offsetHeight / 100 * ((100 - this.game.spot) + 44))
+  }
 
+  prepareHTML () {
+    this.setBallSpot(50)
   }
 
   async playGame () {

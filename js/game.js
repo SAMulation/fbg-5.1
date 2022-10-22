@@ -37,6 +37,7 @@ export default class Game {
     this.players = { 1: new Player(this, team1), 2: new Player(this, team2) } // Object {1: ..., 2: ...}
     this.mults = mults
     this.yards = yards
+    this.lastSpot = this.spot
 
     // Pass input class to game constructor
     this.run = new Run(this, input)

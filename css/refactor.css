@@ -149,23 +149,28 @@ input {
   border-radius: 2vw;
   grid-area: top-all / left-all / bot-all / right-all;
   z-index: 10;
-  display: none;
+  display: '';
 }
 
 .field-container {
   grid-area: top-all / left-all / bot-all / right-all;
-  /* z-index: 2; */
   max-height: 100%;
-  background: rgb(0, 81, 0);
-  border: 1.5vw solid white;
-  z-index: 1;
+  max-width: 600px;
+  padding: 0;
+  /* background: rgb(44, 163, 44); */
+  
+  z-index: 5;
   transition: z-index 1s, opacity .5s;
 
   overflow: scroll;
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */
-
-  display: none;
+  
+  display: grid;
+  grid-template:
+    [top] minmax(0, 20%) [top-endzone] minmax(0, 8%) [top-field] minmax(0, 64%) [bot-endzone] minmax(0, 8%) [bot]
+    /
+    [left] minmax(0, 1fr) [right];
 }
 
 .field-container::-webkit-scrollbar {
@@ -178,6 +183,58 @@ input {
   opacity: 0;
   /* display: none; */
   transition: z-index 2s, opacity 1s;
+}
+
+.field-container .fg-post {
+  grid-row: top / top-endzone;
+}
+
+.field-container .top-endzone {
+  grid-area: top-endzone / left / top-field / right;
+
+  border: 5px solid white;
+  border-bottom: none;
+  background: dodgerblue;
+}
+
+.field-container .modal-message {
+  grid-area: top-endzone / left / top-field / right;
+  z-index: 20;
+
+  color: white;
+  font-weight: bold;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.field-container .field {
+  grid-row: top-field / bot-endzone;
+
+  border: 5px solid white;
+  border-bottom: none;
+  background: repeating-linear-gradient(to top, white, white 5px, green 5px, green 10%);
+
+  display: flex;
+  justify-content: center;
+}
+
+.field-container .bot-endzone {
+  grid-row: bot-endzone / bot;
+
+  border: 5px solid white;
+  border-top: none;
+  background: orange;
+}
+
+.field-container .ball{
+  position: absolute;
+  top: var(--ball-spot);
+  transform: rotate(312deg);
+  font-size: 1rem;
+  margin: 0 auto;
+  transition: all .25s;
 }
 
 .board-container {
@@ -222,16 +279,14 @@ input {
 .board-container .pl-card1,
 .board-container .pl-card2,
 .board-container .mult-card,
-.board-container .yard-card {
-  background: gray;
+.board-container .yard-card,
+.board-container .quality-container,
+.board-container .times-container {
+  background:rgb(129, 0, 17);
   border: 1vw solid black;
   border-radius: 2vw;
   height: 100%;
   width: 100%;
-}
-
-.board-container .pl-card1 {
-  grid-area: 3 / 2 / 4 / 3;
 }
 
 .board-container .pl-card2 {
@@ -239,13 +294,26 @@ input {
 }
 
 .board-container .mult-card {
-  grid-area: 3 / 3 / 4 / 4;
-}
-
-.board-container .yard-card {
   grid-area: 2 / 3 / 3 / 4;
 }
 
+.board-container .quality-container {
+  grid-area: 2 / 4 / 3 / 5;
+  height: 66%;
+}
+
+.board-container .pl-card1 {
+  grid-area: 3 / 2 / 4 / 3;
+}
+
+.board-container .yard-card {
+  grid-area: 3 / 3 / 4 / 4;
+}
+
+.board-container .times-container {
+  grid-area: 3 / 4 / 4 / 5;
+  height: 66%;
+}
 
 .cards-container {
   background: rgb(129, 0, 17);
@@ -304,18 +372,4 @@ input {
   flex-basis: 25%;
   border: 1vw solid white;
   border-radius: 2vw;
-}
-
-/* Upcoming styles */
-.field {
-  background: greenyellow;
-  width: 500px;
-  height: 200px;
-  position: relative;
-}
-.ball {
-  position: absolute;
-  top: 50px;
-  left: 80px;
-  transition: all 1s;
 }

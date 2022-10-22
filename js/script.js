@@ -9,6 +9,7 @@ import { TEAMS } from './teams.js'
 // Measure the viewport
 let innerHeight = window.innerHeight
 let innerWidth = window.innerWidth
+const football = document.querySelector('.field-container .ball')
 document.documentElement.style.setProperty('--height', innerHeight + 'px')
 document.documentElement.style.setProperty('--width', innerWidth + 'px')
 
@@ -19,6 +20,7 @@ window.addEventListener('resize', () => {
   if (innerWidth < 600) {
     document.documentElement.style.setProperty('--width', innerWidth + 'px')
   }
+  document.documentElement.style.setProperty
 })
 
 // FIX: REMOVE LATER - Set to window for easy access
