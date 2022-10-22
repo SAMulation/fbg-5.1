@@ -157,10 +157,11 @@ input {
   max-height: 100%;
   max-width: 600px;
   padding: 0;
+  transform: translateX(0);
   /* background: rgb(44, 163, 44); */
   
   z-index: 5;
-  transition: z-index 1s, opacity .5s;
+  transition: transform 1s, opacity .5s;
 
   overflow: scroll;
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
@@ -178,11 +179,11 @@ input {
 }
 
 .field-container.slide-away {
-  /* transform: translateX(100%); */
-  z-index: -1;
+  transform: translateX(150%);
+  /* z-index: -1; */
   opacity: 0;
   /* display: none; */
-  transition: z-index 2s, opacity 1s;
+  transition: transform 1s, opacity 1s;
 }
 
 .field-container .fg-post {
@@ -200,13 +201,23 @@ input {
 .field-container .modal-message {
   grid-area: top-endzone / left / top-field / right;
   z-index: 20;
+  margin: 10px;
+  color: purple;
 
   color: white;
   font-weight: bold;
 
   display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.field-container .modal-message::-webkit-scrollbar {
+  display: none;
 }
 
 .field-container .field {
@@ -316,16 +327,49 @@ input {
 }
 
 .cards-container {
+  overflow: hidden;
   background: rgb(129, 0, 17);
   grid-area: top-cards / left-all / bot-all / right-all;
   max-width: 100%;
 
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 15% 85%;
+  grid-template-rows: auto 85%;
   row-gap: 3%;
   padding: 0;
+  z-index: 10;
+
+  transition: margin-top 0.5s, background 1s;
 }
+
+@keyframes slide-down {
+  from {
+    margin-top: 0%;
+  }
+  to {
+    margin-top: 100%;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+.cards-container.slide-down {
+  background: rgb(129, 0, 17, 0);
+  margin-top: 37%;
+}
+
+/* .cards-container .cards {
+  animation: slide-up 0.5s;
+} */
+
+
 
 .cards-container .bar {
   grid-area: 1 / 1;

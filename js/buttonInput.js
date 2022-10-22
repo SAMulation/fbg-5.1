@@ -25,7 +25,7 @@ export default class ButtonInput extends BaseInput {
   getButtonInput (game, p) {
     // Cache the DOM element that will store play and timeout buttons
     // const buttonArea = document.querySelector('.selection.pl' + p)
-    const buttonArea = document.querySelector('.cards-container')
+    const buttonArea = document.querySelector('.cards-container .cards')
     const timeout = document.querySelector('.to-butt' + p)
 
     // Clear buttonArea and timeout

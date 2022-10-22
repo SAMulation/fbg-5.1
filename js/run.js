@@ -26,7 +26,7 @@ export default class Run {
       const t = document.createTextNode(msg)
       el.appendChild(t)
       // LATER: Add class, if needed // el.classList.add('play');
-      document.querySelector('.field-container').prepend(el)
+      document.querySelector('.field-container .modal-message').prepend(el)
       // document.querySelector('.page-subheader').prepend(el)
     } else {
       console.log(msg)
@@ -47,7 +47,7 @@ export default class Run {
   //   document.querySelector('.page-subheader').classList.remove('hidden')
   // }
 
-  setBallSpot (val) {
+  setBallSpot () {
     // Basically need to calculate the time based on the last play and async await animation based on that
     // Longer plays will move quickly, shorter plays slower
     // Maybe add a little inflation of ball as it moves - but that can be later, focus on function
@@ -60,7 +60,8 @@ export default class Run {
   }
 
   prepareHTML () {
-    this.setBallSpot(50)
+    document.querySelector('.field-container').classList.add('slide-away')
+    this.setBallSpot()
   }
 
   async playGame () {
