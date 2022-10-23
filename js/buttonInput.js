@@ -64,13 +64,6 @@ export default class ButtonInput extends BaseInput {
         document.querySelector('.pl-card' + p).innerText = val
         document.querySelector('.pl-card' + p).classList.add('picked')
         event.target.parentElement.innerHTML = ''
-        if (document.querySelector('.field-container').classList.contains('slide-away')) {
-          document.querySelector('.field-container').classList.remove('slide-away')
-        //   document.querySelector('.field-container').style.display = 'block'
-        } else {
-          document.querySelector('.field-container').classList.add('slide-away')
-        //   document.querySelector('.field-container').style.display = 'none'
-        }
       })
     })
   }
