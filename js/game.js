@@ -52,17 +52,6 @@ export default class Game {
   }
 
   async runIt () {
-    const gameSetup = document.querySelector('.game-setup-container')
-    gameSetup.addEventListener('transitionend', () => {
-      gameSetup.style.display = 'none'
-    }, { once: true })
-    if (gameSetup.classList.contains('slide-away')) {
-      gameSetup.classList.remove('slide-away')
-    //   gameSetup.style.display = 'block'
-    } else {
-      gameSetup.classList.add('slide-away')
-    //   gameSetup.style.display = 'none'
-    }
     await this.run.playGame()
   }
 

@@ -7,6 +7,11 @@ export default class Run {
     this.game = game
     this.input = input
     this.alert = 'subhead' // 'skip' or ''
+    this.scoreboardContainer = document.querySelector('.scoreboard-container')
+    this.fieldContainer = document.querySelector('.field-container')
+    this.boardContainer = document.querySelector('.board-container')
+    this.cardsContainer = document.querySelector('.cards-container')
+    this.actualCards = this.cardsContainer.querySelector('.cards')
   }
 
   moveBall () {
@@ -47,21 +52,55 @@ export default class Run {
   //   document.querySelector('.page-subheader').classList.remove('hidden')
   // }
 
-  setBallSpot () {
+  setBallSpot (newSpot = this.game.spot) {
     // Basically need to calculate the time based on the last play and async await animation based on that
     // Longer plays will move quickly, shorter plays slower
     // Maybe add a little inflation of ball as it moves - but that can be later, focus on function
-    document.documentElement.style.setProperty('--ball-spot', (document.querySelector('.field').offsetHeight / 100 * ((100 - this.game.spot) + 44)) + 'px')
-    const ballSpot = document.documentElement.style.getPropertyValue('--ball-spot')
-    console.log(ballSpot)
-    console.log(document.querySelector('.field').offsetHeight)
-    console.log((144 + (100 - this.game.spot)))
-    console.log(document.querySelector('.field').offsetHeight / 100 * ((100 - this.game.spot) + 44))
+    // document.documentElement.style.setProperty('--ball-speed', this.game.spot - this.game.lastSpot)
+    document.documentElement.style.setProperty('--ball-spot', (document.querySelector('.field').offsetHeight / 100 * ((100 - newSpot) + 44)) + 'px')
+    // const ballSpot = document.documentElement.style.getPropertyValue('--ball-spot')
+    // console.log(ballSpot)
+    // console.log(document.querySelector('.field').offsetHeight)
+    // console.log((144 + (100 - this.game.spot)))
+    // console.log(document.querySelector('.field').offsetHeight / 100 * ((100 - this.game.spot) + 44))
+  }
+
+  setSpot (newSpot) {
+    this.game.lastSpot = this.game.spot
+    this.game.spot = newSpot
+  }
+
+  simpleAnimation (el, cls) {
+    if (el.classList.contains(cls)) {
+      el.classList.remove(cls)
+    } else {
+      el.classList.add(cls)
+    }
   }
 
   prepareHTML () {
-    document.querySelector('.field-container').classList.add('slide-away')
+    this.setSpot(65)
     this.setBallSpot()
+    setTimeout(() => {
+      this.simpleAnimation(this.scoreboardContainer, 'slide-away')
+      this.simpleAnimation(this.fieldContainer, 'slide-away')
+      this.simpleAnimation(this.boardContainer, 'slide-away')
+      this.actualCards.innerText = ''
+      this.simpleAnimation(this.cardsContainer, 'slide-down')
+    }, 1)
+
+    // Hide game-setup board
+    const gameSetup = document.querySelector('.game-setup-container')
+    gameSetup.addEventListener('transitionend', () => {
+      gameSetup.style.display = 'none'
+    }, { once: true })
+    if (gameSetup.classList.contains('slide-away')) {
+      gameSetup.classList.remove('slide-away')
+    //   gameSetup.style.display = 'block'
+    } else {
+      gameSetup.classList.add('slide-away')
+    //   gameSetup.style.display = 'none'
+    }
   }
 
   async playGame () {

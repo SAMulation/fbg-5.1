@@ -10,6 +10,13 @@
       /* Formerly 10vh */
       [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2.5fr [clockl] 2fr [mid] 2fr [clockr] 2.5fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
     align-items: center;
+    transition: transform .5s, opacity 1s;
+  }
+
+  .scoreboard-container.slide-away {
+    transform: translateX(150%);
+    opacity: 0;
+    transition: transform 1s, opacity 1s;
   }
 
   /* Responsive */
@@ -138,6 +145,7 @@
     z-index: -2;
     /* Here's the slideBoard() animation */
     transition: transform .33s;
+    align-self: stretch;
   }
 
   .top-msg {
@@ -151,7 +159,11 @@
     grid-row: mid / bot;
   }
 
-  .collapsed .top-msg {
+  /* .collapsed .top-msg {
+    transform: translateY(30%);
+  } */
+
+  .top-msg.collapsed {
     transform: translateY(30%);
   }
 
