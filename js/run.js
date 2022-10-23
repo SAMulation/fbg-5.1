@@ -499,6 +499,7 @@ export default class Run {
           this.timeout(game, p)
         }
       }
+      this.boardAnimate('in')
       await this.slideBoard('collapse')
     }
 
@@ -515,6 +516,22 @@ export default class Run {
       // console.log(game);
     }
   };
+
+  boardAnimate (option) {
+    const board = document.querySelector('.board-container')
+    board.addEventListener('transitionend', () => {
+      if (option === 'in') {
+        board.style.display = ''
+      } else {
+        board.style.display = 'none'
+      }
+    }, { once: true })
+    if (board.classList.contains('slide-away')) {
+      board.classList.remove('slide-away')
+    } else {
+      board.classList.add('slide-away')
+    }
+  }
 
   async slideBoard (option = 'uncollapse', el = document.querySelector('.scoreboard-container')) {
     return new Promise(resolve => {

@@ -21,9 +21,9 @@
 
 /* Page Layout */
 body {
+  overflow: hidden;
   background: rgb(80, 80, 80);
   /* background-color: rgb(183, 205, 168); */
-  padding: 5px;
   height: var(--height);
   width: var(--width);
   margin: 0;
@@ -33,8 +33,8 @@ body {
 
 .main-container {
   /* background: white; */
-  width: calc(var(--width) - 2%);
-  height: calc(var(--height) - 2%);
+  width: calc(var(--width));
+  height: calc(var(--height));
   margin: 0;
   box-shadow: 0 0 3px rgba(black, 0.33);
 
@@ -148,7 +148,7 @@ input {
   border: 1vw solid white;
   border-radius: 2vw;
   grid-area: top-all / left-all / bot-all / right-all;
-  z-index: 10;
+  z-index: 20;
   display: '';
 }
 
@@ -259,6 +259,16 @@ input {
   grid-template-rows: 1fr 6fr 6fr 1fr;
   grid-template-columns: 1fr 4fr 4fr 4fr;
   gap: 2vw;
+
+  transition: transform .5s, opacity 1s;
+}
+
+.board-container.slide-away {
+  transform: translateX(150%);
+  /* z-index: -1; */
+  opacity: 0;
+  /* display: none; */
+  transition: transform 1s, opacity 1s;
 }
 
 .board-container > * {
@@ -342,34 +352,10 @@ input {
   transition: margin-top 0.5s, background 1s;
 }
 
-@keyframes slide-down {
-  from {
-    margin-top: 0%;
-  }
-  to {
-    margin-top: 100%;
-  }
-}
-
-@keyframes slide-up {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0%);
-  }
-}
-
 .cards-container.slide-down {
   background: rgb(129, 0, 17, 0);
-  margin-top: 37%;
+  margin-top: 32.5%;
 }
-
-/* .cards-container .cards {
-  animation: slide-up 0.5s;
-} */
-
-
 
 .cards-container .bar {
   grid-area: 1 / 1;

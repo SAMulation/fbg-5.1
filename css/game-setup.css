@@ -1,6 +1,4 @@
 .game-setup-container {
-  /* background: white; */
-  height: calc(100vh - 10px);
   max-width: 100%;
   box-shadow: 0 0 3px rgba(black, 0.33);
 
