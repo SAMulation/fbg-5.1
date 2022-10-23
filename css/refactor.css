@@ -384,7 +384,7 @@ input {
   display: none;
 }
 
-.cards-container .cards button.card, .pl-card1.picked, .pl-card2.picked {
+.cards-container .cards button.card, .board-container div.picked {
   background: #005A9C;
   color: white;
   font-size: 8vw;
