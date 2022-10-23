@@ -253,7 +253,7 @@ input {
   border: 1.5vw solid black;
   grid-area: top-board / left-all / top-cards / right-all;
   height: 100%;
-  width: 100%;
+  max-width: 600px;
 
   display: grid;
   grid-template-rows: 1fr 6fr 6fr 1fr;
@@ -338,7 +338,7 @@ input {
   overflow: hidden;
   background: rgb(129, 0, 17);
   grid-area: top-cards / left-all / bot-all / right-all;
-  max-width: 100%;
+  max-width: 600px;
 
   display: grid;
   grid-template-columns: 1fr;

@@ -1,6 +1,8 @@
 /* Score Board */
   .scoreboard-container {
     --rad: 2vw;
+
+    max-width: 600px;
     grid-area: top-all / left-all / top-board / right-all;
     display: grid;
     grid-template:

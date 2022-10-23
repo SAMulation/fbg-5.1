@@ -7,6 +7,7 @@ export default class Run {
     this.game = game
     this.input = input
     this.alert = 'subhead' // 'skip' or ''
+    this.gameSetup = document.querySelector('.game-setup-container')
     this.scoreboardContainer = document.querySelector('.scoreboard-container')
     this.fieldContainer = document.querySelector('.field-container')
     this.boardContainer = document.querySelector('.board-container')
@@ -70,7 +71,7 @@ export default class Run {
     this.game.spot = newSpot
   }
 
-  simpleAnimation (el, cls) {
+  animationSimple (el, cls) {
     if (el.classList.contains(cls)) {
       el.classList.remove(cls)
     } else {
@@ -78,33 +79,74 @@ export default class Run {
     }
   }
 
-  prepareHTML () {
+  animationWaitAndHide (el, cls) {
+    el.addEventListener('transitionend', () => {
+      el.style.display = 'none'
+    }, { once: true })
+    this.animationSimple(el, cls)
+  }
+
+  animmationWaitAndAdd (el, cls) {
+    el.style.display = ''
+    this.animationSimple(el, cls)
+  }
+
+  async animationWaitForCompletion (el, cls) {
+    return new Promise(resolve => {
+      const onTransitionEnd = () => {
+        el.removeEventListener('transitionend', onTransitionEnd)
+        resolve()
+      }
+      el.addEventListener('transitionend', onTransitionEnd)
+
+      this.animationSimple(el, cls)
+    })
+  }
+
+  async animationWaitThenHide (el, cls) {
+    return new Promise(resolve => {
+      const onTransitionEnd = () => {
+        el.removeEventListener('transitionend', onTransitionEnd)
+        el.style.display = 'none'
+        resolve()
+      }
+      el.addEventListener('transitionend', onTransitionEnd)
+
+      this.animationSimple(el, cls)
+    })
+  }
+
+  async prepareHTML () {
     this.setSpot(65)
     this.setBallSpot()
-    setTimeout(() => {
-      this.simpleAnimation(this.scoreboardContainer, 'slide-away')
-      this.simpleAnimation(this.fieldContainer, 'slide-away')
-      this.simpleAnimation(this.boardContainer, 'slide-away')
-      this.actualCards.innerText = ''
-      this.simpleAnimation(this.cardsContainer, 'slide-down')
-    }, 1)
+    await this.animationSimple(this.scoreboardContainer, 'slide-away')
+    await this.animationSimple(this.fieldContainer, 'slide-away')
+    await this.animationWaitForCompletion(this.boardContainer, 'slide-away')
+    this.actualCards.innerText = ''
+    this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
 
-    // Hide game-setup board
-    const gameSetup = document.querySelector('.game-setup-container')
-    gameSetup.addEventListener('transitionend', () => {
-      gameSetup.style.display = 'none'
-    }, { once: true })
-    if (gameSetup.classList.contains('slide-away')) {
-      gameSetup.classList.remove('slide-away')
-    //   gameSetup.style.display = 'block'
-    } else {
-      gameSetup.classList.add('slide-away')
+    // // Hide game-setup board
+    // const gameSetup = document.querySelector('.game-setup-container')
+    // gameSetup.addEventListener('transitionend', () => {
     //   gameSetup.style.display = 'none'
-    }
+    // }, { once: true })
+    // if (gameSetup.classList.contains('slide-away')) {
+    //   gameSetup.classList.remove('slide-away')
+    // //   gameSetup.style.display = 'block'
+    // } else {
+    //   gameSetup.classList.add('slide-away')
+    // //   gameSetup.style.display = 'none'
+    // }
+
+    this.animationWaitThenHide(this.gameSetup, 'slide-away')
+
+    // Slide back up, bring field back in
+    this.animationSimple(this.fieldContainer, 'slide-away')
+    this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
   }
 
   async playGame () {
-    this.prepareHTML()
+    await this.prepareHTML()
 
     await this.gameLoop(this.game, 0)
 
