@@ -14,6 +14,7 @@ export default class Run {
     this.cardsContainer = document.querySelector('.cards-container')
     this.actualCards = this.cardsContainer.querySelector('.cards')
     this.promiseTracker = ''
+    this.channel = null
   }
 
   moveBall () {
@@ -150,7 +151,9 @@ export default class Run {
     await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
   }
 
-  async playGame () {
+  async playGame (channel) {
+    this.channel = channel
+
     await this.prepareHTML()
 
     await this.gameLoop(this.game, 0)
@@ -980,6 +983,8 @@ export default class Run {
     // await this.slideBoard()
 
     selection = await this.input.getInput(game, p, state)
+
+    this.channel.trigger('client-picked-play', { selection })
 
     game.players[p].currentPlay = selection
   };

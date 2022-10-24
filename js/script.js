@@ -7,22 +7,31 @@ import ButtonInput from './buttonInput.js'
 import PromptInput from './promptInput.js'
 import FormInput from './formInput.js'
 import { TEAMS } from './teams.js'
+let channel = null
 
 // Enable pusher logging - don't include this in production
 Pusher.logToConsole = true
 
 const pusher = new Pusher('41b31f79c4e658e350a5', {
+  userAuthentication: {
+    endpoint: 'http://localhost:5001/pusher/user-auth'
+  },
+  channelAuthorization: { endpoint: 'http://localhost:5001/pusher/auth' },
   cluster: 'us3'
 })
 
-const channel = pusher.subscribe('private-channel')
+pusher.signin()
 
-setTimeout(() => {
-  channel.trigger('client-my-event', { name: 'footbored' })
-}, 5000)
+pusher.bind('pusher:signin_success', (data) => {
+  channel = pusher.subscribe('private-channel')
 
-channel.bind('client-my-event', function (data) {
-  alert(JSON.stringify(data))
+  setTimeout(() => {
+    channel.trigger('client-my-event', { name: 'footbored' })
+  }, 5000)
+
+  channel.bind('client-my-event', function (data) {
+    alert(JSON.stringify(data))
+  })
 })
 
 // Measure the viewport
@@ -50,7 +59,7 @@ window.inputType = 'button'
 // FUNCTION DEFINITIONS
 // THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
 const playGame = async (game) => {
-  await game.runIt()
+  await game.runIt(channel)
   EnablePlayButton(document.querySelector('.playButton'))
 }
 

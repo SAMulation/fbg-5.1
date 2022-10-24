@@ -51,8 +51,8 @@ export default class Game {
     }
   }
 
-  async runIt () {
-    await this.run.playGame()
+  async runIt (channel) {
+    await this.run.playGame(channel)
   }
 
   opp (num) {
