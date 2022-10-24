@@ -274,6 +274,8 @@ input {
   font-size: 2vw;
   font-weight: bold;
   color: black;
+
+  transition: background 2s;
 }
 
 .board-container .pl-card1-header {

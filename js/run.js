@@ -153,7 +153,7 @@ export default class Run {
     // //   gameSetup.style.display = 'none'
     // }
 
-    await this.animationWaitThenHide(this.gameSetup, 'slide-away')
+    await this.animationWaitThenHide(this.gameSetup, 'slide-away').finished
     // this.animationSimple(this.gameSetup, 'slide-away')
 
     // Slide back up, bring field back in
@@ -341,6 +341,44 @@ export default class Run {
         this.timeout(game, dNum)
       }
     }
+  }
+
+  // const aliceTumbling = [
+  //   { transform: 'rotate(0) scale(1)' },
+  //   { transform: 'rotate(360deg) scale(0)' }
+  // ];
+
+  // const aliceTiming = {
+  //   duration: 2000,
+  //   iterations: 1,
+  //   fill: 'forwards'
+  // }
+
+  // const alice1 = document.querySelector("#alice1");
+  // const alice2 = document.querySelector("#alice2");
+  // const alice3 = document.querySelector("#alice3");
+
+  // const sequence = async () => {
+  //   await alice1.animate(aliceTumbling, aliceTiming).finished
+  //   await alice2.animate(aliceTumbling, aliceTiming).finished
+  //   await alice3.animate(aliceTumbling, aliceTiming).finished
+  // }
+
+  // sequence()
+
+  async showPlayResults (game) {
+    const boardIn = [
+      { transform: '...' },
+      { transofrm: '...' }
+    ]
+
+    const el = document.querySelector('.board-container')
+
+    const sequence = async () => {
+      await el.animate(boardIn).finished
+    }
+
+    sequence()
   }
 
   async kickDec (game, die1 = null, mCoddsdie2 = null, yC = null) {
@@ -563,7 +601,10 @@ export default class Run {
 
     // Make sure board is showing
     await this.slideBoard()
-    this.animationSimple(this.cardsContainer, 'slide-down')
+
+    if (this.cardsContainer.classList.contains('slide-down')) {
+      this.animationSimple(this.cardsContainer, 'slide-down')
+    }
 
     if (!game.two_point || game.time_change !== 4) {
       game.time_change = 0
@@ -631,7 +672,7 @@ export default class Run {
           this.timeout(game, p)
         }
       }
-      this.boardAnimate('in')
+      // this.boardAnimate('in')
       await this.slideBoard('collapse')
     }
 
@@ -1735,23 +1776,60 @@ export default class Run {
   async reportPlay (game, p1, p2) {
     const times = game.thisPlay.multiplier === 999 ? '/' : null
     const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card
+    const elPlCard2 = document.querySelector('.pl-card2')
+    const elMultCard = document.querySelector('.mult-card')
+    const elYardCard = document.querySelector('.yard-card')
+    const elTimesCont = document.querySelector('.times-container')
 
     document.querySelector('.' + (game.away === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
     document.querySelector('.' + (game.home === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
     await this.slideBoard()
-    await this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
 
-    const field = document.querySelector('.field-container')
-    // field.addEventListener('transitionend', () => {
+    const bgChange = [
+      { background: '#005A9C' },
+      { color: 'white' }
+    ]
 
-    // })
-    if (field.classList.contains('slide-away')) {
-      field.classList.remove('slide-away')
-    //   field.style.display = 'block'
-    } else {
-      field.classList.add('slide-away')
-    //   field.style.display = 'none'
+    const changeTiming = {
+      duration: 2000,
+      fill: 'forwards'
     }
+
+    const sequence = async () => {
+      await elPlCard2.animate(bgChange, changeTiming).finished
+      await elMultCard.animate(bgChange, changeTiming).finished
+      await elYardCard.animate(bgChange, changeTiming).finished
+      await elTimesCont.animate(bgChange, changeTiming).finished
+    }
+
+    sequence()
+
+    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away').finished
+
+    // elPlCard2.innerText = game.players[2].currentPlay
+    // await this.animationWaitForCompletion(elPlCard2, 'picked').finished
+    // elMultCard.innerText = mCard
+    // await this.animationWaitForCompletion(elMultCard, 'picked').finished
+    // elYardCard.innerText = game.thisPlay.yard_card
+    // await this.animationWaitForCompletion(elYardCard, 'picked').finished
+    // elTimesCont.innerText = (times || game.thisPlay.multiplier) + 'X'
+    // await this.animationWaitForCompletion(elTimesCont, 'picked').finished
+
+    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away').finished
+
+    // await this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
+
+    // const field = document.querySelector('.field-container')
+    // // field.addEventListener('transitionend', () => {
+
+    // // })
+    // if (field.classList.contains('slide-away')) {
+    //   field.classList.remove('slide-away')
+    // //   field.style.display = 'block'
+    // } else {
+    //   field.classList.add('slide-away')
+    // //   field.style.display = 'none'
+    // }
 
     // alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
   };
