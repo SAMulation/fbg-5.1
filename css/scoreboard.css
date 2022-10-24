@@ -21,6 +21,12 @@
     transition: transform 1s, opacity 1s;
   }
 
+  .scoreboard-container.slide-up {
+    transform: translatey(-100%);
+    opacity: 0;
+    transition: transform 1s, opacity 1s;
+  }
+
   /* Responsive */
 @media (min-width: 600px) {
   .scoreboard-container {

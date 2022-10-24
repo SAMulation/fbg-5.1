@@ -29,6 +29,12 @@ body {
   margin: 0;
   font: 500 100% system-ui, sans-serif;
   /* text-transform: uppercase; */
+  /* LATER: Safe Area Inset to be explored */
+  /* padding:
+    env(safe-area-inset-top, 20px)
+    env(safe-area-inset-right, 20px)
+    env(safe-area-inset-bottom, 20px)
+    env(safe-area-inset-left, 20px); */
 }
 
 .main-container {
@@ -275,7 +281,7 @@ input {
   font-weight: bold;
   color: black;
 
-  transition: background 2s;
+  transition: background .5s;
 }
 
 .board-container .pl-card1-header {

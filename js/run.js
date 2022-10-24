@@ -1,3 +1,4 @@
+/* global alert */
 import Utils from './utils.js'
 import { MULTI, MATCHUP } from './defaults.js'
 
@@ -40,7 +41,7 @@ export default class Run {
       const t = document.createTextNode(msg)
       el.appendChild(t)
       document.querySelector('.field-container .modal-message').prepend(el)
-      await this.sleep(2000)
+      await this.sleep(750)
     } else {
       console.log(msg)
     }
@@ -117,8 +118,8 @@ export default class Run {
     this.setSpot(65)
     this.setBallSpot()
     // // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // this.animationSimple(this.cardsContainer, 'slide-down')
-    // this.animationSimple(this.scoreboardContainer, 'slide-away')
+    this.animationSimple(this.cardsContainer, 'slide-down')
+    await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
     // // this.animationSimple(this.boardContainer, 'slide-away')
     // // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
     this.actualCards.innerText = ''
@@ -136,19 +137,14 @@ export default class Run {
     // //   gameSetup.style.display = 'none'
     // }
 
-    await this.animationWaitThenHide(this.gameSetup, 'slide-away').finished
-    // this.animationSimple(this.gameSetup, 'slide-away')
+    await this.animationWaitThenHide(this.gameSetup, 'slide-away')
 
-    await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
     // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
-    await this.animationWaitForCompletion(this.boardContainer, 'slide-away')
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
-
-    // Slide back up, bring field back in
+    // await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
+    // await this.animationWaitForCompletion(this.boardContainer, 'slide-away')
     // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    // this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+
+    // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
   }
 
   async playGame (channel) {
@@ -294,11 +290,15 @@ export default class Run {
   };
 
   async kickPage (game, oNum) {
-    // const oName = game.players[oNum].team.name;
+    const oName = game.players[oNum].team.name
     // printDown('KICK');
     // let kckDec = null;
     while (game.players[oNum].currentPlay === '' && game.status !== 999) {
       if (game.isReal(oNum)) {
+        await this.alertBox(oName + ' pick kickoff type...')
+        if (this.cardsContainer.classList.contains('slide-down')) {
+          this.animationSimple(this.cardsContainer, 'slide-down')
+        }
         await this.playPages(game, oNum, 'kick')
       } else {
         await this.cpuPages(game, 'kick')
@@ -321,8 +321,13 @@ export default class Run {
   }
 
   async returnPage (game, dNum, pick = null) {
+    const dName = game.players[dNum].team.name
     while (game.players[dNum].currentPlay === '' && game.status !== 999) {
       if (game.isReal(dNum)) {
+        await this.alertBox(dName + ' pick return type...')
+        if (this.cardsContainer.classList.contains('slide-down')) {
+          this.animationSimple(this.cardsContainer, 'slide-down')
+        }
         await this.playPages(game, dNum, 'ret', pick)
       } else {
         await this.cpuPages(game, 'ret', pick)
@@ -395,11 +400,12 @@ export default class Run {
 
     // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
     // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    this.animationSimple(this.cardsContainer, 'slide-down')
+
     this.animationSimple(this.fieldContainer, 'slide-away')
+    await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
 
     elPlCard2.innerText = retType
-    this.animationSimple(elPlCard2, 'picked')
+    await this.animationWaitForCompletion(elPlCard2, 'picked')
 
     if (kickType === 'RK') {
       if (retType === 'RR') {
@@ -426,11 +432,11 @@ export default class Run {
         }
 
         elMultCard.innerText = mltCard
-        this.animationSimple(elMultCard, 'picked')
+        await this.animationWaitForCompletion(elMultCard, 'picked')
         elYardCard.innerText = yard
-        this.animationSimple(elYardCard, 'picked')
+        await this.animationWaitForCompletion(elYardCard, 'picked')
         elTimesCont.innerText = multiplier + 'x'
-        this.animationSimple(elTimesCont, 'picked')
+        await this.animationWaitForCompletion(elTimesCont, 'picked')
 
         retDist = multiplier * yard
         // Touchback
@@ -665,6 +671,8 @@ export default class Run {
       }
       // this.boardAnimate('in')
       await this.slideBoard('collapse')
+      this.animationSimple(this.cardsContainer, 'slide-down')
+      this.animationSimple(this.fieldContainer, 'slide-away')
     }
 
     // Making sure you didn't exit
@@ -981,10 +989,13 @@ export default class Run {
     let selection = null
 
     // await this.slideBoard()
-
+    if (this.cardsContainer.classList.contains('slide-down')) {
+      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    }
     selection = await this.input.getInput(game, p, state)
 
-    this.channel.trigger('client-picked-play', { selection })
+    // LATER: Send user selection to server
+    // this.channel.trigger('client-picked-play', { selection })
 
     game.players[p].currentPlay = selection
   };
@@ -1073,8 +1084,6 @@ export default class Run {
 
   showBoard (board) {
     // Cache pieces
-    const awayMsg = document.querySelector('.away-msg.top-msg')
-    const homeMsg = document.querySelector('.home-msg.top-msg')
     const blMsg = document.querySelector('.away-msg.bot-msg')
     const brMsg = document.querySelector('.home-msg.bot-msg')
     const awayTeam = document.querySelector('.away.team')
@@ -1689,6 +1698,9 @@ export default class Run {
       }
     }
 
+    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+    this.setBallSpot()
+
     await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist)
 
     console.log('Updating scoreboard...')
@@ -1778,26 +1790,9 @@ export default class Run {
     document.querySelector('.' + (game.home === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
     await this.slideBoard()
 
-    // const bgChange = [
-    //   { background: '#005A9C' },
-    //   { color: 'white' }
-    // ]
+    // This is it, but not right order, probably
 
-    // const changeTiming = {
-    //   duration: 2000,
-    //   fill: 'forwards'
-    // }
-
-    // const sequence = async () => {
-    //   await elPlCard2.animate(bgChange, changeTiming).finished
-    //   await elMultCard.animate(bgChange, changeTiming).finished
-    //   await elYardCard.animate(bgChange, changeTiming).finished
-    //   await elTimesCont.animate(bgChange, changeTiming).finished
-    // }
-
-    // sequence()
-
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away').finished
+    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
     elPlCard2.innerText = game.players[2].currentPlay
     await this.animationWaitForCompletion(elPlCard2, 'picked')
@@ -1808,7 +1803,8 @@ export default class Run {
     elTimesCont.innerText = (times || game.thisPlay.multiplier) + 'X'
     await this.animationWaitForCompletion(elTimesCont, 'picked')
 
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away').finished
+    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+    this.setBallSpot()
 
     // await this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
 
@@ -2122,11 +2118,14 @@ export default class Run {
 
     // LATER: Move this
     // await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
-    this.animationSimple(this.scoreboardContainer, 'slide-away')
+    // this.animationSimple(this.scoreboardContainer, 'slide-away')
 
     // Coin toss decision
     if (game.isReal(game.away)) {
+      await this.alertBox(awayName + ' pick [H] or [T] for coin toss...')
+      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
       coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
+      this.animationSimple(this.cardsContainer, 'slide-down')
     } else { // Computer picking
       await this.alertBox('Coin Toss\n' + awayName + ' choosing...\n')
       coinPick = Utils.coinFlip() ? 'H' : 'T'
@@ -2185,6 +2184,8 @@ export default class Run {
       game.status = 11
       game.current_time = 0
     }
+
+    await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
   };
 
   // What ALL is this function doing?
