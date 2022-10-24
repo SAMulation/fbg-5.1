@@ -26,8 +26,7 @@ export default class Run {
 
   sleep (ms) {
     return new Promise(resolve => {
-      // setTimeout(resolve(), ms)
-      resolve()
+      setTimeout(resolve, ms)
     })
   }
 
@@ -40,7 +39,7 @@ export default class Run {
       const t = document.createTextNode(msg)
       el.appendChild(t)
       document.querySelector('.field-container .modal-message').prepend(el)
-      // await this.sleep(2000)
+      await this.sleep(2000)
     } else {
       console.log(msg)
     }
@@ -84,11 +83,7 @@ export default class Run {
   }
 
   animationSimple (el, cls) {
-    if (el.classList.contains(cls)) {
-      el.classList.remove(cls)
-    } else {
-      el.classList.add(cls)
-    }
+    el.classList.toggle(cls)
   }
 
   animationWaitAndHide (el, cls) {
@@ -105,39 +100,26 @@ export default class Run {
 
   async animationWaitForCompletion (el, cls) {
     return new Promise(resolve => {
-      setTimeout(() => {
-        const onTransitionEnd = () => {
-          el.removeEventListener('transitionend', onTransitionEnd)
-          resolve()
-        }
-        el.addEventListener('transitionend', onTransitionEnd)
-
-        this.animationSimple(el, cls)
-      }, 1)
+      el.addEventListener('transitionend', () => {
+        resolve()
+      }, { once: true })
+      this.animationSimple(el, cls)
     })
   }
 
   async animationWaitThenHide (el, cls) {
-    return new Promise(resolve => {
-      const onTransitionEnd = () => {
-        el.removeEventListener('transitionend', onTransitionEnd)
-        el.style.display = 'none'
-        resolve()
-      }
-      el.addEventListener('transitionend', onTransitionEnd)
-
-      this.animationSimple(el, cls)
-    })
+    await this.animationWaitForCompletion(el, cls)
+    el.style.display = 'none'
   }
 
   async prepareHTML () {
     this.setSpot(65)
     this.setBallSpot()
-    // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    this.animationSimple(this.cardsContainer, 'slide-down')
-    this.animationSimple(this.scoreboardContainer, 'slide-away')
-    // this.animationSimple(this.boardContainer, 'slide-away')
-    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+    // // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // this.animationSimple(this.cardsContainer, 'slide-down')
+    // this.animationSimple(this.scoreboardContainer, 'slide-away')
+    // // this.animationSimple(this.boardContainer, 'slide-away')
+    // // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
     this.actualCards.innerText = ''
 
     // // Hide game-setup board
@@ -156,10 +138,16 @@ export default class Run {
     await this.animationWaitThenHide(this.gameSetup, 'slide-away').finished
     // this.animationSimple(this.gameSetup, 'slide-away')
 
+    await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
+    await this.animationWaitForCompletion(this.boardContainer, 'slide-away')
+    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+
     // Slide back up, bring field back in
     // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
     // this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    this.animationSimple(this.cardsContainer, 'slide-down')
+    await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
   }
 
   async playGame () {
@@ -1785,35 +1773,35 @@ export default class Run {
     document.querySelector('.' + (game.home === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
     await this.slideBoard()
 
-    const bgChange = [
-      { background: '#005A9C' },
-      { color: 'white' }
-    ]
+    // const bgChange = [
+    //   { background: '#005A9C' },
+    //   { color: 'white' }
+    // ]
 
-    const changeTiming = {
-      duration: 2000,
-      fill: 'forwards'
-    }
+    // const changeTiming = {
+    //   duration: 2000,
+    //   fill: 'forwards'
+    // }
 
-    const sequence = async () => {
-      await elPlCard2.animate(bgChange, changeTiming).finished
-      await elMultCard.animate(bgChange, changeTiming).finished
-      await elYardCard.animate(bgChange, changeTiming).finished
-      await elTimesCont.animate(bgChange, changeTiming).finished
-    }
+    // const sequence = async () => {
+    //   await elPlCard2.animate(bgChange, changeTiming).finished
+    //   await elMultCard.animate(bgChange, changeTiming).finished
+    //   await elYardCard.animate(bgChange, changeTiming).finished
+    //   await elTimesCont.animate(bgChange, changeTiming).finished
+    // }
 
-    sequence()
+    // sequence()
 
-    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away').finished
+    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away').finished
 
-    // elPlCard2.innerText = game.players[2].currentPlay
-    // await this.animationWaitForCompletion(elPlCard2, 'picked').finished
-    // elMultCard.innerText = mCard
-    // await this.animationWaitForCompletion(elMultCard, 'picked').finished
-    // elYardCard.innerText = game.thisPlay.yard_card
-    // await this.animationWaitForCompletion(elYardCard, 'picked').finished
-    // elTimesCont.innerText = (times || game.thisPlay.multiplier) + 'X'
-    // await this.animationWaitForCompletion(elTimesCont, 'picked').finished
+    elPlCard2.innerText = game.players[2].currentPlay
+    await this.animationWaitForCompletion(elPlCard2, 'picked')
+    elMultCard.innerText = mCard
+    await this.animationWaitForCompletion(elMultCard, 'picked')
+    elYardCard.innerText = game.thisPlay.yard_card
+    await this.animationWaitForCompletion(elYardCard, 'picked')
+    elTimesCont.innerText = (times || game.thisPlay.multiplier) + 'X'
+    await this.animationWaitForCompletion(elTimesCont, 'picked')
 
     await this.animationWaitForCompletion(this.fieldContainer, 'slide-away').finished
 

@@ -54,7 +54,7 @@ body {
 @media (min-width: 601px) {
   div.main-container {
     grid-template-rows: [top-all] minmax(0, 1fr) [top-board] minmax(0, 2fr) [top-cards] minmax(0, 1fr) [bot-all];
-    width: 600;
+    width: 600px;
     margin: 0 auto;
   }
 }
@@ -344,17 +344,17 @@ input {
 
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: auto 85%;
+  grid-template-rows: 15% 85%;
   row-gap: 3%;
   padding: 0;
   z-index: 10;
 
-  transition: margin-top 0.5s, background 1s;
+  transition: transform 0.5s;
 }
 
 .cards-container.slide-down {
   background: rgb(129, 0, 17, 0);
-  margin-top: 32.5%;
+  transform: translateY(85%);
 }
 
 .cards-container .bar {
