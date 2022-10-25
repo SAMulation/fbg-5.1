@@ -167,15 +167,15 @@
     grid-row: mid / bot;
   }
 
-  /* .collapsed .top-msg {
-    transform: translateY(30%);
-  } */
-
-  .top-msg.collapsed {
+  .scoreboard-container.collapsed .top-msg {
     transform: translateY(30%);
   }
 
-  .collapsed .bot-msg {
+  /* .top-msg.collapsed {
+    transform: translateY(30%);
+  } */
+
+  .scoreboard-container.collapsed .bot-msg {
     transform: translateY(-30%);
   }
 
