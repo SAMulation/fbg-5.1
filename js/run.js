@@ -212,7 +212,7 @@ export default class Run {
         await this.returnPage(game, dNum)
       }
       if (game.status !== 999) {
-        this.kickDec(game)
+        await this.kickDec(game)
       }
       if (game.status < 0) {
         game.status = Math.abs(game.status) // Make status positive (no more kicking)
