@@ -580,11 +580,18 @@ export default class Run {
           console.log('p: ' + p + ' time_change: ' + game.time_change)
           alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end!\nWould the ' + game.players[p].team.name + ' like to call a timeout?')
 
+          if (this.cardsContainer.classList.contains('slide-down')) {
+            this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+          }
+
           selection = await this.input.getInput(game, p, 'last')
 
           if (selection === 'Y') {
             await this.timeout(game, p)
           }
+        }
+        if (game.isReal(p) && !this.cardsContainer.classList.contains('slide-down')) {
+          this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
         }
       }
     }
@@ -674,6 +681,9 @@ export default class Run {
         if (game.players[p].currentPlay === 'TO') {
           await this.timeout(game, p)
         }
+      }
+      if (game.isReal(p) && !this.cardsContainer.classList.contains('slide-down')) {
+        this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
       }
       // this.boardAnimate('in')
       // await this.slideBoard('collapse')
@@ -998,7 +1008,7 @@ export default class Run {
 
     // await this.slideBoard()
     if (this.cardsContainer.classList.contains('slide-down')) {
-      // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
     }
     selection = await this.input.getInput(game, p, state)
 
@@ -1951,6 +1961,9 @@ export default class Run {
 
       selection = game.players[oNum].currentPlay
     }
+    if (game.isReal(oNum) && !this.cardsContainer.classList.contains('slide-down')) {
+      this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    }
 
     if (selection === '2P') {
       // printDown('2PT');
@@ -2133,9 +2146,13 @@ export default class Run {
     // Coin toss decision
     if (game.isReal(game.away)) {
       await this.alertBox(awayName + ' pick [H] or [T] for coin toss...')
-      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      if (this.cardsContainer.classList.contains('slide-down')) {
+        this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      }
       coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
-      this.animationSimple(this.cardsContainer, 'slide-down')
+      if (!this.cardsContainer.classList.contains('slide-down')) {
+        this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      }
     } else { // Computer picking
       await this.alertBox('Coin Toss\n' + awayName + ' choosing...\n')
       coinPick = Utils.coinFlip() ? 'H' : 'T'
@@ -2150,7 +2167,14 @@ export default class Run {
     await this.alertBox(result)
 
     if (game.num_plr === 2 || (actFlip === coinPick && game.away === 1) || (actFlip !== coinPick && game.home === 1)) {
+      if (this.cardsContainer.classList.contains('slide-down')) {
+        this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      }
+
       decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
+      if (!this.cardsContainer.classList.contains('slide-down')) {
+        this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      }
     } else { // Computer choosing
       await this.alertBox((actFlip === coinPick ? awayName : homeName) + ' choosing...')
 
