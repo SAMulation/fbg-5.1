@@ -621,6 +621,8 @@ export default class Run {
     // Make sure board is showing
     await this.slideBoard()
 
+    // HERE: TURN THIS INTO A FUNCTION
+
     this.plCard1.innerText = ''
     this.plCard2.innerText = ''
     this.multCard.innerText = ''
