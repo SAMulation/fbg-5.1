@@ -12,6 +12,12 @@ export default class Run {
     this.scoreboardContainer = document.querySelector('.scoreboard-container')
     this.fieldContainer = document.querySelector('.field-container')
     this.boardContainer = document.querySelector('.board-container')
+    this.plCard1 = document.querySelector('.board-container .pl-card1')
+    this.plCard2 = document.querySelector('.board-container .pl-card2')
+    this.multCard = document.querySelector('.board-container .mult-card')
+    this.yardCard = document.querySelector('.board-container .yard-card')
+    this.qualityContainer = document.querySelector('.board-container .quality-container')
+    this.timesContainer = document.querySelector('.board-container .times-container')
     this.cardsContainer = document.querySelector('.cards-container')
     this.actualCards = this.cardsContainer.querySelector('.cards')
     this.promiseTracker = ''
@@ -411,7 +417,7 @@ export default class Run {
     // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
 
     elPlCard2.innerText = retType
-    // await this.animationWaitForCompletion(elPlCard2, 'picked')
+    await this.animationWaitForCompletion(elPlCard2, 'picked')
 
     if (kickType === 'RK') {
       if (retType === 'RR') {
@@ -438,11 +444,11 @@ export default class Run {
         }
 
         elMultCard.innerText = mltCard
-        // await this.animationWaitForCompletion(elMultCard, 'picked')
+        await this.animationWaitForCompletion(elMultCard, 'picked')
         elYardCard.innerText = yard
-        // await this.animationWaitForCompletion(elYardCard, 'picked')
+        await this.animationWaitForCompletion(elYardCard, 'picked')
         elTimesCont.innerText = multiplier + 'x'
-        // await this.animationWaitForCompletion(elTimesCont, 'picked')
+        await this.animationWaitForCompletion(elTimesCont, 'picked')
 
         retDist = multiplier * yard
         // Touchback
@@ -593,6 +599,9 @@ export default class Run {
         if (game.isReal(p) && !this.cardsContainer.classList.contains('slide-down')) {
           this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
         }
+        if (game.isReal(p) && !this.fieldContainer.classList.contains('slide-away')) {
+          this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+        }
       }
     }
   };
@@ -611,6 +620,22 @@ export default class Run {
 
     // Make sure board is showing
     await this.slideBoard()
+
+    this.plCard1.innerText = ''
+    this.plCard2.innerText = ''
+    this.multCard.innerText = ''
+    this.yardCard.innerText = ''
+    this.qualityContainer.innerText = ''
+    this.timesContainer.innerText = ''
+
+    this.fieldContainer.classList.remove('slide-away')
+
+    this.plCard1.classList.remove('picked')
+    this.plCard2.classList.remove('picked')
+    this.multCard.classList.remove('picked')
+    this.yardCard.classList.remove('picked')
+    this.qualityContainer.classList.remove('picked')
+    this.timesContainer.classList.remove('picked')
 
     if (this.cardsContainer.classList.contains('slide-down')) {
       await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
@@ -684,6 +709,9 @@ export default class Run {
       }
       if (game.isReal(p) && !this.cardsContainer.classList.contains('slide-down')) {
         this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      }
+      if (game.isReal(p) && !this.fieldContainer.classList.contains('slide-away')) {
+        this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
       }
       // this.boardAnimate('in')
       // await this.slideBoard('collapse')
@@ -1813,13 +1841,13 @@ export default class Run {
     // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
     elPlCard2.innerText = game.players[2].currentPlay
-    // await this.animationWaitForCompletion(elPlCard2, 'picked')
+    await this.animationWaitForCompletion(elPlCard2, 'picked')
     elMultCard.innerText = mCard
-    // await this.animationWaitForCompletion(elMultCard, 'picked')
+    await this.animationWaitForCompletion(elMultCard, 'picked')
     elYardCard.innerText = game.thisPlay.yard_card
-    // await this.animationWaitForCompletion(elYardCard, 'picked')
+    await this.animationWaitForCompletion(elYardCard, 'picked')
     elTimesCont.innerText = (times || game.thisPlay.multiplier) + 'X'
-    // await this.animationWaitForCompletion(elTimesCont, 'picked')
+    await this.animationWaitForCompletion(elTimesCont, 'picked')
 
     // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
     this.setBallSpot()
@@ -2174,6 +2202,9 @@ export default class Run {
       decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
       if (!this.cardsContainer.classList.contains('slide-down')) {
         this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      }
+      if (!this.fieldContainer.classList.contains('slide-away')) {
+        this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
       }
     } else { // Computer choosing
       await this.alertBox((actFlip === coinPick ? awayName : homeName) + ' choosing...')
