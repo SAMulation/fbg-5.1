@@ -167,7 +167,7 @@
     grid-row: mid / bot;
   }
 
-  .scoreboard-container.collapsed .top-msg {
+  .scoreboard-container.collapsed .top-msg, .top-msg.collapsed {
     transform: translateY(30%);
   }
 
@@ -175,7 +175,7 @@
     transform: translateY(30%);
   } */
 
-  .scoreboard-container.collapsed .bot-msg {
+  .scoreboard-container.collapsed .bot-msg, .bot-msg.collapsed {
     transform: translateY(-30%);
   }
 

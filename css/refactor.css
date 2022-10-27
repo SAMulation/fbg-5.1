@@ -359,7 +359,7 @@ input {
 }
 
 .cards-container.slide-down {
-  background: rgb(129, 0, 17, 0);
+  /* background: rgb(129, 0, 17, 0); */
   transform: translateY(85%);
 }
 
