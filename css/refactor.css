@@ -395,14 +395,21 @@ input {
 .cards-container .cards button.card, .board-container div.picked {
   background: #005A9C;
   color: white;
-  font-size: 8vw;
+  font-size: 5vh;
   font-family: 'calc', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.cards-container .cards button.card {
+.board-container div.mult-card.picked,
+.board-container div.yard-card.picked,
+.board-container div.quality-container.picked,
+.board-container div.times-container.picked {
+  font-size: 3vh;
+}
+
+.cards-container .cards button.card{
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: 25%;

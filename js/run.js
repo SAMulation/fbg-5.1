@@ -532,9 +532,11 @@ export default class Run {
 
     let msg = 'The return... '
     if (!touchback) {
+      await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+
       this.multCard.innerText = mltCard
       await this.animationWaitForCompletion(this.multCard, 'picked')
-      this.timesContainer.innerText = (multiplier || game.thisPlay.multiplier) + 'X'
+      this.timesContainer.innerText = multiplier + 'X'
       await this.animationWaitForCompletion(this.timesContainer, 'picked')
       this.yardCard.innerText = yard
       await this.animationWaitForCompletion(this.yardCard, 'picked')
@@ -1277,11 +1279,24 @@ export default class Run {
   };
 
   printTime (time) {
+    // if (time === -0.5) {
+    //   return 'End'
+    // } else {
+    //   const min = Math.trunc(time)
+    //   const sec = (time - min === 0.5) ? '30' : '00'
+    //   // HW: How would you do other times?
+
+    //   return min + ':' + sec
+    // }
+
     if (time === -0.5) {
       return 'End'
     } else {
       const min = Math.trunc(time)
-      const sec = (time - min === 0.5) ? '30' : '00'
+      let sec = Math.round((time - min) * 60)
+      if (sec < 10) {
+        sec = '0' + sec
+      }
       // HW: How would you do other times?
 
       return min + ':' + sec
@@ -1753,7 +1768,7 @@ export default class Run {
     }
 
     if (!game.two_point) {
-      this.timeChange(game)
+      await this.timeChange(game)
     }
 
     // await this.alertBox('Teams huddling up...\nPress Enter...\n');
@@ -1856,7 +1871,7 @@ export default class Run {
     this.animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
 
     await this.animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
-    this.setBallSpot()
+    // this.setBallSpot()
 
     // await this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
 
@@ -2097,7 +2112,7 @@ export default class Run {
     this.showBoard(document.querySelector('.scoreboard-container'))
   };
 
-  timeChange (game) {
+  async timeChange (game) {
     console.log('timeChange')
     if (game.qtr <= 4 && game.time_change === 0) {
       game.current_time -= 0.5
@@ -2120,8 +2135,20 @@ export default class Run {
       game.current_time = -0.5
     }
     // document.querySelector('.page-selection2').innerText = this.showBoard();
-    this.showBoard(document.querySelector('.scoreboard'))
+    // this.showBoard(document.querySelector('.scoreboard'))
+    await this.tickingClock(game.current_time + 0.5, game.current_time)
   };
+
+  async tickingClock (oldTime, newTime) {
+    const clockTime = document.querySelector('.clock .time')
+    let curTime = oldTime
+    while (curTime > newTime) {
+      clockTime.innerText = this.printTime(curTime)
+      curTime -= 1 / 60
+      await this.sleep(10)
+    }
+    clockTime.innerText = this.printTime(this.game.current_time)
+  }
 
   async gameControl (game) {
     // The game just started
