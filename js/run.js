@@ -1852,6 +1852,8 @@ export default class Run {
 
     // This is it, but not right order, probably
 
+    // PROBLEM HERE
+    debugger
     await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
     this.plCard1.innerText = game.players[1].currentPlay
