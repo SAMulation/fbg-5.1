@@ -1,4 +1,5 @@
 import TextInput from './textInput.js'
+import { EXIT } from './defaults.js'
 
 export default class PromptInput extends TextInput {
   async getInput (game, p, type, newText = null) {
@@ -15,7 +16,7 @@ export default class PromptInput extends TextInput {
         while (selection === '') {
           selection = prompt(this.message)
           if (!selection) {
-            game.status = 999
+            game.status = EXIT
             selection = 'EXIT'
           } else {
             selection = this.abrvs.includes(selection.toUpperCase()) ? selection.toUpperCase() : ''

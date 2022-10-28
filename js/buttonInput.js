@@ -1,4 +1,5 @@
 import BaseInput from './baseInput.js'
+import { EXIT } from './defaults.js'
 
 export default class ButtonInput extends BaseInput {
   // gameSetup = document.querySelector('.game-setup-container')
@@ -29,25 +30,25 @@ export default class ButtonInput extends BaseInput {
   //     el.addEventListener('transitionend', () => {
   //       resolve()
   //     }, { once: true })
-  //     this.animationSimple(el, cls, off)
+  //     animationSimple(el, cls, off)
   //   })
   // }
 
   // async animationPrePick (game, p) {
   //   if (game.isReal(p)) {
-  //     await this.animationWaitForCompletion(this.cardsContainer, 'slide-down', 'off')
+  //     await animationWaitForCompletion(this.cardsContainer, 'slide-down', 'off')
   //   }
-  //   this.animationSimple(this.scoreboardContainerTopLeft, 'collapsed', 'off')
-  //   this.animationSimple(this.scoreboardContainerTopRight, 'collapsed', 'off')
+  //   animationSimple(this.scoreboardContainerTopLeft, 'collapsed', 'off')
+  //   animationSimple(this.scoreboardContainerTopRight, 'collapsed', 'off')
   // }
 
   // async animationPostPick (event, game, p) {
   //   const val = event.target.innerText
-  //   this.animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
-  //   this.animationSimple(this.scoreboardContainerTopRight, 'collapsed')
+  //   animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
+  //   animationSimple(this.scoreboardContainerTopRight, 'collapsed')
 
   //   if (game.isReal(p)) {
-  //     await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+  //     await animationWaitForCompletion(this.cardsContainer, 'slide-down')
   //   }
 
   //   document.querySelector('.pl-card' + p).innerText = val
@@ -71,7 +72,7 @@ export default class ButtonInput extends BaseInput {
     // } else {
     //   document.querySelector('.cards-container').classList.remove('reg')
     // }
-    // await this.animationPrePick(game, p)
+    // await animationPrePick(game, p)
     return new Promise((resolve, reject) => {
       this.bindButtons(document.querySelectorAll('button.card'), resolve, p)
     })

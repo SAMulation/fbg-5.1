@@ -1,3 +1,5 @@
+// LATER: CHANGE ALL 999 to null
+
 export default class Play {
   bonus = 999
   dist = 999

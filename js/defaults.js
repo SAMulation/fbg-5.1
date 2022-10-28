@@ -17,6 +17,9 @@ export const TIMEOUT = 4 // Timeout called
 export const TWOMIN = 9 // Actively in two minute warning
 
 // STATUS CONSTANTS
+export const SAFETY_KICK = -4
+export const KICKOFF = -3
+export const KICK = -1
 export const INIT = 0
 export const REG = 11
 export const OFF_TP = 12
@@ -26,6 +29,8 @@ export const FG = 15
 export const PUNT = 16
 export const HAIL = 17
 export const TWO_PT = 20
+export const TD = 101
+export const SAFETY = 102
 export const REG_TURNOVER = 110
 export const OFF_TP_TURNOVER = 120
 export const DEF_TP_TURNOVER = 130
@@ -34,3 +39,7 @@ export const FG_TURNOVER = 150
 export const PUNT_TURNOVER = 160
 export const HAIL_TURNOVER = 170
 export const TWO_PT_TURNOVER = 200
+export const LEAVE = 900
+export const P1_WINS = 901
+export const P2_WINS = 902
+export const EXIT = 999

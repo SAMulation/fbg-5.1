@@ -1,13 +1,13 @@
 /* global alert */
 import Utils from './utils.js'
-import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, INIT, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT } from './defaults.js'
+import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT } from './defaults.js'
+import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer } from './graphics.js'
 
 export default class Run {
   constructor (game, input) {
-    // Pointer to game object
-    this.game = game
+    this.game = game // Pointer to game object
     this.input = input
-    this.alert = 'subhead' // 'skip' or ''
+    this.alert = 'bar' // or 'alert' or 'console'
     this.gameSetup = document.querySelector('.game-setup-container')
     this.scoreboardContainer = document.querySelector('.scoreboard-container')
     this.scoreboardContainerTopLeft = document.querySelector('.scoreboard-container .away-msg.top-msg')
@@ -15,6 +15,7 @@ export default class Run {
     this.scoreboardContainerBotLeft = document.querySelector('.scoreboard-container .away-msg.bot-msg')
     this.scoreboardContainerBotRight = document.querySelector('.scoreboard-container .home-msg.bot-msg')
     this.fieldContainer = document.querySelector('.field-container')
+    this.field = this.fieldContainer.querySelector('.field')
     this.boardContainer = document.querySelector('.board-container')
     this.plCard1 = document.querySelector('.board-container .pl-card1')
     this.plCard2 = document.querySelector('.board-container .pl-card2')
@@ -24,213 +25,57 @@ export default class Run {
     this.timesContainer = document.querySelector('.board-container .times-container')
     this.cardsContainer = document.querySelector('.cards-container')
     this.actualCards = this.cardsContainer.querySelector('.cards')
-    this.promiseTracker = ''
-    this.channel = null
-  }
-
-  moveBall () {
-    const ball = document.querySelector('.field-container .ball')
-    let left = parseInt(ball.style.left) || 10
-    left += 100
-    if (left > 500) left = 10
-    ball.style.left = `${left}px`
-  }
-
-  sleep (ms) {
-    return new Promise(resolve => {
-      setTimeout(resolve, ms)
-    })
-  }
-
-  async alertBox (msg) {
-    // msg = this.printTime(this.game.currentTime) + ' | ' + msg
-    if (this.alert === 'alert') {
-      alert(msg)
-    } else if (this.alert === 'subhead') {
-      const el = document.createElement('p')
-      const t = document.createTextNode(msg)
-      el.appendChild(t)
-      // document.querySelector('.field-container .modal-message').prepend(el)
-      document.querySelector('.cards-container .bar').innerText = msg
-      await this.sleep(750)
-    } else {
-      console.log(msg)
-    }
-
-    return new Promise(resolve => {
-      // setTimeout(resolve(), ms)
-      resolve()
-    })
-  };
-
-  // prepareHTML () {
-  //   document.querySelector('.selection.pl1').innerHTML = ''
-  //   document.querySelector('.selection.pl2').innerHTML = ''
-  //   document.querySelector('.page-main h1').innerText = 'Player 1 Pick Play'
-  //   document.querySelector('.page-main .to-butt1').innerHTML = 'Timeout? (<span>' + this.game.players[1].timeouts + '</span>)'
-  //   document.querySelector('.page-main .to-butt1').classList.remove('hidden')
-  //   document.querySelector('.page-sidebar .to-butt2').innerText = 'TO'
-  //   document.querySelector('.page-sidebar h1').innerText = 'Player 2 Pick Play'
-  //   this.showBoard(document.querySelector('.scoreboard-container'))
-  //   document.querySelector('.main-container').classList.add('game') // LATER: When completely done with game, remove this
-  //   document.querySelector('.scoreboard-container').classList.remove('hidden')
-  //   document.querySelector('.page-subheader').classList.remove('hidden')
-  // }
-
-  setBallSpot (newSpot = this.game.spot) {
-    // Basically need to calculate the time based on the last play and async await animation based on that
-    // Longer plays will move quickly, shorter plays slower
-    // Maybe add a little inflation of ball as it moves - but that can be later, focus on function
-    // document.documentElement.style.setProperty('--ball-speed', this.game.spot - this.game.lastSpot)
-    document.documentElement.style.setProperty('--ball-spot', (document.querySelector('.field').offsetHeight / 100 * ((100 - newSpot) + 44)) + 'px')
-    // const ballSpot = document.documentElement.style.getPropertyValue('--ball-spot')
-    // console.log(ballSpot)
-    // console.log(document.querySelector('.field').offsetHeight)
-    // console.log((144 + (100 - this.game.spot)))
-    // console.log(document.querySelector('.field').offsetHeight / 100 * ((100 - this.game.spot) + 44))
-  }
-
-  setSpot (newSpot) {
-    this.game.lastSpot = this.game.spot
-    this.game.spot = newSpot
-  }
-
-  animationSimple (el, cls, on = true) {
-    if ((on && !el.classList.contains(cls)) || (!on && el.classList.contains(cls))) {
-      el.classList.toggle(cls)
-    }
-  }
-
-  async animationWaitForCompletion (el, cls, on = true) {
-    return new Promise(resolve => {
-      const handler = () => {
-        el.removeEventListener('transitionend', handler)
-        el.removeEventListener('transitioncancel', handler)
-        resolve()
-      }
-
-      el.addEventListener('transitionend', handler)
-      el.addEventListener('transitioncancel', handler)
-      this.animationSimple(el, cls, on)
-    })
-  }
-
-  async animationWaitThenHide (el, cls, on = true) {
-    if (!on) {
-      el.style.display = ''
-    }
-    await this.animationWaitForCompletion(el, cls, on)
-    if (on) {
-      el.style.display = 'none'
-    }
-  }
-
-  async animationPrePick (game, p) {
-    if (game.isReal(p)) {
-      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-    }
-    this.animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-    this.animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
-  }
-
-  async animationPostPick (game, p) {
-    this.animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
-    this.animationSimple(this.scoreboardContainerTopRight, 'collapsed')
-
-    if (game.isReal(p)) {
-      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    }
-  }
-
-  resetBoardContainer () {
-    // Clear values
-    this.plCard1.innerText = ''
-    this.plCard2.innerText = ''
-    this.multCard.innerText = ''
-    this.yardCard.innerText = ''
-    this.qualityContainer.innerText = ''
-    this.timesContainer.innerText = ''
-
-    // Remove classes
-    this.plCard1.classList.remove('picked')
-    this.plCard2.classList.remove('picked')
-    this.multCard.classList.remove('picked')
-    this.yardCard.classList.remove('picked')
-    this.qualityContainer.classList.remove('picked')
-    this.timesContainer.classList.remove('picked')
+    this.alertMessage = this.cardsContainer.querySelector('.bar')
+    this.ball = document.querySelector('.field-container .ball')
+    this.docStyle = document.documentElement.style
+    this.channel = null // This is the Pusher channel
   }
 
   async prepareHTML () {
-    this.setSpot(65)
-    this.setBallSpot()
-    // // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    this.animationSimple(this.cardsContainer, 'slide-down')
-    await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
-    // // this.animationSimple(this.boardContainer, 'slide-away')
-    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    this.actualCards.innerText = ''
-
-    // // Hide game-setup board
-    // const gameSetup = document.querySelector('.game-setup-container')
-    // gameSetup.addEventListener('transitionend', () => {
-    //   gameSetup.style.display = 'none'
-    // }, { once: true })
-    // if (gameSetup.classList.contains('slide-away')) {
-    //   gameSetup.classList.remove('slide-away')
-    // //   gameSetup.style.display = 'block'
-    // } else {
-    //   gameSetup.classList.add('slide-away')
-    // //   gameSetup.style.display = 'none'
-    // }
-
-    await this.animationWaitThenHide(this.gameSetup, 'slide-away')
-
-    // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
-    // await this.animationWaitForCompletion(this.boardContainer, 'slide-away')
-    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
-
-    // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    setSpot(this, 65) // Place ball
+    setBallSpot(this)
+    animationSimple(this.cardsContainer, 'slide-down') // Slide cards container down
+    await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
+    this.actualCards.innerText = '' // Clear out default cards
+    await animationWaitThenHide(this.gameSetup, 'slide-away') // Slide away game setup screen
   }
 
   async playGame (channel) {
-    this.channel = channel
-
-    await this.prepareHTML()
-
-    await this.gameLoop(this.game, 0)
-
-    console.log(this.game)
+    this.channel = channel // Pass from script.js via game.js
+    await this.prepareHTML() // Set up game board and field
+    await this.gameLoop(this.game, INIT) // Start the game loop
   };
 
   async gameLoop (game, test = REG) {
     // Pass status into gameLoop for testing purposes
+    // Can pass it 11 (REG) to just 'jump in' and test a play
+    // *** Though, some stuff won't work cuz all the vars aren't set
     game.status = test
-    // gameStart, so set time to 0.5
-    if (test === 0) {
-      game.currentTime = -0.5 // LATER: Remember to check
+
+    // INIT, so set time to 0.5
+    if (game.status === INIT) {
+      game.currentTime = -0.5
     }
 
     // This is the game loop
-    while (game.status < 900) {
-      if (game.status < 900) {
+    while (game.status < LEAVE) {
+      if (game.status < LEAVE) {
         await this.gameControl(game)
       }
-      while (game.currentTime >= 0 && game.status !== 999) {
-        // game.save('as-' + datetime.now().strftime("%m.%d.%Y-%H.%M.%S"))
-        if (game.status < 0) {
+      while (game.currentTime >= 0 && game.status !== EXIT) {
+        if (game.status <= KICK) {
           await this.kickoff(game)
-        } else if ((game.status > 10 && game.status < 100) || game.twoPtConv) {
+        } else if ((game.status >= REG && game.status < TD) || game.twoPtConv) {
           await this.playMechanism(game)
         }
 
-        if (game.status !== 999) {
+        if (game.status !== EXIT) {
           await this.endPlay(game)
         }
       }
     }
 
-    if (game.status === 999) {
+    if (game.status === EXIT) {
       game.status = 0
     }
   };
@@ -254,10 +99,10 @@ export default class Run {
 
       await this.kickPage(game, oNum)
 
-      if (game.status !== 999) {
+      if (game.status !== EXIT) {
         await this.returnPage(game, dNum)
       }
-      if (game.status !== 999) {
+      if (game.status !== EXIT) {
         await this.kickDec(game)
       }
       if (game.status < 0) {
@@ -339,9 +184,9 @@ export default class Run {
     const oName = game.players[oNum].team.name
     // printDown('KICK');
     // let kckDec = null;
-    while (game.players[oNum].currentPlay === '' && game.status !== 999) {
+    while (game.players[oNum].currentPlay === '' && game.status !== EXIT) {
       if (game.isReal(oNum)) {
-        await this.alertBox(oName + ' pick kickoff type...')
+        await alertBox(this, oName + ' pick kickoff type...')
         await this.playPages(game, oNum, 'kick')
       } else {
         await this.cpuPages(game, 'kick')
@@ -354,20 +199,20 @@ export default class Run {
   }
 
   async playPickedAnimation (game) {
-    // this.animationWaitForCompletion(this.boardContainer, 'slide-away')
-    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    // await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    // this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // animationWaitForCompletion(this.boardContainer, 'slide-away')
+    // await animationWaitForCompletion(this.fieldContainer, 'slide-away')
+    // await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // animationWaitForCompletion(this.fieldContainer, 'slide-away')
+    // animationWaitForCompletion(this.cardsContainer, 'slide-down')
     document.querySelector('.pl-card2').innerText = game.players[2].currentPlay
     document.querySelector('.pl-card2').classList.add('picked')
   }
 
   async returnPage (game, dNum, pick = null) {
     const dName = game.players[dNum].team.name
-    while (game.players[dNum].currentPlay === '' && game.status !== 999) {
+    while (game.players[dNum].currentPlay === '' && game.status !== EXIT) {
       if (game.isReal(dNum)) {
-        await this.alertBox(dName + ' pick return type...')
+        await alertBox(this, dName + ' pick return type...')
         await this.playPages(game, dNum, 'ret', pick)
       } else {
         await this.cpuPages(game, 'ret', pick)
@@ -432,17 +277,17 @@ export default class Run {
     let retDist = 0
     let okResult = false
 
-    await this.alertBox('Teams are lining up for the kick...')
+    await alertBox(this, 'Teams are lining up for the kick...')
 
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+    await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
     this.plCard1.innerText = game.players[1].currentPlay
-    await this.animationWaitForCompletion(this.plCard1, 'picked')
+    await animationWaitForCompletion(this.plCard1, 'picked')
     this.plCard2.innerText = game.players[2].currentPlay
-    await this.animationWaitForCompletion(this.plCard2, 'picked')
+    await animationWaitForCompletion(this.plCard2, 'picked')
 
-    this.setBallSpot()
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    setBallSpot(this)
+    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
 
     if (kickType === 'RK') {
       if (retType === 'RR') {
@@ -475,7 +320,7 @@ export default class Run {
         touchback = true
       }
     } else if (kickType === 'OK') {
-      await this.alertBox(oName + ' onside kick!!!')
+      await alertBox(this, oName + ' onside kick!!!')
       let odds = 6
       if (retType === 'RK') {
         odds = 12
@@ -509,13 +354,13 @@ export default class Run {
       }
     }
 
-    await this.alertBox('The kick is up...')
+    await alertBox(this, 'The kick is up...')
 
     if (touchback) {
-      await this.alertBox('Deep kick!')
+      await alertBox(this, 'Deep kick!')
       // moveBall('c');
     } else {
-      await this.alertBox(oName + ' kick...')
+      await alertBox(this, oName + ' kick...')
       game.thisPlay.dist = kickDist
       // moveBall('k');
       game.spot += kickDist
@@ -523,11 +368,11 @@ export default class Run {
 
     if (kickType === 'OK') {
       if (okResult) {
-        await this.alertBox(oName + ' recover!')
+        await alertBox(this, oName + ' recover!')
         possession = false
         retDist = -retDist
       } else {
-        await this.alertBox(dName + ' recover!')
+        await alertBox(this, dName + ' recover!')
       }
     }
 
@@ -537,17 +382,17 @@ export default class Run {
 
     let msg = 'The return... '
     if (!touchback) {
-      await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+      await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
       this.multCard.innerText = mltCard
-      await this.animationWaitForCompletion(this.multCard, 'picked')
+      await animationWaitForCompletion(this.multCard, 'picked')
       this.timesContainer.innerText = multiplier + 'X'
-      await this.animationWaitForCompletion(this.timesContainer, 'picked')
+      await animationWaitForCompletion(this.timesContainer, 'picked')
       this.yardCard.innerText = yard
-      await this.animationWaitForCompletion(this.yardCard, 'picked')
+      await animationWaitForCompletion(this.yardCard, 'picked')
 
-      this.animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-      this.animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
+      animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
+      animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
 
       if (retDist === 0) {
         msg += 'No return'
@@ -589,9 +434,9 @@ export default class Run {
       game.changeTime = 1
     }
 
-    this.setBallSpot()
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
-    await this.alertBox(msg)
+    setBallSpot(this)
+    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    await alertBox(this, msg)
 
     // if (game.status < 0) {
     //   game.status = Math.abs(game.status) // Make status positive (no more kicking)
@@ -603,9 +448,9 @@ export default class Run {
     await this.pickPlay(game)
 
     // console.log(stat);
-    if (game.status !== 999) {
+    if (game.status !== EXIT) {
       await this.lastChanceTO(game)
-      await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+      await animationWaitForCompletion(this.fieldContainer, 'slide-away')
       await this.doPlay(game, game.players[1].currentPlay, game.players[2].currentPlay)
     }
   };
@@ -621,9 +466,9 @@ export default class Run {
           console.log('p: ' + p + ' changeTime: ' + game.changeTime)
           alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end! Would the ' + game.players[p].team.name + ' like to call a timeout?')
 
-          await this.animationPrePick(game, p)
+          await animationPrePick(this, game, p)
           selection = await this.input.getInput(game, p, 'last')
-          await this.animationPostPick(game, p)
+          await animationPostPick(this, game, p)
 
           if (selection === 'Y') {
             await this.timeout(game, p)
@@ -646,15 +491,15 @@ export default class Run {
     game.players[1].currentPlay = ''
     game.players[2].currentPlay = ''
 
-    this.animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
-    this.animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
+    animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
+    animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
 
     // Make sure board is showing
     // await this.slideBoard()
 
     // HERE: TURN THIS INTO A FUNCTION
 
-    this.resetBoardContainer()
+    resetBoardContainer(this)
 
     if (!game.twoPtConv || game.changeTime !== 4) {
       game.changeTime = 0
@@ -686,7 +531,7 @@ export default class Run {
     } else {
       timChg = 9
       twoMin = true
-      await this.alertBox('Two-minute warning...')
+      await alertBox(this, 'Two-minute warning...')
     }
 
     game.changeTime = timChg
@@ -699,9 +544,9 @@ export default class Run {
       game.players[p].currentPlay = ''
 
       // Computer Stuff
-      if (game.status !== 999 && p === 2 && !game.isReal(2)) {
+      if (game.status !== EXIT && p === 2 && !game.isReal(2)) {
         // This is where the computer can call timeout or pick special play
-        await this.alertBox(game.players[2].team.name + ' are picking their play...')
+        await alertBox(this, game.players[2].team.name + ' are picking their play...')
         document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = game.players[2].team.name + ' are picking their play...'
         // await this.slideBoard()
         if (game.changeTime === 0) {
@@ -711,7 +556,7 @@ export default class Run {
         this.cpuPlay(game)
       }
 
-      while (game.players[p].currentPlay === '' && game.status !== 999) {
+      while (game.players[p].currentPlay === '' && game.status !== EXIT) {
         if (game.isReal(p)) {
           await this.playPages(game, p)
         } else {
@@ -725,15 +570,15 @@ export default class Run {
     }
 
     // Making sure you didn't exit
-    if (game.status !== 999) {
+    if (game.status !== EXIT) {
       game.status = this.setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay)
       // debugger
 
-      await this.alertBox('Both teams are lining up for the snap...')
+      await alertBox(this, 'Both teams are lining up for the snap...')
 
       // Exit out of the game
     } else {
-      await this.alertBox('Catch ya laterrrrr!')
+      await alertBox(this, 'Catch ya laterrrrr!')
       // console.log(game);
     }
   };
@@ -775,7 +620,7 @@ export default class Run {
     //   }
     // })
 
-    await this.animationWaitForCompletion(el, 'collapsed')
+    await animationWaitForCompletion(el, 'collapsed')
   }
 
   async cpuTime (game) {
@@ -845,7 +690,7 @@ export default class Run {
       msg = "Timeout not called, one's been called..."
     }
 
-    await this.alertBox(msg)
+    await alertBox(this, msg)
     game.players[p].currentPlay = ''
   };
 
@@ -984,7 +829,7 @@ export default class Run {
 
       game.players[2].currentPlay = playAbrv
     } else if (state === 'xp') {
-      await this.alertBox(game.players[2].team.name + ' selecting PAT type...')
+      await alertBox(this, game.players[2].team.name + ' selecting PAT type...')
       let selection = 'XP'
 
       const diff = game.players[1].score - game.players[2].score
@@ -995,7 +840,7 @@ export default class Run {
 
       game.players[2].currentPlay = selection
     } else if (state === 'kick') {
-      await this.alertBox(game.players[2].team.name + ' selecting kickoff type...')
+      await alertBox(this, game.players[2].team.name + ' selecting kickoff type...')
       await this.cpuTime(game)
 
       const qtr = game.qtr
@@ -1012,7 +857,7 @@ export default class Run {
 
       game.players[2].currentPlay = kckDec
     } else if (state === 'ret') {
-      this.alertBox(game.players[2].team.name + ' selecting return type...')
+      alertBox(game.players[2].team.name + ' selecting return type...')
       await this.cpuTime(game)
 
       const qtr = game.qtr
@@ -1039,9 +884,9 @@ export default class Run {
   async playPages (game, p, state = 'reg', pick = null) {
     let selection = null
 
-    await this.animationPrePick(game, p)
+    await animationPrePick(this, game, p)
     selection = await this.input.getInput(game, p, state)
-    await this.animationPostPick(game, p)
+    await animationPostPick(this, game, p)
 
     // LATER: Send user selection to server
     // this.channel.trigger('client-picked-play', { selection })
@@ -1386,7 +1231,7 @@ export default class Run {
       }
     }
 
-    // await this.alertBox(report);
+    // await alertBox(this, report);
   };
 
   drawPlay (game, plr, play) {
@@ -1401,7 +1246,7 @@ export default class Run {
     const coin = Utils.coinFlip()
     let multCard = null
 
-    await this.alertBox('Same play!')
+    await alertBox(this, 'Same play!')
     multCard = game.decMults()
 
     if (multCard.card === 'King') {
@@ -1412,7 +1257,7 @@ export default class Run {
       game.thisPlay.multiplier = -3
     } else {
       if (coin) {
-        await this.alertBox('Picked!')
+        await alertBox(this, 'Picked!')
         await this.changePoss(game, 'to')
       }
       game.thisPlay.dist = 0
@@ -1459,10 +1304,10 @@ export default class Run {
         }
       } else {
         if (die === 6) {
-          await this.alertBox('FUMBLE!!!')
+          await alertBox(this, 'FUMBLE!!!')
           game.thisPlay.dist = 101 // Touchdown
         } else { // die === 4 && die === 5
-          await this.alertBox('FUMBLE!!')
+          await alertBox(this, 'FUMBLE!!')
           if ((100 - game.spot) / 2 > 25) { // Half the field or 25, whichever is more
             game.thisPlay.dist = Math.round((100 - game.spot) / 2)
           } else {
@@ -1481,7 +1326,7 @@ export default class Run {
 
   async trickPlay (game) {
     const die = Utils.rollDie()
-    await this.alertBox((game.status === 12 ? game.players[game.offNum].team.name : game.players[game.defNum].team.name) + ' trick play!')
+    await alertBox(this, (game.status === 12 ? game.players[game.offNum].team.name : game.players[game.defNum].team.name) + ' trick play!')
 
     if (die === 2) {
       // If timeout called, return
@@ -1537,8 +1382,8 @@ export default class Run {
     const fdst = spt + 17
     let die = Utils.rollDie()
 
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
-    await this.alertBox(name + ' attempting a ' + fdst + '-yard field goal...')
+    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    await alertBox(this, name + ' attempting a ' + fdst + '-yard field goal...')
 
     // Ice kicker
     if (game.changeTime === 4 && game.lastCallTO !== game.offNum) {
@@ -1556,7 +1401,7 @@ export default class Run {
     // LATER: Field goal graphics will go here
 
     if (make) {
-      await this.alertBox(name + ' field goal is good!')
+      await alertBox(this, name + ' field goal is good!')
       this.scoreChange(game, ono, 3)
       if (game.isOT()) {
         // Maybe the graphics are different here
@@ -1564,7 +1409,7 @@ export default class Run {
         game.status = -3
       }
     } else {
-      await this.alertBox(name + ' field goal is no good...')
+      await alertBox(this, name + ' field goal is no good...')
       if (!game.isOT()) {
         await this.changePoss(game, 'fg')
       }
@@ -1598,8 +1443,8 @@ export default class Run {
     }
 
     // printDown('PUNT');
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
-    await this.alertBox(oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...')
+    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    await alertBox(this, oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...')
 
     // Check block (not on Safety Kick)
     if (game.status !== -4 && Utils.rollDie() === 6) {
@@ -1619,13 +1464,13 @@ export default class Run {
       }
     }
 
-    await this.alertBox('The punt is up...')
+    await alertBox(this, 'The punt is up...')
 
     if (touchback) {
-      await this.alertBox('Deep kick!')
+      await alertBox(this, 'Deep kick!')
       // moveBall('c');
     } else if (block) {
-      await this.alertBox(dName + ' blocked the punt!!!')
+      await alertBox(this, dName + ' blocked the punt!!!')
       // addRecap( blocked punt )
       // Regular punt/safety kick
     } else {
@@ -1649,7 +1494,7 @@ export default class Run {
         await this.changePoss(game, 'pnt')
       }
     } else {
-      await this.alertBox(dName + ' muffed the kick! ' + oName + ' recover the ball...')
+      await alertBox(this, dName + ' muffed the kick! ' + oName + ' recover the ball...')
       // addRecap( muffed punt )
       // record turnover to defNum
     }
@@ -1703,7 +1548,7 @@ export default class Run {
       game.down = 0 // CHECK: This is a band-aid
     }
 
-    await this.alertBox(msg)
+    await alertBox(this, msg)
   };
 
   async hailMary (game) {
@@ -1711,7 +1556,7 @@ export default class Run {
     let msg = null
     let dst = 0
 
-    await this.alertBox(game.players[game.offNum].team.name + ' hail mary!')
+    await alertBox(this, game.players[game.offNum].team.name + ' hail mary!')
     document.querySelector('.' + (game.away === game.offNum ? 'away' : 'home') + ' .hm' + game.players[game.offNum].hm).classList.add('called')
 
     if (die === 1) {
@@ -1731,7 +1576,7 @@ export default class Run {
     }
 
     if (msg) {
-      await this.alertBox(msg)
+      await alertBox(this, msg)
     }
 
     game.thisPlay.multiplier_card = '/'
@@ -1762,8 +1607,8 @@ export default class Run {
       }
     }
 
-    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    this.setBallSpot()
+    // await animationWaitForCompletion(this.fieldContainer, 'slide-away')
+    setBallSpot(this)
 
     await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist)
 
@@ -1776,7 +1621,7 @@ export default class Run {
       await this.timeChanger(game)
     }
 
-    // await this.alertBox('Teams huddling up...\nPress Enter...\n');
+    // await alertBox(this, 'Teams huddling up...\nPress Enter...\n');
 
     if (game.status > 0 && game.status < 10) {
       game.status = REG
@@ -1848,8 +1693,8 @@ export default class Run {
     const times = game.thisPlay.multiplier === 999 ? '/' : null
     const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card
 
-    this.animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
-    this.animationSimple(this.scoreboardContainerBotRight, 'collapsed')
+    animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
+    animationSimple(this.scoreboardContainerBotRight, 'collapsed')
 
     document.querySelector('.' + (game.away === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
     document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
@@ -1859,28 +1704,28 @@ export default class Run {
 
     // PROBLEM HERE
     // debugger
-    // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+    // await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
     this.plCard1.innerText = game.players[1].currentPlay
-    await this.animationWaitForCompletion(this.plCard1, 'picked')
+    await animationWaitForCompletion(this.plCard1, 'picked')
     this.plCard2.innerText = game.players[2].currentPlay
-    await this.animationWaitForCompletion(this.plCard2, 'picked')
+    await animationWaitForCompletion(this.plCard2, 'picked')
     this.qualityContainer.innerText = game.thisPlay.getQuality()
-    await this.animationWaitForCompletion(this.qualityContainer, 'picked')
+    await animationWaitForCompletion(this.qualityContainer, 'picked')
     this.multCard.innerText = mCard
-    await this.animationWaitForCompletion(this.multCard, 'picked')
+    await animationWaitForCompletion(this.multCard, 'picked')
     this.timesContainer.innerText = (times || game.thisPlay.multiplier) + 'X'
-    await this.animationWaitForCompletion(this.timesContainer, 'picked')
+    await animationWaitForCompletion(this.timesContainer, 'picked')
     this.yardCard.innerText = game.thisPlay.yard_card
-    await this.animationWaitForCompletion(this.yardCard, 'picked')
+    await animationWaitForCompletion(this.yardCard, 'picked')
 
-    this.animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-    this.animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
+    animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
+    animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
 
-    await this.animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
-    this.setBallSpot()
+    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    setBallSpot(this)
 
-    // await this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
+    // await alertBox(this, 'Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
 
     // const field = document.querySelector('.field-container')
     // // field.addEventListener('transitionend', () => {
@@ -1919,19 +1764,19 @@ export default class Run {
         }
 
         if (good) {
-          await this.alertBox(oname + ' 2-point conversion good!')
+          await alertBox(this, oname + ' 2-point conversion good!')
           this.scoreChange(game, ono, 2)
         } else {
           if (game.changeTime < 2 || game.changeTime > 3) {
-            await this.alertBox(oname + ' 2-point conversion no good!')
+            await alertBox(this, oname + ' 2-point conversion no good!')
           }
         }
       } else if ((game.spot + dst <= 0 || game.spot + dst >= 100) && game.turnover) {
-        await this.alertBox(dname + ' returned 2-pt!!!')
+        await alertBox(this, dname + ' returned 2-pt!!!')
         this.scoreChange(game, dno, 2)
       } else {
         if (game.changeTime < 2 || game.changeTime > 3) {
-          await this.alertBox(oname + ' 2-point conversion no good!')
+          await alertBox(this, oname + ' 2-point conversion no good!')
         }
       }
 
@@ -1966,7 +1811,7 @@ export default class Run {
   };
 
   async safety (game) {
-    await this.alertBox(game.players[game.defNum].team.name + ' forced a safety!!')
+    await alertBox(this, game.players[game.defNum].team.name + ' forced a safety!!')
     this.scoreChange(game, game.defNum, 2)
     if (game.isOT()) {
       game.otPoss = 0
@@ -1977,7 +1822,7 @@ export default class Run {
   };
 
   async touchdown (game) {
-    await this.alertBox(game.players[game.offNum].team.name + ' scored a touchdown!!!')
+    await alertBox(this, game.players[game.offNum].team.name + ' scored a touchdown!!!')
     this.scoreChange(game, game.offNum, 6)
     this.showBoard(document.querySelector('.scoreboard-container'))
 
@@ -2038,10 +1883,10 @@ export default class Run {
       // printFG(die !== 6);
 
       if (die !== 6) {
-        await this.alertBox(oName + ' XP good!')
+        await alertBox(this, oName + ' XP good!')
         this.scoreChange(game, oNum, 1)
       } else {
-        await this.alertBox(oName + ' XP no good...')
+        await alertBox(this, oName + ' XP no good...')
         // Might need some graphics here
       }
 
@@ -2068,11 +1913,11 @@ export default class Run {
 
     // Sticks
     if (game.spot === game.firstDown) {
-      await this.alertBox('Sticks...')
+      await alertBox(this, 'Sticks...')
       coin = Utils.coinFlip()
 
       if (!coin) {
-        await this.alertBox('Almost!')
+        await alertBox(this, 'Almost!')
       }
     }
 
@@ -2082,7 +1927,7 @@ export default class Run {
 
     if (game.spot > game.firstDown || coin) {
       if (game.down !== 0) {
-        await this.alertBox('First down!')
+        await alertBox(this, 'First down!')
         // print_down(game);
       }
       game.down = 1
@@ -2108,7 +1953,7 @@ export default class Run {
     }
 
     if (game.down > 4) {
-      await this.alertBox('Turnover on downs!!!')
+      await alertBox(this, 'Turnover on downs!!!')
       await this.changePoss(game, 'to')
 
       game.down = 1
@@ -2152,7 +1997,7 @@ export default class Run {
     while (curTime > newTime) {
       clockTime.innerText = this.printTime(curTime)
       curTime -= 1 / 60
-      await this.sleep(10)
+      await sleep(10)
     }
     clockTime.innerText = this.printTime(this.game.currentTime)
   }
@@ -2166,7 +2011,7 @@ export default class Run {
         await this.resetVar(game)
       }
 
-      await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
+      await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
     } else {
       // End of half
       // if (game.state === END_QTR && game.qtr === 3) {
@@ -2205,17 +2050,17 @@ export default class Run {
     let recFirst = 'away'
 
     // LATER: Move this
-    // await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
-    // this.animationSimple(this.scoreboardContainer, 'slide-away')
+    // await animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
+    // animationSimple(this.scoreboardContainer, 'slide-away')
 
     // Coin toss decision
     if (game.isReal(game.away)) {
-      await this.alertBox(awayName + ' pick [H] or [T] for coin toss...')
-      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+      await alertBox(this, awayName + ' pick [H] or [T] for coin toss...')
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
-      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
     } else { // Computer picking
-      await this.alertBox('Coin Toss: ' + awayName + ' choosing...')
+      await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
       coinPick = Utils.coinFlip() ? 'H' : 'T'
     }
 
@@ -2225,16 +2070,16 @@ export default class Run {
     // Some sort of graphic
     actFlip = Utils.coinFlip() ? 'H' : 'T'
     result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
-    await this.alertBox(result)
+    await alertBox(this, result)
 
     if (game.numberPlayers === 2 || (actFlip === coinPick && game.away === 1) || (actFlip !== coinPick && game.home === 1)) {
-      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
-      await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
 
-      // await this.animationWaitForCompletion(this.fieldContainer, 'slide-away')
+      // await animationWaitForCompletion(this.fieldContainer, 'slide-away')
     } else { // Computer choosing
-      await this.alertBox((actFlip === coinPick ? awayName : homeName) + ' choosing...')
+      await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing...')
 
       decPick = Utils.randInt(1, 2)
       if (!(game.qtr >= 4)) {
@@ -2259,7 +2104,7 @@ export default class Run {
     }
 
     result += '...'
-    await this.alertBox(result)
+    await alertBox(this, result)
 
     if ((actFlip === coinPick && (decPick === '2' || decPick === 'K')) || (coinPick !== actFlip && (decPick === '1' || decPick === 'R'))) {
       recFirst = 'home'
@@ -2277,7 +2122,7 @@ export default class Run {
       game.currentTime = 0
     }
 
-    // await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
+    // await animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
   };
 
   // What ALL is this function doing?
@@ -2381,11 +2226,11 @@ export default class Run {
       }
 
       if (game.qtr !== 0) {
-        await this.alertBox('Quarter end...')
+        await alertBox(this, 'Quarter end...')
 
         // Used to check !over, but you should never get there
         if (!(game.qtr % 2) && !(game.qtr === 4 && game.gameType === 'otc')) {
-          await this.alertBox('Halftime shuffle...')
+          await alertBox(this, 'Halftime shuffle...')
           // LATER: Stat review statBoard(game);
         }
       }
@@ -2440,7 +2285,7 @@ export default class Run {
     // display game over
     // statBoard()
     // record final qtr scores
-    await this.alertBox(wName + ' win the game ' + game.players[winner].score + ' - ' + game.players[game.opp(winner)].score + '!!!')
+    await alertBox(this, wName + ' win the game ' + game.players[winner].score + ' - ' + game.players[game.opp(winner)].score + '!!!')
     game.status = 900 + winner
     // this.EnablePlayButton(document.querySelector('.playButton'));
     // fireworks();

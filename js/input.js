@@ -1,4 +1,5 @@
 import { BUTTONS } from './buttons.js'
+import { EXIT } from './defaults.js'
 
 export default class ButtonInput {
   constructor (type = 'button') {
@@ -39,7 +40,7 @@ export default class ButtonInput {
           while (selection === '') {
             selection = prompt(msg)
             if (!selection) {
-              game.status = 999
+              game.status = EXIT
               selection = 'EXIT'
             } else {
               selection = abrvs.includes(selection.toUpperCase()) ? selection.toUpperCase() : ''
@@ -156,7 +157,7 @@ export default class ButtonInput {
     //     selection = prompt(msg);
     //     console.log(abrvs.includes(selection));
     //     if (!selection) {
-    //         game.status = 999;
+    //         game.status = EXIT;
     //         selection = 'EXIT';
     //     } else {
     //         selection = abrvs.includes(selection.toUpperCase()) ? selection.toUpperCase() : '';
@@ -187,7 +188,7 @@ export default class ButtonInput {
     while (selection === '') {
       console.log(msg)
       if (!selection) {
-        game.status = 999
+        game.status = EXIT
         selection = 'EXIT'
       } else {
         selection = abrvs.includes(selection.toUpperCase()) ? selection.toUpperCase() : ''
