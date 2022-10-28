@@ -1,6 +1,6 @@
 /* global alert */
 import Utils from './utils.js'
-import { MULTI, MATCHUP } from './defaults.js'
+import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, INIT, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT } from './defaults.js'
 
 export default class Run {
   constructor (game, input) {
@@ -203,7 +203,7 @@ export default class Run {
     console.log(this.game)
   };
 
-  async gameLoop (game, test = 11) {
+  async gameLoop (game, test = REG) {
     // Pass status into gameLoop for testing purposes
     game.status = test
     // gameStart, so set time to 0.5
@@ -326,7 +326,7 @@ export default class Run {
     game.defNum = tmp
     // printNeedle(game.offNum);
 
-    if (game.status >= 11 && game.status <= 17 && game.status !== 16) {
+    if (game.status >= REG && game.status <= 17 && game.status !== 16) {
       if (mode !== 'ot') {
         // printFirst(game);  // These are the first down markers
       }
@@ -599,7 +599,7 @@ export default class Run {
   };
 
   async playMechanism (game) {
-    await this.prePlay(game, 11)
+    await this.prePlay(game, REG)
     await this.pickPlay(game)
 
     // console.log(stat);
@@ -882,7 +882,7 @@ export default class Run {
           scoreBlock = 1 // Down a FG
         } else if (diff <= 8) {
           scoreBlock = 2 // Down a possession
-        } else if (diff <= 11) {
+        } else if (diff <= REG) {
           scoreBlock = 3 // Down a poss + FG
         } else {
           scoreBlock = 4 // Down 2+ TDs
@@ -1327,7 +1327,7 @@ export default class Run {
     const ono = game.offNum
 
     if ('SRLRSPLP'.includes(p1) && 'SRLRSPLP'.includes(p2)) {
-      stat = 11
+      stat = REG
     }
 
     if (!stat) {
@@ -1346,7 +1346,7 @@ export default class Run {
       } else if (p2 === 'TP') {
         stat = ono === 1 ? 13 : 12
       } else {
-        stat = 11
+        stat = REG
       }
     }
 
@@ -1354,7 +1354,7 @@ export default class Run {
   };
 
   async doPlay (game, p1, p2) {
-    if (game.status >= 11 && game.status <= 13) {
+    if (game.status >= REG && game.status <= 13) {
       this.regPlay(game, p1, p2)
     }
 
@@ -1779,7 +1779,7 @@ export default class Run {
     // await this.alertBox('Teams huddling up...\nPress Enter...\n');
 
     if (game.status > 0 && game.status < 10) {
-      game.status = 11
+      game.status = REG
     }
     console.log(game.status)
     // }
@@ -1940,7 +1940,7 @@ export default class Run {
         if (!game.isOT()) {
           game.status = -3
         } else {
-          game.status = 11
+          game.status = REG
         }
       }
     }
@@ -2050,7 +2050,7 @@ export default class Run {
       if (!game.isOT()) {
         game.status = -3 // Get ready for kickoff
       } else {
-        game.status = 11 // Get ready for next OT play
+        game.status = REG // Get ready for next OT play
       }
     }
   };
@@ -2273,7 +2273,7 @@ export default class Run {
       if (game.gameType !== 'otc') {
         // Might need this for graphic resetting later
       }
-      game.status = 11
+      game.status = REG
       game.currentTime = 0
     }
 

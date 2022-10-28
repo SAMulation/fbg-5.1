@@ -1,32 +1,27 @@
 import Player from './player.js'
 import Play from './play.js'
 import Run from './run.js'
-// import ButtonInput from './input.js'
 import ButtonInput from './buttonInput.js'
+import Utils from './utils.js'
+import { CHANGE, INIT } from './defaults.js'
 
 export default class Game {
-  constructor (team1, team2, gameType, numberPlayers, away, home, input, mults = null, yards = null) {
-    //                  qtrLength, recFirst, qtr=1, score1=0,
-    //                  score2=0,
-    //                  time1=3, time2=3, plays1=None, plays2=None,
-    //                  mults1=None, mults2=None, yards1=None,
-    //                  yards2=None,
-    //                  stats1=None, stats2=None) {
+  constructor (team1, team2, gameType, numberPlayers, home, qtrLength, input = new ButtonInput(), mults = null, yards = null) {
     this.gameType = gameType
     this.numberPlayers = numberPlayers
-    this.away = away
     this.home = home
+    this.away = this.opp(this.home)
     this.down = 0
-    this.firstDown = 45
+    this.firstDown = null
     this.lastCallTO = 0
     this.otPoss = -1
     this.over = false
     this.qtr = 0
-    this.qtrLength = 7
-    this.recFirst = 2
-    this.spot = 35
-    this.status = 0 // Defined elsewhere, diff nums for diff plays
-    this.changeTime = 0 // Define later
+    this.qtrLength = qtrLength
+    this.recFirst = null // Set in coin toss
+    this.spot = 65
+    this.status = INIT // Defined in defaults.js, diff nums for diff plays
+    this.changeTime = CHANGE // Defined in defaults.js, diff nums for diff states of time change
     this.turnover = false
     this.twoMinWarning = false
     this.twoPtConv = false
@@ -34,7 +29,7 @@ export default class Game {
     this.defNum = this.recFirst
     this.currentTime = this.qtrLength
     this.thisPlay = new Play()
-    this.players = { 1: new Player(this, team1), 2: new Player(this, team2) } // Object {1: ..., 2: ...}
+    this.players = { 1: new Player(this, team1), 2: new Player(this, team2) }
     this.mults = mults
     this.yards = yards
     this.lastSpot = this.spot
@@ -71,17 +66,11 @@ export default class Game {
     this.mults = [4, 4, 4, 3]
   }
 
-  randInt (min, max) {
-    min = Math.ceil(min)
-    max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min + 1) + min) // The maximum is inclusive and the minimum is inclusive
-  }
-
   decMults () {
     let card = -1
 
     while (card === -1) {
-      card = this.randInt(0, 3)
+      card = Utils.randInt(0, 3)
       // Out of this card, try again
       if (!this.mults[card]) {
         card = -1
@@ -105,6 +94,7 @@ export default class Game {
       }
     }
 
+    // LATER: Clean up how multiplier cards are represented
     const cards = ['King', 'Queen', 'Jack', '10']
 
     return { card: cards[card], num: card + 1 }
@@ -114,7 +104,7 @@ export default class Game {
     let card = -1
 
     while (card === -1) {
-      card = this.randInt(0, 9)
+      card = Utils.randInt(0, 9)
 
       if (!this.yards[card]) {
         card = -1
@@ -150,64 +140,3 @@ export default class Game {
     return this.players[p].timeouts + 1 // Stop showing this timeout
   }
 }
-
-//     def save(self, filename):
-//         # json_string = json.dumps(self.__dict__)
-//         # json_file = open("game.json", "w")
-//         # json_file.write(json_string)
-//         # json_file.close()
-
-//         save_array = [0, 0, 0, 0, 0]
-
-//         save_array[0] = self.get_team_ch(1)
-//         save_array[1] = self.get_team_ch(2)
-
-//         save_array[2] = self.get_plr_ch(1).__dict__
-//         self.get_plr_ch(1).set("team2", 0)
-//         self.get_plr_ch(2).set("team2", 0)
-//         save_array[2] = self.get_plr_ch(1).__dict__
-//         save_array[3] = self.get_plr_ch(2).__dict__
-
-//         self.set("players", [0, 1, 2])
-//         self.set("this_play", None)
-//         save_array[4] = self.__dict__
-
-//         json_string = json.dumps(save_array)
-//         json_file = open(filename + ".json", "w")
-//         json_file.write(json_string)
-//         json_file.close()
-
-//         self.load(filename)
-
-//     def load(self, filename):
-//         # json_file = open("game.json", "r")
-//         # json_content = json_file.read()
-//         # json_list = json.loads(json_content)
-//         # key_list = self.__dict__.keys()
-//         #
-//         # for key in key_list:
-//         #     setattr(self, key, json_list.get(key))
-
-//         json_file = open(filename + ".json", "r")
-//         json_content = json_file.read()
-//         json_list = json.loads(json_content)
-//         json_file.close()
-//         key_list = json_list[4].keys()
-
-//         team1 = json_list[0]
-//         team2 = json_list[1]
-//         plr1 = json_list[2]
-//         plr2 = json_list[3]
-//         game = json_list[4]
-
-//         self.__init__(team1, team2, game.get("gameType"), game.get("numberPlayers"), game.get("away"),
-//                       game.get("home"), game.get("qtrLength"), game.get("recFirst"), game.get("qtr"),
-//                       plr1.get("score"),
-//                       plr2.get("score"), plr1.get("timeouts"), plr2.get("timeouts"), plr1.get("plays"),
-//                       plr2.get("plays"),
-//                       plr1.get("mults"), plr2.get("mults"), plr1.get("yards"), plr2.get("yards"), plr1.get("stats"),
-//                       plr2.get("stats"))
-
-//         for key in game:
-//             if key != "players" and key != "this_play":
-//                 setattr(self, key, game[key])

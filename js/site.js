@@ -8,8 +8,9 @@ export default class Site {
     this.channel = null // or Pusher channel
     this.team1 = null // or Team object
     this.team2 = null // or Team object
+    this.home = 2 // or 1
     this.gameType = 'reg' // or 'otc'
-    this.quarterLength = 7 // or some other int (1-15)
+    this.qtrLength = 7 // or some other int (1-15)
     this.gameMode = 'rookie' // or 'pro'
   }
 }

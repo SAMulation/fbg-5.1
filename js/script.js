@@ -36,14 +36,14 @@ const channel = null
 
 // FIX: REMOVE LATER - Set to window for easy access
 const site = new Site(document.querySelector('.main-container'))
-let game = null
 window.site = site
-window.game = game
 window.inputType = 'button'
 
 // FUNCTION DEFINITIONS
 const playGame = async (game) => {
   await game.runIt(channel)
+
+  // LATER: Get ready for next game
   EnablePlayButton(document.querySelector('.playButton'))
 }
 
@@ -59,17 +59,6 @@ const setTeamLists = (lists) => {
       list.appendChild(el)
     }
     list.selectedIndex = list.id === 'p1Team' ? 24 : 2
-  })
-}
-
-const bindButtons = (rootElement) => {
-  const buttons = rootElement.querySelectorAll('button.play')
-  console.log(buttons)
-
-  buttons.forEach(button => {
-    button.addEventListener('pointerdown', event => {
-      game.run.buttonPress(event.target.getAttribute('data-playType'))
-    })
   })
 }
 
@@ -92,19 +81,18 @@ const submitTeams = (submit) => {
     if (valid && value[0] !== -1 && value[1] !== -1) {
       site.team1 = value[0]
       site.team2 = value[1]
-      game = initGame(site)
-      window.game = game
+      site.game = initGame(site)
+      window.game = site.game
       document.querySelector('.playButton').disabled = false
       document.querySelector('.playSubmit').disabled = true
     }
   })
 }
 
-const pressPlayButton = (button) => {
+const pressPlayButton = (button, site) => {
   button.addEventListener('pointerdown', event => {
-    playGame(window.game)
+    playGame(site.game)
     event.target.setAttribute('disabled', '')
-    // document.querySelector('.page-subheader').innerHTML = ''
   })
 }
 
@@ -122,12 +110,10 @@ const initGame = (site) => {
   } else {
     window.inputType = new ButtonInput()
   }
-  // return new Game(site.team1, site.team2, site.gamtyp, site.numplr, 1, 2, window.inputType)
-  return new Game(site.team1, site.team2, site.gameType, 2, 1, 2, window.inputType)
+  return new Game(site.team1, site.team2, site.numPlayers, site.gameType, site.home, site.qtrLength, window.inputType)
 }
 
 // MAIN FUNCTION CALLS
 setTeamLists(document.querySelectorAll('.teamList'))
 submitTeams(document.querySelector('#gameForm'))
-pressPlayButton(document.querySelector('.playButton'))
-bindButtons(document.querySelector('.main-container'))
+pressPlayButton(document.querySelector('.playButton'), site)
