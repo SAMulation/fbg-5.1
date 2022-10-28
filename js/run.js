@@ -103,9 +103,14 @@ export default class Run {
 
   async animationWaitForCompletion (el, cls, on = true) {
     return new Promise(resolve => {
-      el.addEventListener('transitionend', () => {
+      const handler = () => {
+        el.removeEventListener('transitionend', handler)
+        el.removeEventListener('transitioncancel', handler)
         resolve()
-      }, { once: true })
+      }
+
+      el.addEventListener('transitionend', handler)
+      el.addEventListener('transitioncancel', handler)
       this.animationSimple(el, cls, on)
     })
   }
@@ -1873,7 +1878,7 @@ export default class Run {
     this.animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
 
     await this.animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
-    // this.setBallSpot()
+    this.setBallSpot()
 
     // await this.alertBox('Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
 

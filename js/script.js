@@ -138,7 +138,8 @@ const initGame = (site) => {
   } else {
     window.inputType = new ButtonInput()
   }
-  return new Game(site.team1, site.team2, site.gamtyp, site.numplr, 1, 2, window.inputType)
+  // return new Game(site.team1, site.team2, site.gamtyp, site.numplr, 1, 2, window.inputType)
+  return new Game(site.team1, site.team2, site.gamtyp, 2, 1, 2, window.inputType)
 }
 
 // MAIN FUNCTION CALLS
