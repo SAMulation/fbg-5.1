@@ -5,34 +5,34 @@ import Run from './run.js'
 import ButtonInput from './buttonInput.js'
 
 export default class Game {
-  constructor (team1, team2, game_type, num_plr, away, home, input, mults = null, yards = null) {
-    //                  qtr_length, rec_first, qtr=1, score1=0,
+  constructor (team1, team2, gameType, numberPlayers, away, home, input, mults = null, yards = null) {
+    //                  qtrLength, recFirst, qtr=1, score1=0,
     //                  score2=0,
     //                  time1=3, time2=3, plays1=None, plays2=None,
     //                  mults1=None, mults2=None, yards1=None,
     //                  yards2=None,
     //                  stats1=None, stats2=None) {
-    this.game_type = game_type
-    this.num_plr = 1 // num_plr;
+    this.gameType = gameType
+    this.numberPlayers = numberPlayers
     this.away = away
     this.home = home
     this.down = 0
-    this.fst_down = 45
-    this.last_call_to = 0
-    this.ot_poss = -1
+    this.firstDown = 45
+    this.lastCallTO = 0
+    this.otPoss = -1
     this.over = false
     this.qtr = 0
-    this.qtr_length = 7
-    this.rec_first = 2
+    this.qtrLength = 7
+    this.recFirst = 2
     this.spot = 35
     this.status = 0 // Defined elsewhere, diff nums for diff plays
-    this.time_change = 0 // Define later
+    this.changeTime = 0 // Define later
     this.turnover = false
-    this.two_min = false
-    this.two_point = false
-    this.off_num = this.opp(this.rec_first)
-    this.def_num = this.rec_first
-    this.current_time = this.qtr_length
+    this.twoMinWarning = false
+    this.twoPtConv = false
+    this.offNum = this.opp(this.recFirst)
+    this.defNum = this.recFirst
+    this.currentTime = this.qtrLength
     this.thisPlay = new Play()
     this.players = { 1: new Player(this, team1), 2: new Player(this, team2) } // Object {1: ..., 2: ...}
     this.mults = mults
@@ -60,7 +60,7 @@ export default class Game {
   }
 
   isReal (num) {
-    return num === 1 || this.num_plr === 2
+    return num === 1 || this.numberPlayers === 2
   }
 
   isOT () {
@@ -200,8 +200,8 @@ export default class Game {
 //         plr2 = json_list[3]
 //         game = json_list[4]
 
-//         self.__init__(team1, team2, game.get("game_type"), game.get("num_plr"), game.get("away"),
-//                       game.get("home"), game.get("qtr_length"), game.get("rec_first"), game.get("qtr"),
+//         self.__init__(team1, team2, game.get("gameType"), game.get("numberPlayers"), game.get("away"),
+//                       game.get("home"), game.get("qtrLength"), game.get("recFirst"), game.get("qtr"),
 //                       plr1.get("score"),
 //                       plr2.get("score"), plr1.get("timeouts"), plr2.get("timeouts"), plr1.get("plays"),
 //                       plr2.get("plays"),

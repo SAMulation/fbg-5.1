@@ -1,11 +1,15 @@
 export default class Site {
   constructor (root) {
-    // Example: this.game = new Game(TEAMS[25], TEAMS[2], 'reg', 2, 1, 2);
-    this.team1 = ''
-    this.team2 = ''
-    this.qtrlen = ''
-    // LATER: These won't autofill
-    this.gamtyp = 'reg'
-    this.numplr = 1
+    this.user = null // ADD: User class
+    this.game = null // Set to current game
+    this.numberPlayers = null
+    this.connectionType = 'local' // or 'remote'
+    this.host = false // or true
+    this.channel = null // or Pusher channel
+    this.team1 = null // or Team object
+    this.team2 = null // or Team object
+    this.gameType = 'reg' // or 'otc'
+    this.quarterLength = 7 // or some other int (1-15)
+    this.gameMode = 'rookie' // or 'pro'
   }
 }

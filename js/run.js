@@ -43,7 +43,7 @@ export default class Run {
   }
 
   async alertBox (msg) {
-    // msg = this.printTime(this.game.current_time) + ' | ' + msg
+    // msg = this.printTime(this.game.currentTime) + ' | ' + msg
     if (this.alert === 'alert') {
       alert(msg)
     } else if (this.alert === 'subhead') {
@@ -208,7 +208,7 @@ export default class Run {
     game.status = test
     // gameStart, so set time to 0.5
     if (test === 0) {
-      game.current_time = -0.5 // LATER: Remember to check
+      game.currentTime = -0.5 // LATER: Remember to check
     }
 
     // This is the game loop
@@ -216,11 +216,11 @@ export default class Run {
       if (game.status < 900) {
         await this.gameControl(game)
       }
-      while (game.current_time >= 0 && game.status !== 999) {
+      while (game.currentTime >= 0 && game.status !== 999) {
         // game.save('as-' + datetime.now().strftime("%m.%d.%Y-%H.%M.%S"))
         if (game.status < 0) {
           await this.kickoff(game)
-        } else if ((game.status > 10 && game.status < 100) || game.two_point) {
+        } else if ((game.status > 10 && game.status < 100) || game.twoPtConv) {
           await this.playMechanism(game)
         }
 
@@ -236,10 +236,10 @@ export default class Run {
   };
 
   async kickoff (game) {
-    const oNum = game.off_num
-    const dNum = game.def_num
+    const oNum = game.offNum
+    const dNum = game.defNum
     game.down = 0
-    game.fst_down = 0
+    game.firstDown = 0
 
     await this.prePlay(game, game.status) // NOW: Check on this
 
@@ -280,20 +280,20 @@ export default class Run {
       // moveBall('c');  // Which cleared the ball
     }
 
-    if (mode !== 'nop' && mode !== 'ot' && game.isOT() && !game.two_point && game.ot_poss > 0) {
-      game.ot_poss = -game.ot_poss // This indicates that the ot poss just ended, handle appropriately
+    if (mode !== 'nop' && mode !== 'ot' && game.isOT() && !game.twoPtConv && game.otPoss > 0) {
+      game.otPoss = -game.otPoss // This indicates that the ot poss just ended, handle appropriately
     }
 
     if (mode === 'to') {
       game.spot = 100 - game.spot // Switch side of field
       // addRecap(game, teamName + ' turnover!') // or however
-      // game.players[game.off_num].stats.tos++;  // Inc turnovers in Stats
+      // game.players[game.offNum].stats.tos++;  // Inc turnovers in Stats
       game.turnover = true
       game.down = 0
     } else if (mode === 'ot') {
       // Probably need a visual reset here
       game.spot = 75
-      game.ot_poss = Math.abs(game.ot_poss) - 1
+      game.otPoss = Math.abs(game.otPoss) - 1
     } else if (mode === 'pnt') {
       game.spot = 100 - game.spot // Switch side of field
       game.down = 0
@@ -316,21 +316,21 @@ export default class Run {
 
     // This should never happen, but it's making sure the possessions don't equal each other
     // We assume to offensive number is correct
-    if (game.off_num === game.def_num) {
-      game.def_num = game.opp(game.off_num)
+    if (game.offNum === game.defNum) {
+      game.defNum = game.opp(game.offNum)
     }
 
     // Actually change possession
-    const tmp = game.off_num
-    game.off_num = game.def_num
-    game.def_num = tmp
-    // printNeedle(game.off_num);
+    const tmp = game.offNum
+    game.offNum = game.defNum
+    game.defNum = tmp
+    // printNeedle(game.offNum);
 
     if (game.status >= 11 && game.status <= 17 && game.status !== 16) {
       if (mode !== 'ot') {
         // printFirst(game);  // These are the first down markers
       }
-      game.fst_down = game.spot + 10 // CHECK: I think this is needed
+      game.firstDown = game.spot + 10 // CHECK: I think this is needed
       await this.updateDown(game)
     }
   };
@@ -418,10 +418,10 @@ export default class Run {
   }
 
   async kickDec (game, die1 = null, mCoddsdie2 = null, yC = null) {
-    const oName = game.players[game.off_num].team.name
-    const dName = game.players[game.def_num].team.name
-    const kickType = game.players[game.off_num].currentPlay
-    const retType = game.players[game.def_num].currentPlay
+    const oName = game.players[game.offNum].team.name
+    const dName = game.players[game.defNum].team.name
+    const kickType = game.players[game.offNum].currentPlay
+    const retType = game.players[game.defNum].currentPlay
     let touchback = false
     let possession = true
     let tmp = null
@@ -579,14 +579,14 @@ export default class Run {
       game.spot = 25
       // moveBall('s');
       // Return Timeout
-      if (game.time_change === 4) {
-        this.returnTime(game.last_call_to)
+      if (game.changeTime === 4) {
+        this.returnTime(game.lastCallTO)
       }
-      if (game.two_min) {
-        game.two_min = false
+      if (game.twoMinWarning) {
+        game.twoMinWarning = false
       }
       // LATER: Change to 'tb' or something better
-      game.time_change = 1
+      game.changeTime = 1
     }
 
     this.setBallSpot()
@@ -614,11 +614,11 @@ export default class Run {
     let selection
 
     // Very end of the game
-    if (game.status < 900 && ((game.qtr === 2 || game.qtr === 4) && game.current_time === 0) && !game.time_change) {
+    if (game.status < 900 && ((game.qtr === 2 || game.qtr === 4) && game.currentTime === 0) && !game.changeTime) {
       for (let p = 1; p <= 2; p++) {
         // Real and have a timeout, one's not been called
-        if (game.isReal(p) && game.players[p].timeouts && !game.time_change) {
-          console.log('p: ' + p + ' time_change: ' + game.time_change)
+        if (game.isReal(p) && game.players[p].timeouts && !game.changeTime) {
+          console.log('p: ' + p + ' changeTime: ' + game.changeTime)
           alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end! Would the ' + game.players[p].team.name + ' like to call a timeout?')
 
           await this.animationPrePick(game, p)
@@ -656,8 +656,8 @@ export default class Run {
 
     this.resetBoardContainer()
 
-    if (!game.two_point || game.time_change !== 4) {
-      game.time_change = 0
+    if (!game.twoPtConv || game.changeTime !== 4) {
+      game.changeTime = 0
     }
 
     if (game.turnover && game.down !== 1) {
@@ -668,13 +668,13 @@ export default class Run {
 
     game.status = stat
 
-    if ((game.qtr === 2 || game.qtr === 4) && game.current_time === 2) {
+    if ((game.qtr === 2 || game.qtr === 4) && game.currentTime === 2) {
       await this.twoMinCheck(game)
     }
   };
 
   async twoMinCheck (game) {
-    let twoMin = game.two_minute
+    let twoMin = game.twoMinWarningute
     let timChg
 
     // Two-minute warning just ended
@@ -689,8 +689,8 @@ export default class Run {
       await this.alertBox('Two-minute warning...')
     }
 
-    game.time_change = timChg
-    game.two_minute = twoMin
+    game.changeTime = timChg
+    game.twoMinWarningute = twoMin
   };
 
   async pickPlay (game) {
@@ -702,9 +702,9 @@ export default class Run {
       if (game.status !== 999 && p === 2 && !game.isReal(2)) {
         // This is where the computer can call timeout or pick special play
         await this.alertBox(game.players[2].team.name + ' are picking their play...')
-        document.querySelector('.' + (game.away === game.off_num ? 'away-msg' : 'home-msg') + '.top-msg').innerText = game.players[2].team.name + ' are picking their play...'
+        document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = game.players[2].team.name + ' are picking their play...'
         // await this.slideBoard()
-        if (game.time_change === 0) {
+        if (game.changeTime === 0) {
           await this.cpuTime(game)
         }
 
@@ -780,11 +780,11 @@ export default class Run {
 
   async cpuTime (game) {
     const toCount = game.players[2].timeouts
-    const ono = game.off_num
+    const ono = game.offNum
 
     if (toCount > 0) {
       const qtr = game.qtr
-      const ctim = game.current_time
+      const ctim = game.currentTime
       const spt = game.spot
       const p1s = game.players[1].score
       const p2s = game.players[2].score
@@ -816,22 +816,22 @@ export default class Run {
   };
 
   async timeout (game, p) {
-    const tChg = game.time_change
+    const tChg = game.changeTime
     const toCount = game.players[p].timeouts
     let msg = ''
 
     // 9 = Two-min call
     if (tChg === 9) {
       msg = 'Timeout not called, two minute warning...'
-    } else if (game.two_point) {
+    } else if (game.twoPtConv) {
       msg = 'Timeout not called, two-point conversion...'
       // 4 = Timeout called
     } else if (tChg !== 4) {
       // Call timeout
       if (toCount > 0) {
         const to = game.callTime(p)
-        game.last_call_to = p
-        game.time_change = 4
+        game.lastCallTO = p
+        game.changeTime = 4
         msg = 'Timeout called by ' + game.players[p].team.name
         document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + to).classList.add('called')
         // Disable button mid-play
@@ -850,16 +850,16 @@ export default class Run {
   };
 
   cpuPlay (game) {
-    if (game.off_num === 2) {
+    if (game.offNum === 2) {
       const qtr = game.qtr
-      const curtim = game.current_time
+      const curtim = game.currentTime
       const toCount = game.players[2].timeouts
-      const tchg = game.time_change
-      const qlen = game.qtr_length
+      const tchg = game.changeTime
+      const qlen = game.qtrLength
       const spt = game.spot
       const hm = game.players[2].hm
       const dwn = game.down
-      const fdn = game.fst_down
+      const fdn = game.firstDown
       const diff = game.players[1].score - game.players[2].score
       let scoreBlock = 0
       let timeBlock = 0
@@ -957,7 +957,7 @@ export default class Run {
       }
 
       // Set the play
-      if (!(!dec || dec === 'GO' || game.two_point)) {
+      if (!(!dec || dec === 'GO' || game.twoPtConv)) {
         game.players[2].currentPlay = dec
       }
     }
@@ -999,7 +999,7 @@ export default class Run {
       await this.cpuTime(game)
 
       const qtr = game.qtr
-      const ctim = game.current_time
+      const ctim = game.currentTime
       const p2s = game.players[2].score
       const p1s = game.players[1].score
       let kckDec = 'RK'
@@ -1016,7 +1016,7 @@ export default class Run {
       await this.cpuTime(game)
 
       const qtr = game.qtr
-      const ctim = game.current_time
+      const ctim = game.currentTime
       const p2s = game.players[2].score
       const p1s = game.players[1].score
       let retDec = 'RR'
@@ -1081,7 +1081,7 @@ export default class Run {
       }
 
       // HM or kick on defense
-      if (legal && playIndex >= 5 && playIndex <= 7 && this.game.def_num === p) {
+      if (legal && playIndex >= 5 && playIndex <= 7 && this.game.defNum === p) {
         legal = false
       }
 
@@ -1101,7 +1101,7 @@ export default class Run {
       }
 
       // Kick on two-point conversion
-      if (legal && totalPlays === -1 && this.game.two_point) {
+      if (legal && totalPlays === -1 && this.game.twoPtConv) {
         legal = false
       }
     }
@@ -1188,7 +1188,7 @@ export default class Run {
     // }
 
     // Possession
-    if (this.game.away === this.game.off_num) {
+    if (this.game.away === this.game.offNum) {
       if (homeTeam.classList.contains('poss')) {
         homeTeam.classList.remove('poss')
       }
@@ -1200,7 +1200,7 @@ export default class Run {
       homeTeam.classList.add('poss')
     }
 
-    // if (this.game.home === this.game.off_num) {
+    // if (this.game.home === this.game.offNum) {
     //   board.querySelector('.topRight').innerText = '🏈'
     // } else {
     //   board.querySelector('.topRight').innerHTML = '&nbsp;'
@@ -1215,20 +1215,20 @@ export default class Run {
     awayScore.innerText = this.game.players[this.game.away].score
 
     // Time
-    clockTime.innerText = this.printTime(this.game.current_time)
+    clockTime.innerText = this.printTime(this.game.currentTime)
 
     // topMessageDown(awayMsg, homeMsg)
     // bottomMessageUp(blMsg, brMsg)
 
     // First Down
-    if (this.game.away === this.game.off_num) {
-      blMsg.innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.fst_down, this.game.spot)
+    if (this.game.away === this.game.offNum) {
+      blMsg.innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.firstDown, this.game.spot)
     } else {
-      brMsg.innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.fst_down, this.game.spot)
+      brMsg.innerText = this.game.down + this.ending(this.game.down) + ' & ' + this.downDist(this.game.firstDown, this.game.spot)
     }
 
     // Ball Spot
-    if (this.game.away === this.game.off_num) {
+    if (this.game.away === this.game.offNum) {
       brMsg.innerText = this.printSpot(this.game, this.game.spot)
     } else {
       blMsg.innerText = this.printSpot(this.game, this.game.spot)
@@ -1310,13 +1310,13 @@ export default class Run {
 
   printSpot (game, s) {
     let spot = '50'
-    // console.log(game.off_num);
+    // console.log(game.offNum);
     // console.log(game.players[1].team.abrv);
-    // console.log(game.players[game.off_num].team.abrv);
+    // console.log(game.players[game.offNum].team.abrv);
     if (s < 50) {
-      spot = game.players[game.off_num].team.abrv + ' ' + s
+      spot = game.players[game.offNum].team.abrv + ' ' + s
     } else if (s > 50) {
-      spot = game.players[game.def_num].team.abrv + ' ' + (100 - s)
+      spot = game.players[game.defNum].team.abrv + ' ' + (100 - s)
     }
 
     return spot
@@ -1324,7 +1324,7 @@ export default class Run {
 
   setStatus (game, p1, p2) {
     let stat = 0
-    const ono = game.off_num
+    const ono = game.offNum
 
     if ('SRLRSPLP'.includes(p1) && 'SRLRSPLP'.includes(p2)) {
       stat = 11
@@ -1363,9 +1363,9 @@ export default class Run {
     } else if (game.status >= 12 && game.status <= 13) {
       await this.trickPlay(game)
     } else if (game.status === 15) {
-      await this.fieldGoal(game, game.off_num)
+      await this.fieldGoal(game, game.offNum)
     } else if (game.status === 16) {
-      await this.punt(game, game.off_num, 16)
+      await this.punt(game, game.offNum, 16)
     } else if (game.status === 17) {
       await this.hailMary(game)
     }
@@ -1405,7 +1405,7 @@ export default class Run {
     multCard = game.decMults()
 
     if (multCard.card === 'King') {
-      await this.bigPlay(game, coin ? game.off_num : game.def_num)
+      await this.bigPlay(game, coin ? game.offNum : game.defNum)
     } else if ((multCard.card === 'Queen' && coin) || (multCard.card === 'Jack' && !coin)) {
       game.thisPlay.multiplier = 3
     } else if ((multCard.card === 'Queen' && !coin) || (multCard.card === 'Jack' && coin)) {
@@ -1430,7 +1430,7 @@ export default class Run {
     const die = Utils.rollDie()
 
     // Offensive Big Play
-    if (game.off_num === num) {
+    if (game.offNum === num) {
       if (die >= 1 && die <= 3) {
         game.thisPlay.dist = 25
       } else if (die === 6) {
@@ -1446,11 +1446,11 @@ export default class Run {
     } else {
       if (die >= 1 && die <= 3) {
         // If timeout called, return
-        if (game.time_change === 4) {
-          this.returnTime(game.last_call_to)
+        if (game.changeTime === 4) {
+          this.returnTime(game.lastCallTO)
         }
 
-        game.time_change = 2
+        game.changeTime = 2
 
         if (game.spot - 10 < 1) {
           game.thisPlay.dist = -Math.trunc(game.spot / 2) // Half the distance to the goal
@@ -1481,14 +1481,14 @@ export default class Run {
 
   async trickPlay (game) {
     const die = Utils.rollDie()
-    await this.alertBox((game.status === 12 ? game.players[game.off_num].team.name : game.players[game.def_num].team.name) + ' trick play!')
+    await this.alertBox((game.status === 12 ? game.players[game.offNum].team.name : game.players[game.defNum].team.name) + ' trick play!')
 
     if (die === 2) {
       // If timeout called, return
-      if (game.time_change === 4) {
-        this.returnTime(game.last_call_to)
+      if (game.changeTime === 4) {
+        this.returnTime(game.lastCallTO)
       }
-      game.time_change = 2
+      game.changeTime = 2
 
       // Offense Trick Play
       if (game.status === 12) {
@@ -1516,7 +1516,7 @@ export default class Run {
       game.thisPlay.multiplier_card = '/'
       game.thisPlay.multiplier = 4
     } else if (die === 5) {
-      await this.bigPlay(game, game.status === 12 ? game.off_num : game.def_num)
+      await this.bigPlay(game, game.status === 12 ? game.offNum : game.defNum)
       // die === 1 && die === 6
     } else {
       if (game.status === 12) {
@@ -1526,12 +1526,12 @@ export default class Run {
       }
 
       // Place play based on die roll
-      game.players[(game.status === 12 ? game.off_num : game.def_num)].currentPlay = die === 1 ? 'LP' : 'LR'
+      game.players[(game.status === 12 ? game.offNum : game.defNum)].currentPlay = die === 1 ? 'LP' : 'LR'
     }
   };
 
   async fieldGoal (game, ono) {
-    const name = game.players[game.off_num].team.name
+    const name = game.players[game.offNum].team.name
     let make = true
     const spt = 100 - game.spot
     const fdst = spt + 17
@@ -1541,7 +1541,7 @@ export default class Run {
     await this.alertBox(name + ' attempting a ' + fdst + '-yard field goal...')
 
     // Ice kicker
-    if (game.time_change === 4 && game.last_call_to !== game.off_num) {
+    if (game.changeTime === 4 && game.lastCallTO !== game.offNum) {
       die++
       console.log('Kicker iced!')
     }
@@ -1574,13 +1574,13 @@ export default class Run {
     // addRecap(..., fdst + '-yd FG ' + (make ? 'good' : 'missed'));
 
     if (game.isOT()) {
-      game.ot_poss = -Math.abs(game.ot_poss)
+      game.otPoss = -Math.abs(game.otPoss)
     }
   };
 
   async punt (game, ono, stat) {
-    const oName = game.players[game.off_num].team.name
-    const dName = game.players[game.def_num].team.name
+    const oName = game.players[game.offNum].team.name
+    const dName = game.players[game.defNum].team.name
     let block = false
     let touchback = false
     let possession = true
@@ -1651,7 +1651,7 @@ export default class Run {
     } else {
       await this.alertBox(dName + ' muffed the kick! ' + oName + ' recover the ball...')
       // addRecap( muffed punt )
-      // record turnover to def_num
+      // record turnover to defNum
     }
 
     // Return
@@ -1711,8 +1711,8 @@ export default class Run {
     let msg = null
     let dst = 0
 
-    await this.alertBox(game.players[game.off_num].team.name + ' hail mary!')
-    document.querySelector('.' + (game.away === game.off_num ? 'away' : 'home') + ' .hm' + game.players[game.off_num].hm).classList.add('called')
+    await this.alertBox(game.players[game.offNum].team.name + ' hail mary!')
+    document.querySelector('.' + (game.away === game.offNum ? 'away' : 'home') + ' .hm' + game.players[game.offNum].hm).classList.add('called')
 
     if (die === 1) {
       msg = 'BIG SACK!'
@@ -1739,7 +1739,7 @@ export default class Run {
     game.thisPlay.multiplier = '/'
     game.thisPlay.dist = dst
 
-    game.players[game.off_num].hm--
+    game.players[game.offNum].hm--
   };
 
   // END OF PLAY - WE HAVE THE DATA, LET'S GO!!!
@@ -1753,11 +1753,11 @@ export default class Run {
       console.log('Play over - ball is moving...')
       await this.reportPlay(game, p1, p2)
 
-      // if (!game.two_point && game.status < 15 || game.status > 16) {
-      //     saveDist(game.off_num)  // LATER: When we have stats
+      // if (!game.twoPtConv && game.status < 15 || game.status > 16) {
+      //     saveDist(game.offNum)  // LATER: When we have stats
       // }
 
-      if (game.two_point) {
+      if (game.twoPtConv) {
         game.spot = game.thisPlay.dist + game.spot
       }
     }
@@ -1768,12 +1768,12 @@ export default class Run {
     await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist)
 
     console.log('Updating scoreboard...')
-    if (!game.isOT() && game.ot_poss < 0 && !game.two_point && (game.status < 15 || game.status === 17)) {
+    if (!game.isOT() && game.otPoss < 0 && !game.twoPtConv && (game.status < 15 || game.status === 17)) {
       await this.updateDown(game)
     }
 
-    if (!game.two_point) {
-      await this.timeChange(game)
+    if (!game.twoPtConv) {
+      await this.timeChanger(game)
     }
 
     // await this.alertBox('Teams huddling up...\nPress Enter...\n');
@@ -1813,7 +1813,7 @@ export default class Run {
     if (game.spot + game.thisPlay.dist >= 100) {
       game.thisPlay.bonus = game.thisPlay.dist
       game.thisPlay.dist = 100 - game.spot
-      if (!game.two_point) {
+      if (!game.twoPtConv) {
         game.status = 101
       }
     }
@@ -1822,7 +1822,7 @@ export default class Run {
     if (game.spot + game.thisPlay.dist <= 0) {
       game.thisPlay.bonus = game.thisPlay.dist
       game.thisPlay.dist = -game.spot
-      if (!game.two_point) {
+      if (!game.twoPtConv) {
         game.status = 102
       }
     }
@@ -1836,10 +1836,10 @@ export default class Run {
     if (p1Num === 4 || p2Num === 4) {
       match = 1
     } else {
-      match = MATCHUP[game.off_num === 1 ? p1Num : p2Num][game.off_num === 1 ? p2Num : p1Num]
+      match = MATCHUP[game.offNum === 1 ? p1Num : p2Num][game.offNum === 1 ? p2Num : p1Num]
     }
 
-    game.thisPlay.quality = MATCHUP[game.off_num === 1 ? p1Num : p2Num][game.off_num === 1 ? p2Num : p1Num]
+    game.thisPlay.quality = MATCHUP[game.offNum === 1 ? p1Num : p2Num][game.offNum === 1 ? p2Num : p1Num]
 
     return MULTI[multIdx - 1][match - 1]
   };
@@ -1851,8 +1851,8 @@ export default class Run {
     this.animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
     this.animationSimple(this.scoreboardContainerBotRight, 'collapsed')
 
-    document.querySelector('.' + (game.away === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
-    document.querySelector('.' + (game.home === game.off_num ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
+    document.querySelector('.' + (game.away === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
+    document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
     // await this.slideBoard()
 
     // This is it, but not right order, probably
@@ -1898,15 +1898,15 @@ export default class Run {
   };
 
   async checkScore (game, bon, dst) {
-    const ono = game.off_num
-    const dno = game.def_num
+    const ono = game.offNum
+    const dno = game.defNum
     const oname = game.players[ono].team.name
     const dname = game.players[dno].team.name
     let good = false
     let coin
 
     // Two-Point Conversion
-    if (game.two_point) {
+    if (game.twoPtConv) {
       if (game.spot + game.thisPlay.dist >= 100 && !game.turnover) {
         if (bon > dst) {
           good = true
@@ -1922,7 +1922,7 @@ export default class Run {
           await this.alertBox(oname + ' 2-point conversion good!')
           this.scoreChange(game, ono, 2)
         } else {
-          if (game.time_change < 2 || game.time_change > 3) {
+          if (game.changeTime < 2 || game.changeTime > 3) {
             await this.alertBox(oname + ' 2-point conversion no good!')
           }
         }
@@ -1930,13 +1930,13 @@ export default class Run {
         await this.alertBox(dname + ' returned 2-pt!!!')
         this.scoreChange(game, dno, 2)
       } else {
-        if (game.time_change < 2 || game.time_change > 3) {
+        if (game.changeTime < 2 || game.changeTime > 3) {
           await this.alertBox(oname + ' 2-point conversion no good!')
         }
       }
 
-      if (game.time_change < 2 || game.time_change > 3) {
-        game.two_point = false
+      if (game.changeTime < 2 || game.changeTime > 3) {
+        game.twoPtConv = false
         if (!game.isOT()) {
           game.status = -3
         } else {
@@ -1966,10 +1966,10 @@ export default class Run {
   };
 
   async safety (game) {
-    await this.alertBox(game.players[game.def_num].team.name + ' forced a safety!!')
-    this.scoreChange(game, game.def_num, 2)
+    await this.alertBox(game.players[game.defNum].team.name + ' forced a safety!!')
+    this.scoreChange(game, game.defNum, 2)
     if (game.isOT()) {
-      game.ot_poss = 0
+      game.otPoss = 0
     } else {
       game.status = -4
     }
@@ -1977,8 +1977,8 @@ export default class Run {
   };
 
   async touchdown (game) {
-    await this.alertBox(game.players[game.off_num].team.name + ' scored a touchdown!!!')
-    this.scoreChange(game, game.off_num, 6)
+    await this.alertBox(game.players[game.offNum].team.name + ' scored a touchdown!!!')
+    this.scoreChange(game, game.offNum, 6)
     this.showBoard(document.querySelector('.scoreboard-container'))
 
     // addRecap ( touchdown )
@@ -1988,15 +1988,15 @@ export default class Run {
     }
 
     if (game.isOT()) {
-      game.ot_poss = -game.ot_poss
+      game.otPoss = -game.otPoss
     }
   };
 
   // QUESTION FOR DANIEL
   patNec (game) {
-    const endGameNoTO = game.qtr === 4 && game.current_time === 0 && game.time_change !== 4
-    const endOT = game.isOT() && (game.ot_poss === 1 || (game.ot_poss === 2 && game.turnover))
-    const scoreDiff = game.players[game.off_num].score > game.players[game.def_num].score || game.players[game.def_num].score - game.players[game.off_num].score > 2
+    const endGameNoTO = game.qtr === 4 && game.currentTime === 0 && game.changeTime !== 4
+    const endOT = game.isOT() && (game.otPoss === 1 || (game.otPoss === 2 && game.turnover))
+    const scoreDiff = game.players[game.offNum].score > game.players[game.defNum].score || game.players[game.defNum].score - game.players[game.offNum].score > 2
 
     return !((endGameNoTO || endOT) && scoreDiff)
     // return !(endGameNoTO || endOT) || !scoreDiff;
@@ -2004,7 +2004,7 @@ export default class Run {
   };
 
   async pat (game) {
-    const oNum = game.off_num
+    const oNum = game.offNum
     const oName = game.players[oNum].team.name
     let selection = '2P' // Default in 3OT+
 
@@ -2022,10 +2022,10 @@ export default class Run {
       // printDown('2PT');
       game.spot = 98
       // moveBall('s');
-      if (game.time_change !== 4) {
-        game.time_change = 7 // Two-point
+      if (game.changeTime !== 4) {
+        game.changeTime = 7 // Two-point
       }
-      game.two_point = true
+      game.twoPtConv = true
     } else {
       // printDown('XP');
       let die = Utils.rollDie()
@@ -2067,7 +2067,7 @@ export default class Run {
     // if (game.spt != 0 || game.status > 0 && game.status < 10) { // Update the spot }
 
     // Sticks
-    if (game.spot === game.fst_down) {
+    if (game.spot === game.firstDown) {
       await this.alertBox('Sticks...')
       coin = Utils.coinFlip()
 
@@ -2080,7 +2080,7 @@ export default class Run {
       coin = 1
     }
 
-    if (game.spot > game.fst_down || coin) {
+    if (game.spot > game.firstDown || coin) {
       if (game.down !== 0) {
         await this.alertBox('First down!')
         // print_down(game);
@@ -2088,9 +2088,9 @@ export default class Run {
       game.down = 1
 
       if (game.spot > 90) {
-        game.fst_down = 100
+        game.firstDown = 100
       } else {
-        game.fst_down = game.spot + 10
+        game.firstDown = game.spot + 10
       }
 
       // print_down(game);
@@ -2103,7 +2103,7 @@ export default class Run {
       coin = 1
     }
 
-    if (!coin && game.time_change !== 2) {
+    if (!coin && game.changeTime !== 2) {
       game.down += 1
     }
 
@@ -2119,31 +2119,31 @@ export default class Run {
     this.showBoard(document.querySelector('.scoreboard-container'))
   };
 
-  async timeChange (game) {
-    console.log('timeChange')
-    if (game.qtr <= 4 && game.time_change === 0) {
-      game.current_time -= 0.5
-      console.log(game.current_time)
+  async timeChanger (game) {
+    console.log('timeChanger')
+    if (game.qtr <= 4 && game.changeTime === 0) {
+      game.currentTime -= 0.5
+      console.log(game.currentTime)
       // Inc TOP for offense
-      // print_time(game.current_time);
+      // print_time(game.currentTime);
     }
 
     // LATER: Add this for OT
-    // if (game.ot_poss < 0) {
-    //     if (game.isOT() && game.ot_poss_switch(qtr, ono, rec_first, ot_poss)) {
+    // if (game.otPoss < 0) {
+    //     if (game.isOT() && game.otPoss_switch(qtr, ono, recFirst, otPoss)) {
     //         changePoss(game, 'ot');
     //     } else {
-    //         this.ot_poss_switch2()
-    //         game.ot_poss = Math.abs(game.ot_poss) - 1;
+    //         this.otPoss_switch2()
+    //         game.otPoss = Math.abs(game.otPoss) - 1;
     //     }
     // }
 
-    if (game.qtr > 4 && game.ot_poss === 0) {
-      game.current_time = -0.5
+    if (game.qtr > 4 && game.otPoss === 0) {
+      game.currentTime = -0.5
     }
     // document.querySelector('.page-selection2').innerText = this.showBoard();
     // this.showBoard(document.querySelector('.scoreboard'))
-    await this.tickingClock(game.current_time + 0.5, game.current_time)
+    await this.tickingClock(game.currentTime + 0.5, game.currentTime)
   };
 
   async tickingClock (oldTime, newTime) {
@@ -2154,7 +2154,7 @@ export default class Run {
       curTime -= 1 / 60
       await this.sleep(10)
     }
-    clockTime.innerText = this.printTime(this.game.current_time)
+    clockTime.innerText = this.printTime(this.game.currentTime)
   }
 
   async gameControl (game) {
@@ -2162,7 +2162,7 @@ export default class Run {
     if (game.status === 0) { // if (game.state === REG_START || game.state === OTC_START) {
       await this.coinToss(game)
 
-      if (!game.isOT() || game.game_type === 'otc') { // if (game.state === OTC_START) {
+      if (!game.isOT() || game.gameType === 'otc') { // if (game.state === OTC_START) {
         await this.resetVar(game)
       }
 
@@ -2176,8 +2176,8 @@ export default class Run {
 
       // End of odd quarter (1st, 3rd, OT) || But do we need this for OTC?
       // if (game.state === END_QTR || (game.state === END_OT && game.qtr % 2)
-      if (game.qtr % 2 && game.current_time !== game.qtr_length) {
-        if (!game.isOT() || (game.isOT() && game.ot_poss !== 2)) {
+      if (game.qtr % 2 && game.currentTime !== game.qtrLength) {
+        if (!game.isOT() || (game.isOT() && game.otPoss !== 2)) {
           await this.resetTime(game) // CHECK: This was a band-aid
         }
       }
@@ -2187,10 +2187,10 @@ export default class Run {
     if (game.status < 900) {
       // Set up OT Challenge
       // if (game.state === OTC_START) {
-      if (game.qtr === 5 && game.game_type === 'otc' && game.rec_first !== game.off_num) {
+      if (game.qtr === 5 && game.gameType === 'otc' && game.recFirst !== game.offNum) {
         await this.changePoss(game)
-        // print_needle(-game.off_num);
-        game.ot_poss = 2
+        // print_needle(-game.offNum);
+        game.otPoss = 2
       }
     }
   };
@@ -2227,7 +2227,7 @@ export default class Run {
     result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
     await this.alertBox(result)
 
-    if (game.num_plr === 2 || (actFlip === coinPick && game.away === 1) || (actFlip !== coinPick && game.home === 1)) {
+    if (game.numberPlayers === 2 || (actFlip === coinPick && game.away === 1) || (actFlip !== coinPick && game.home === 1)) {
       await this.animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
       await this.animationWaitForCompletion(this.cardsContainer, 'slide-down')
@@ -2265,16 +2265,16 @@ export default class Run {
       recFirst = 'home'
     }
 
-    game.rec_first = recFirst === 'home' ? game.home : game.away
-    game.def_num = game.rec_first // Because they're receiving first
-    game.off_num = game.opp(game.def_num) // Because they're kicking
+    game.recFirst = recFirst === 'home' ? game.home : game.away
+    game.defNum = game.recFirst // Because they're receiving first
+    game.offNum = game.opp(game.defNum) // Because they're kicking
 
     if (game.qtr >= 4) {
-      if (game.game_type !== 'otc') {
+      if (game.gameType !== 'otc') {
         // Might need this for graphic resetting later
       }
       game.status = 11
-      game.current_time = 0
+      game.currentTime = 0
     }
 
     // await this.animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
@@ -2282,7 +2282,7 @@ export default class Run {
 
   // What ALL is this function doing?
   async resetVar (game) {
-    if (game.qtr === 0 || (game.qtr === 4 && game.game_type === 'otc')) {
+    if (game.qtr === 0 || (game.qtr === 4 && game.gameType === 'otc')) {
       // displayBoard()
       // printNames()
       for (let p = 1; p <= 2; p++) {
@@ -2346,7 +2346,7 @@ export default class Run {
       // updateDown(game);
     }
 
-    if (game.qtr === 4 && game.game_type !== 'otc' && game.players[1].score === game.players[2].score) {
+    if (game.qtr === 4 && game.gameType !== 'otc' && game.players[1].score === game.players[2].score) {
       await this.coinToss(game)
     }
 
@@ -2358,10 +2358,10 @@ export default class Run {
         this.showBoard(document.querySelector('.scoreboard-container'))
       }
 
-      if (game.qtr === 3 && game.off_num !== game.rec_first) {
+      if (game.qtr === 3 && game.offNum !== game.recFirst) {
         await this.changePoss(game)
       }
-      // printNeedle(-game.off_num);
+      // printNeedle(-game.offNum);
 
       // Make sure plays are set right for OT challenge, esp hail marys
     }
@@ -2376,7 +2376,7 @@ export default class Run {
       await this.endGame(game)
     // No, then let's increase the quarter
     } else {
-      if (game.qtr !== 0 && !(game.qtr === 4 && game.game_type === 'otc')) {
+      if (game.qtr !== 0 && !(game.qtr === 4 && game.gameType === 'otc')) {
         // LATER: Record quarter score here
       }
 
@@ -2384,7 +2384,7 @@ export default class Run {
         await this.alertBox('Quarter end...')
 
         // Used to check !over, but you should never get there
-        if (!(game.qtr % 2) && !(game.qtr === 4 && game.game_type === 'otc')) {
+        if (!(game.qtr % 2) && !(game.qtr === 4 && game.gameType === 'otc')) {
           await this.alertBox('Halftime shuffle...')
           // LATER: Stat review statBoard(game);
         }
@@ -2392,14 +2392,14 @@ export default class Run {
 
       // Get ready for OT or reset clock for next qtr
       if (game.qtr >= 4) {
-        game.current_time = 0
-        game.ot_poss = 2
+        game.currentTime = 0
+        game.otPoss = 2
         game.spot = 75
-        game.fst_down = 85
+        game.firstDown = 85
         // moveBall('s');
         // printDown(game);
       } else {
-        game.current_time = game.qtr_length
+        game.currentTime = game.qtrLength
       }
 
       game.qtr++
@@ -2411,10 +2411,10 @@ export default class Run {
 
       if (game.isOT() && this.ot_qtr_switch(game)) {
         await this.changePoss(game, 'nop')
-        // print_needle(-game.off_num);
+        // print_needle(-game.offNum);
         // First OT needs a little help
-        if (game.ot_poss === -2 && game.qtr === 5) {
-          game.ot_poss = 2
+        if (game.otPoss === -2 && game.qtr === 5) {
+          game.otPoss = 2
         }
       }
     }
@@ -2422,10 +2422,10 @@ export default class Run {
 
   ot_qtr_switch (game) {
     const qtrEven = !(game.qtr % 2)
-    const offRecdFirst = game.off_num === game.rec_first
+    const offRecdFirst = game.offNum === game.recFirst
     let swtch = false
 
-    if ((!qtrEven && !offRecdFirst && game.ot_poss === 2) || (qtrEven && offRecdFirst && game.ot_poss === 2)) {
+    if ((!qtrEven && !offRecdFirst && game.otPoss === 2) || (qtrEven && offRecdFirst && game.otPoss === 2)) {
       swtch = true
     }
 
@@ -2447,10 +2447,10 @@ export default class Run {
     // storeStats(winner, false);
   };
 
-  ot_poss_switch (game) {
+  otPoss_switch (game) {
     const qtrEven = !(game.qtr % 2)
-    const offEqRec = game.off_num === game.rec_first
-    const otp = game.ot_poss
+    const offEqRec = game.offNum === game.recFirst
+    const otp = game.otPoss
     let possSwitch = false
 
     if (!qtrEven && offEqRec && otp === -2 || !qtrEven && !offEqRec && otp === -1 || qtrEven && !offEqRec && otp === -2 || qtrEven && offEqRec && otp === -1) {

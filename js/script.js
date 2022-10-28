@@ -34,30 +34,14 @@ const channel = null
 //   })
 // })
 
-// Measure the viewport
-let innerHeight = window.innerHeight
-let innerWidth = window.innerWidth
-document.documentElement.style.setProperty('--height', innerHeight + 'px')
-document.documentElement.style.setProperty('--width', innerWidth + 'px')
-
-window.addEventListener('resize', () => {
-  innerHeight = window.innerHeight
-  innerWidth = window.innerWidth
-  document.documentElement.style.setProperty('--height', innerHeight + 'px')
-  if (innerWidth < 600) {
-    document.documentElement.style.setProperty('--width', innerWidth + 'px')
-  }
-})
-
 // FIX: REMOVE LATER - Set to window for easy access
-const site = new Site(document)
+const site = new Site(document.querySelector('.main-container'))
 let game = null
 window.site = site
 window.game = game
 window.inputType = 'button'
 
 // FUNCTION DEFINITIONS
-// THIS IS THE TESTING FUNCTION, SOME DAY IT WILL WRAP THE ENTIRE GAME
 const playGame = async (game) => {
   await game.runIt(channel)
   EnablePlayButton(document.querySelector('.playButton'))
@@ -139,7 +123,7 @@ const initGame = (site) => {
     window.inputType = new ButtonInput()
   }
   // return new Game(site.team1, site.team2, site.gamtyp, site.numplr, 1, 2, window.inputType)
-  return new Game(site.team1, site.team2, site.gamtyp, 2, 1, 2, window.inputType)
+  return new Game(site.team1, site.team2, site.gameType, 2, 1, 2, window.inputType)
 }
 
 // MAIN FUNCTION CALLS

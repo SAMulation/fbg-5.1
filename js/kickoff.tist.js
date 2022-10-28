@@ -51,10 +51,10 @@ export default class Kickoff {
   // }
 
   kickoff (pick1 = null, pick2 = null, die1 = null, mCoddsdie2 = null, yC = null) {
-    const oNum = this.game.off_num
-    const dNum = this.game.def_num
+    const oNum = this.game.offNum
+    const dNum = this.game.defNum
     this.game.down = 0
-    this.game.fst_down = 0
+    this.game.firstDown = 0
 
     this.game.run.prePlay(game, 3) // NOW: Check on this
     // debugger

@@ -218,7 +218,7 @@ export default class ButtonInput {
       // Append child to container div
       if (storage[i].abrv === 'TO') {
         // Disable Timeout button if out of timeouts
-        if (game.players[p].timeouts === 0 || game.time_change) {
+        if (game.players[p].timeouts === 0 || game.changeTime) {
           btn.setAttribute('disabled', '')
         }
         timeout.appendChild(btn)
