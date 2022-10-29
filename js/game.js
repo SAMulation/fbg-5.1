@@ -3,7 +3,7 @@ import Play from './play.js'
 import Run from './run.js'
 import ButtonInput from './buttonInput.js'
 import Utils from './utils.js'
-import { CHANGE, INIT } from './defaults.js'
+import { CHANGE, INIT, INIT_OTC } from './defaults.js'
 
 export default class Game {
   constructor (team1, team2, gameType, numberPlayers, home, qtrLength, input = new ButtonInput(), mults = null, yards = null) {
@@ -44,6 +44,10 @@ export default class Game {
     if (!this.plays) {
       this.fillYards()
     }
+
+    if (this.gameType === 'otc') {
+      this.status = INIT_OTC
+    }
   }
 
   async runIt (channel) {
@@ -55,7 +59,7 @@ export default class Game {
   }
 
   isReal (num) {
-    return num === 1 || this.numberPlayers === 2
+    return this.numberPlayers !== 0 && (num === 1 || this.numberPlayers === 2)
   }
 
   isOT () {

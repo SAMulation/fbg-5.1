@@ -102,8 +102,9 @@ body {
 
 p, button, .to-butt1 *, .to-butt2 * {
   font-family: 'calc', sans-serif;
-  font-size: 1rem;
-  line-height: 1.25rem;
+  font-size: 0.5rem;
+  line-height: 1rem;
+  padding: 1%;
 }
 
 p.tiny {
@@ -281,7 +282,7 @@ input {
 
 .board-container > * {
   align-self: center;
-  font-size: 2vw;
+  /* font-size: 2vw; */
   font-weight: bold;
   color: black;
 
@@ -369,7 +370,7 @@ input {
 
 .cards-container .bar {
   grid-area: 1 / 1;
-  font-size: 1.75vh;
+  font-size: 0.75rem;
   background: black;
   color: white;
   font-weight: bold;
@@ -399,10 +400,9 @@ input {
 .cards-container .cards button.card, .board-container div.picked {
   background: #005A9C;
   color: white;
-  font-size: 5vh;
   font-family: 'calc', sans-serif;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 

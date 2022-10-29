@@ -1,6 +1,6 @@
 /* global alert */
 import Utils from './utils.js'
-import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT } from './defaults.js'
+import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT } from './defaults.js'
 import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer } from './graphics.js'
 
 export default class Run {
@@ -77,6 +77,270 @@ export default class Run {
 
     if (game.status === EXIT) {
       game.status = 0
+    }
+  };
+
+  async gameControl (game) {
+    // The game just started
+    if (game.status === INIT || game.status === INIT_OTC) {
+      await this.coinToss(game)
+
+      if (!game.isOT() || game.gameType === 'otc') { // if (game.state === OTC_START) {
+        await this.resetVar(game)
+      }
+
+      await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
+    } else {
+      // End of half
+      // if (game.state === END_QTR && game.qtr === 3) {
+      if (game.status === 0 || (!(game.qtr % 2))) {
+        await this.resetVar(game)
+      }
+
+      // End of odd quarter (1st, 3rd, OT) || But do we need this for OTC?
+      // if (game.state === END_QTR || (game.state === END_OT && game.qtr % 2)
+      if (game.qtr % 2 && game.currentTime !== game.qtrLength) {
+        if (!game.isOT() || (game.isOT() && game.otPoss !== 2)) {
+          await this.resetTime(game) // CHECK: This was a band-aid
+        }
+      }
+    }
+
+    // Skip if exited during Coin Toss
+    if (game.status < 900) {
+      // Set up OT Challenge
+      // if (game.state === OTC_START) {
+      if (game.qtr === 5 && game.gameType === 'otc' && game.recFirst !== game.offNum) {
+        await this.changePoss(game)
+        // print_needle(-game.offNum);
+        game.otPoss = 2
+      }
+    }
+  };
+
+  async coinToss (game) {
+    const awayName = game.players[game.away].team.name
+    const homeName = game.players[game.home].team.name
+    let coinPick = null
+    let result = ''
+    let actFlip = null
+    let decPick = null
+    let recFirst = 'away'
+
+    // LATER: Move this
+    // await animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
+    // animationSimple(this.scoreboardContainer, 'slide-away')
+
+    // Coin toss decision
+    if (game.isReal(game.away)) {
+      await alertBox(this, awayName + ' pick heads or tails for coin toss...')
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+      coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // Computer picking
+    } else {
+      await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
+      coinPick = Utils.coinFlip() ? 'H' : 'T'
+    }
+
+    // Show result
+    result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
+    result += 'Annnnnnnnnnnnnd... '
+    // Some sort of graphic
+    actFlip = Utils.coinFlip() ? 'H' : 'T'
+    result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
+    await alertBox(this, result)
+
+    // Decide if want to kick or receive
+    if (game.numberPlayers === 2 || (actFlip === coinPick && game.isReal(game.away)) || (actFlip !== coinPick && game.isReal(game.home))) {
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+      decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // Computer choosing
+    } else {
+      await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing...')
+
+      decPick = Utils.randInt(1, 2)
+      if (game.qtr < 4) {
+        decPick = decPick === 1 ? 'K' : 'R'
+      } // else: Leave it as 1 or 2 for OT possession picking
+    }
+
+    result = (actFlip === coinPick ? awayName : homeName) + ' '
+
+    if (game.qtr >= 4) {
+      if (decPick === '1') {
+        result += 'get ball 1st'
+      } else {
+        result += 'get ball 2nd'
+      }
+    } else {
+      if (decPick === 'K') {
+        result += ' will kick'
+      } else {
+        result += ' will receive'
+      }
+    }
+
+    result += '...'
+    await alertBox(this, result)
+
+    if ((actFlip === coinPick && (decPick === '2' || decPick === 'K')) || (coinPick !== actFlip && (decPick === '1' || decPick === 'R'))) {
+      recFirst = 'home'
+    }
+
+    game.recFirst = recFirst === 'home' ? game.home : game.away
+    game.defNum = game.recFirst // Because they're receiving first
+    game.offNum = game.opp(game.defNum) // Because they're kicking
+
+    if (game.qtr >= 4) {
+      if (game.gameType !== 'otc') {
+        // LATER: Might need this for graphic resetting
+      }
+      game.status = REG // Should lead to first play
+      game.currentTime = 0
+    }
+  };
+
+  // CHECKPOINT: YOU'RE HERE
+
+  // What ALL is this function doing?
+  async resetVar (game) {
+    if (game.qtr === 0 || (game.qtr === 4 && game.gameType === 'otc')) {
+      // displayBoard()
+      // printNames()
+      for (let p = 1; p <= 2; p++) {
+        game.players[p].score = 0
+        // printScore(p);
+        // game.players[p].stats.totalYards = 0;
+        // game.players[p].stats.passYards = 0;
+        // game.players[p].stats.runYards = 0;
+        // game.players[p].stats.timePoss = 0;
+        // game.players[p].stats.firstDowns = 0;
+        // game.players[p].stats.turnovers = 0;
+        // game.players[p].stats.qtrScore = 0;
+      }
+      // Add initial entry to addRecap( initial );
+      // Make a spot to store the scores for each qtr
+
+      // OT Challenge Stuff
+      // This could be more elegant
+      if (game.qtr === 4) {
+        game.down = 0
+        await this.updateDown(game) // Forces game to set itself up
+      }
+    }
+
+    // Need the equivalent of fillBoard to add all cards
+
+    let to = 3
+    let hm = 3
+    if (game.qtr >= 4) {
+      to = 1
+      hm = 2
+    }
+    game.players[1].timeouts = to
+    game.players[2].timeouts = to
+    game.players[1].hm = hm
+    game.players[2].hm = hm
+
+    // Refill timeout pills
+    for (let t = 1; t <= to; t++) {
+      for (let p = 1; p <= 2; p++) {
+        if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.contains('called')) {
+          document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.remove('called')
+        }
+      }
+    }
+
+    // Refill hail mary pills
+    for (let h = 1; h <= hm; h++) {
+      for (let p = 1; p <= 2; p++) {
+        if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.contains('called')) {
+          document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.remove('called')
+        }
+      }
+    }
+
+    if (game.qtr <= 3) {
+      // Ready to kickoff
+      game.status = -1
+      // BAND-AID
+      // game.qtr = 1;
+      // updateDown(game);
+    }
+
+    if (game.qtr === 4 && game.gameType !== 'otc' && game.players[1].score === game.players[2].score) {
+      await this.coinToss(game)
+    }
+
+    await this.resetTime(game)
+
+    if (!game.over) {
+      if (!game.isOT()) {
+        // document.querySelector('.page-selection2').innerText = this.showBoard();
+        this.showBoard(document.querySelector('.scoreboard-container'))
+      }
+
+      if (game.qtr === 3 && game.offNum !== game.recFirst) {
+        await this.changePoss(game)
+      }
+      // printNeedle(-game.offNum);
+
+      // Make sure plays are set right for OT challenge, esp hail marys
+    }
+  };
+
+  // What all is THIS function doing
+  async resetTime (game) {
+    const over = game.qtr >= 4 && game.players[1].score !== game.players[2].score
+
+    // Is the game over?
+    if (over) {
+      await this.endGame(game)
+    // No, then let's increase the quarter
+    } else {
+      if (game.qtr !== 0 && !(game.qtr === 4 && game.gameType === 'otc')) {
+        // LATER: Record quarter score here
+      }
+
+      if (game.qtr !== 0) {
+        await alertBox(this, 'Quarter end...')
+
+        // Used to check !over, but you should never get there
+        if (!(game.qtr % 2) && !(game.qtr === 4 && game.gameType === 'otc')) {
+          await alertBox(this, 'Halftime shuffle...')
+          // LATER: Stat review statBoard(game);
+        }
+      }
+
+      // Get ready for OT or reset clock for next qtr
+      if (game.qtr >= 4) {
+        game.currentTime = 0
+        game.otPoss = 2
+        game.spot = 75
+        game.firstDown = 85
+        // moveBall('s');
+        // printDown(game);
+      } else {
+        game.currentTime = game.qtrLength
+      }
+
+      game.qtr++
+      // document.querySelector('.page-selection2').innerText = this.showBoard();
+      this.showBoard(document.querySelector('.scoreboard-container'))
+
+      // LATER: Set qtr score
+      // Could update the spot and/or print new qtr
+
+      if (game.isOT() && this.ot_qtr_switch(game)) {
+        await this.changePoss(game, 'nop')
+        // print_needle(-game.offNum);
+        // First OT needs a little help
+        if (game.otPoss === -2 && game.qtr === 5) {
+          game.otPoss = 2
+        }
+      }
     }
   };
 
@@ -2001,269 +2265,6 @@ export default class Run {
     }
     clockTime.innerText = this.printTime(this.game.currentTime)
   }
-
-  async gameControl (game) {
-    // The game just started
-    if (game.status === 0) { // if (game.state === REG_START || game.state === OTC_START) {
-      await this.coinToss(game)
-
-      if (!game.isOT() || game.gameType === 'otc') { // if (game.state === OTC_START) {
-        await this.resetVar(game)
-      }
-
-      await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
-    } else {
-      // End of half
-      // if (game.state === END_QTR && game.qtr === 3) {
-      if (game.status === 0 || (!(game.qtr % 2))) {
-        await this.resetVar(game)
-      }
-
-      // End of odd quarter (1st, 3rd, OT) || But do we need this for OTC?
-      // if (game.state === END_QTR || (game.state === END_OT && game.qtr % 2)
-      if (game.qtr % 2 && game.currentTime !== game.qtrLength) {
-        if (!game.isOT() || (game.isOT() && game.otPoss !== 2)) {
-          await this.resetTime(game) // CHECK: This was a band-aid
-        }
-      }
-    }
-
-    // Skip if exited during Coin Toss
-    if (game.status < 900) {
-      // Set up OT Challenge
-      // if (game.state === OTC_START) {
-      if (game.qtr === 5 && game.gameType === 'otc' && game.recFirst !== game.offNum) {
-        await this.changePoss(game)
-        // print_needle(-game.offNum);
-        game.otPoss = 2
-      }
-    }
-  };
-
-  async coinToss (game) {
-    const awayName = game.players[game.away].team.name
-    const homeName = game.players[game.home].team.name
-    let coinPick = null
-    let result = ''
-    let actFlip = null
-    let decPick = null
-    let recFirst = 'away'
-
-    // LATER: Move this
-    // await animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
-    // animationSimple(this.scoreboardContainer, 'slide-away')
-
-    // Coin toss decision
-    if (game.isReal(game.away)) {
-      await alertBox(this, awayName + ' pick [H] or [T] for coin toss...')
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-      coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    } else { // Computer picking
-      await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
-      coinPick = Utils.coinFlip() ? 'H' : 'T'
-    }
-
-    // Show result
-    result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
-    result += 'Annnnnnnnnnnnnd... '
-    // Some sort of graphic
-    actFlip = Utils.coinFlip() ? 'H' : 'T'
-    result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
-    await alertBox(this, result)
-
-    if (game.numberPlayers === 2 || (actFlip === coinPick && game.away === 1) || (actFlip !== coinPick && game.home === 1)) {
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-      decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-
-      // await animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    } else { // Computer choosing
-      await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing...')
-
-      decPick = Utils.randInt(1, 2)
-      if (!(game.qtr >= 4)) {
-        decPick = decPick === 1 ? 'K' : 'R'
-      }
-    }
-
-    result = (actFlip === coinPick ? awayName : homeName) + ' '
-
-    if (game.qtr >= 4) {
-      if (decPick === '1') {
-        result += 'get ball 1st'
-      } else {
-        result += 'get ball 2nd'
-      }
-    } else {
-      if (decPick === 'K') {
-        result += ' will kick'
-      } else {
-        result += ' will receive'
-      }
-    }
-
-    result += '...'
-    await alertBox(this, result)
-
-    if ((actFlip === coinPick && (decPick === '2' || decPick === 'K')) || (coinPick !== actFlip && (decPick === '1' || decPick === 'R'))) {
-      recFirst = 'home'
-    }
-
-    game.recFirst = recFirst === 'home' ? game.home : game.away
-    game.defNum = game.recFirst // Because they're receiving first
-    game.offNum = game.opp(game.defNum) // Because they're kicking
-
-    if (game.qtr >= 4) {
-      if (game.gameType !== 'otc') {
-        // Might need this for graphic resetting later
-      }
-      game.status = REG
-      game.currentTime = 0
-    }
-
-    // await animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
-  };
-
-  // What ALL is this function doing?
-  async resetVar (game) {
-    if (game.qtr === 0 || (game.qtr === 4 && game.gameType === 'otc')) {
-      // displayBoard()
-      // printNames()
-      for (let p = 1; p <= 2; p++) {
-        game.players[p].score = 0
-        // printScore(p);
-        // game.players[p].stats.totalYards = 0;
-        // game.players[p].stats.passYards = 0;
-        // game.players[p].stats.runYards = 0;
-        // game.players[p].stats.timePoss = 0;
-        // game.players[p].stats.firstDowns = 0;
-        // game.players[p].stats.turnovers = 0;
-        // game.players[p].stats.qtrScore = 0;
-      }
-      // Add initial entry to addRecap( initial );
-      // Make a spot to store the scores for each qtr
-
-      // OT Challenge Stuff
-      // This could be more elegant
-      if (game.qtr === 4) {
-        game.down = 0
-        await this.updateDown(game) // Forces game to set itself up
-      }
-    }
-
-    // Need the equivalent of fillBoard to add all cards
-
-    let to = 3
-    let hm = 3
-    if (game.qtr >= 4) {
-      to = 1
-      hm = 2
-    }
-    game.players[1].timeouts = to
-    game.players[2].timeouts = to
-    game.players[1].hm = hm
-    game.players[2].hm = hm
-
-    // Refill timeout pills
-    for (let t = 1; t <= to; t++) {
-      for (let p = 1; p <= 2; p++) {
-        if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.contains('called')) {
-          document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.remove('called')
-        }
-      }
-    }
-
-    // Refill hail mary pills
-    for (let h = 1; h <= hm; h++) {
-      for (let p = 1; p <= 2; p++) {
-        if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.contains('called')) {
-          document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.remove('called')
-        }
-      }
-    }
-
-    if (game.qtr <= 3) {
-      // Ready to kickoff
-      game.status = -1
-      // BAND-AID
-      // game.qtr = 1;
-      // updateDown(game);
-    }
-
-    if (game.qtr === 4 && game.gameType !== 'otc' && game.players[1].score === game.players[2].score) {
-      await this.coinToss(game)
-    }
-
-    await this.resetTime(game)
-
-    if (!game.over) {
-      if (!game.isOT()) {
-        // document.querySelector('.page-selection2').innerText = this.showBoard();
-        this.showBoard(document.querySelector('.scoreboard-container'))
-      }
-
-      if (game.qtr === 3 && game.offNum !== game.recFirst) {
-        await this.changePoss(game)
-      }
-      // printNeedle(-game.offNum);
-
-      // Make sure plays are set right for OT challenge, esp hail marys
-    }
-  };
-
-  // What all is THIS function doing
-  async resetTime (game) {
-    const over = game.qtr >= 4 && game.players[1].score !== game.players[2].score
-
-    // Is the game over?
-    if (over) {
-      await this.endGame(game)
-    // No, then let's increase the quarter
-    } else {
-      if (game.qtr !== 0 && !(game.qtr === 4 && game.gameType === 'otc')) {
-        // LATER: Record quarter score here
-      }
-
-      if (game.qtr !== 0) {
-        await alertBox(this, 'Quarter end...')
-
-        // Used to check !over, but you should never get there
-        if (!(game.qtr % 2) && !(game.qtr === 4 && game.gameType === 'otc')) {
-          await alertBox(this, 'Halftime shuffle...')
-          // LATER: Stat review statBoard(game);
-        }
-      }
-
-      // Get ready for OT or reset clock for next qtr
-      if (game.qtr >= 4) {
-        game.currentTime = 0
-        game.otPoss = 2
-        game.spot = 75
-        game.firstDown = 85
-        // moveBall('s');
-        // printDown(game);
-      } else {
-        game.currentTime = game.qtrLength
-      }
-
-      game.qtr++
-      // document.querySelector('.page-selection2').innerText = this.showBoard();
-      this.showBoard(document.querySelector('.scoreboard-container'))
-
-      // LATER: Set qtr score
-      // Could update the spot and/or print new qtr
-
-      if (game.isOT() && this.ot_qtr_switch(game)) {
-        await this.changePoss(game, 'nop')
-        // print_needle(-game.offNum);
-        // First OT needs a little help
-        if (game.otPoss === -2 && game.qtr === 5) {
-          game.otPoss = 2
-        }
-      }
-    }
-  };
 
   ot_qtr_switch (game) {
     const qtrEven = !(game.qtr % 2)

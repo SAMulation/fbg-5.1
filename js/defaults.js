@@ -21,6 +21,7 @@ export const SAFETY_KICK = -4
 export const KICKOFF = -3
 export const KICK = -1
 export const INIT = 0
+export const INIT_OTC = 1
 export const REG = 11
 export const OFF_TP = 12
 export const DEF_TP = 13
