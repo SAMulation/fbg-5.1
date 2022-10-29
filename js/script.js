@@ -1,5 +1,5 @@
 /* global Pusher */
-/* global alert */
+/* global alert, prompt */
 import Team from './team.js'
 import Game from './game.js'
 import Site from './site.js'
@@ -103,6 +103,7 @@ const EnablePlayButton = (button) => {
 }
 
 const initGame = (site) => {
+  const user = [null, null, null]
   if (window.inputType === 'prompt') {
     window.inputType = new PromptInput()
   } else if (window.inputType === 'form') {
@@ -110,7 +111,14 @@ const initGame = (site) => {
   } else {
     window.inputType = new ButtonInput()
   }
-  return new Game(site.team1, site.team2, site.numPlayers, site.gameType, site.home, site.qtrLength, window.inputType)
+
+  for (let p = 1; p <= site.numberPlayers; p++) {
+    while (!user[p]) {
+      user[p] = prompt('What should I call player ' + p + '?', 'Player')
+    }
+  }
+
+  return new Game(site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, user[1], user[2], window.inputType)
 }
 
 // MAIN FUNCTION CALLS

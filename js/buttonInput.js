@@ -1,5 +1,4 @@
 import BaseInput from './baseInput.js'
-import { EXIT } from './defaults.js'
 
 export default class ButtonInput extends BaseInput {
   async getInput (game, p, type) {

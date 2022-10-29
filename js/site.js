@@ -2,7 +2,7 @@ export default class Site {
   constructor (root) {
     this.user = null // ADD: User class
     this.game = null // Set to current game
-    this.numberPlayers = null
+    this.numberPlayers = 1 // or 2 or 0
     this.connectionType = 'local' // or 'remote'
     this.host = false // or true
     this.channel = null // or Pusher channel

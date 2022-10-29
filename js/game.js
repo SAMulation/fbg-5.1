@@ -6,7 +6,7 @@ import Utils from './utils.js'
 import { CHANGE, INIT, INIT_OTC } from './defaults.js'
 
 export default class Game {
-  constructor (team1, team2, gameType, numberPlayers, home, qtrLength, input = new ButtonInput(), mults = null, yards = null) {
+  constructor (team1, team2, gameType, numberPlayers, home, qtrLength, stats1, stats2, input = new ButtonInput(), mults = null, yards = null) {
     this.gameType = gameType
     this.numberPlayers = numberPlayers
     this.home = home
@@ -29,7 +29,7 @@ export default class Game {
     this.defNum = this.recFirst
     this.currentTime = this.qtrLength
     this.thisPlay = new Play()
-    this.players = { 1: new Player(this, team1), 2: new Player(this, team2) }
+    this.players = { 1: new Player(this, team1, stats1), 2: new Player(this, team2, stats2) }
     this.mults = mults
     this.yards = yards
     this.lastSpot = this.spot

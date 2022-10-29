@@ -64,7 +64,7 @@ body {
 @media (min-width: 601px) {
   div.main-container {
     grid-template-rows: [top-all] minmax(0, 1fr) [top-board] minmax(0, 2fr) [top-cards] minmax(0, 1fr) [bot-all];
-    /* width: 600px; */
+    max-width: 600px;
     margin: 0 auto;
   }
 }

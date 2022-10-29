@@ -1,9 +1,10 @@
+import Stat from './stat.js'
 import Team from './team.js'
 
 export default class Player {
   // need to access quarter from parent Game class
   // minimum req: Player(game, team)
-  constructor (game, team, init = true, score = 0, time = 3, plays = null, hm = 3, stats = null) {
+  constructor (game, team, stats, init = true, score = 0, time = 3, plays = null, hm = 3) {
     this.game = game
     this.team = new Team(team)
     this.score = score
@@ -12,6 +13,17 @@ export default class Player {
     this.stats = stats
     this.currentPlay = ''
     this.hm = hm // This is hail mary, I'm moving this here
+
+    // Computer
+    if (stats === null) {
+      this.stats = new Stat('Computer')
+      // New user
+    } else if (typeof stats === 'string') {
+      this.stats = new Stat(stats)
+    } else {
+      // Existing user
+      this.stats = stats
+    }
 
     if (init) {
       this.score = 0
@@ -25,11 +37,6 @@ export default class Player {
     if (!plays) {
       this.fillPlays('a', this.game.qtr)
     }
-
-    // LATER: Come up with Stats class
-    // if (!stats) {
-    //     this.stats = new Stats();
-    // }
   }
 
   fillPlays (option, qtr = 4) {
