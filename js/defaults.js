@@ -14,6 +14,7 @@ export const TB = 1 // Touchback
 export const PEN_DOWN = 2 // Penalty, loss of down
 export const PEN_NO_DOWN = 3 // Penalty, no loss of down
 export const TIMEOUT = 4 // Timeout called
+export const TWOPT = 7 // Actively in two-point conversion
 export const TWOMIN = 9 // Actively in two minute warning
 
 // STATUS CONSTANTS

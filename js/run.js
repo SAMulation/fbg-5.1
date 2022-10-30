@@ -1,7 +1,7 @@
 /* global alert */
 import Stat from './stat.js'
 import Utils from './utils.js'
-import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT } from './defaults.js'
+import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT } from './defaults.js'
 import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer } from './graphics.js'
 
 export default class Run {
@@ -50,7 +50,7 @@ export default class Run {
 
   async prepareHTML (game) {
     setSpot(this, 65) // Place ball
-    this.moveBall(game, 'show/clear')
+    await this.moveBall(game, 'show/clear')
     animationSimple(this.cardsContainer, 'slide-down') // Slide cards container down
     await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
     this.actualCards.innerText = '' // Clear out default cards
@@ -139,9 +139,11 @@ export default class Run {
     if (game.connection.type === 'remote') {
     // if (game.isPlayer(p, 'host')) {
     //   // Send value to REMOTE player
-    //   sendInputToRemote(value)
+    //   await sendInputToRemote(value)
     // } else {
-    //   await alertBox(this, msg)
+    //   if (msg) {
+    //     await alertBox(this, msg)
+    //   }
     //   // Receive value from REMOTE player
     //   value = await receiveInputFromRemote()
     // }
@@ -162,7 +164,6 @@ export default class Run {
     // Coin toss decision
     // Real players
     if (game.isPlayer(game.away, 'local')) {
-      await alertBox(this, awayName + ' pick heads or tails for coin toss...')
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
       await animationWaitForCompletion(this.cardsContainer, 'slide-down')
@@ -360,11 +361,12 @@ export default class Run {
         game.otPoss = 2
         game.spot = 75
         game.firstDown = 85
-        this.moveBall(game, 'show')
+        await this.moveBall(game, 'show')
         this.printMsgDown(game, this.scoreboardContainer)
         this.printMsgSpot(game, this.scoreboardContainer)
       } else {
         game.currentTime = game.qtrLength
+        await this.tickingClock('end', game.currentTime)
       }
 
       game.qtr++
@@ -381,19 +383,19 @@ export default class Run {
     }
   };
 
-  moveBall (game, mode = null) {
+  async moveBall (game, mode = null, val = null) {
     if (mode === 'clear') {
       this.ball.classList.toggle('hidden', true)
     } else if (mode === 'show') {
       this.ball.classList.toggle('hidden', false)
     } else {
       if (mode !== 'kick') {
-        alertBox('The ball is hiked...')
+        await alertBox('The ball is hiked...')
       }
       this.ball.classList.toggle('hidden', false)
       setBallSpot(this)
       if (mode === 'show/clear') {
-        this.moveBall(game, 'clear')
+        await this.moveBall(game, 'clear')
       }
     }
   }
@@ -412,7 +414,7 @@ export default class Run {
     } else {
       // Reset board
       game.spot = 65
-      this.moveBall(game, 'show')
+      await this.moveBall(game, 'show')
 
       await this.kickPage(game)
 
@@ -498,7 +500,7 @@ export default class Run {
   };
 
   setLastPlay (game) {
-    game.lastPlay = game.players[game.away].currentPlay + ' v ' + game.players[game.home].currentPlay + ' | ' + (game.thisPlay.dist === 0 ? 'No gain' : (game.thisPlay.dist + '-yard ' + (game.thisPlay.dist < 0 ? 'loss' : 'gain')))
+    game.lastPlay = game.players[game.away].currentPlay + ' v ' + game.players[game.home].currentPlay + '  |  ' + (game.thisPlay.dist === 0 ? 'No gain' : (Math.abs(game.thisPlay.dist) + '-yard ' + (game.thisPlay.dist < 0 ? 'loss' : 'gain')))
   }
 
   async playSelection (game, p, type, msg) {
@@ -556,22 +558,7 @@ export default class Run {
     await this.playSelection(game, game.defNum, 'ret', dName + ' pick return type...')
   }
 
-  async showPlayResults (game) {
-    const boardIn = [
-      { transform: '...' },
-      { transofrm: '...' }
-    ]
-
-    const el = document.querySelector('.board-container')
-
-    const sequence = async () => {
-      await el.animate(boardIn).finished
-    }
-
-    sequence()
-  }
-
-  async kickDec (game, die1 = null, mCoddsdie2 = null, yC = null) {
+  async kickDec (game) {
     const oName = game.players[game.offNum].team.name
     const dName = game.players[game.defNum].team.name
     const kickType = game.players[game.offNum].currentPlay
@@ -580,14 +567,17 @@ export default class Run {
     let possession = true
     let tmp = null
     let kickDist = 0
-    let mltCard = ''
-    let yard = 0
+    let multCard = null
+    let yard = null
     let multiplier = 0 // Recently changed from -1
     let retDist = 0
     let okResult = false
 
     await alertBox(this, 'Teams are lining up for the kick...')
-
+    animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
+    animationSimple(this.scoreboardContainerTopRight, 'collapsed')
+    animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
+    animationSimple(this.scoreboardContainerBotRight, 'collapsed')
     await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
     this.plCard1.innerText = game.players[1].currentPlay
@@ -600,25 +590,34 @@ export default class Run {
 
     if (kickType === 'RK') {
       if (retType === 'RR') {
-        tmp = Utils.rollDie()
-        if (die1) {
-          tmp = die1
+        if (game.isPlayer(game.me, 'host')) {
+          tmp = Utils.rollDie()
         }
+        tmp = await this.remoteCommunication(game, game.me, tmp)
+
         kickDist = 5 * tmp - 65
-        mltCard = game.decMults().card
-        if (mCoddsdie2) {
-          mltCard = mCoddsdie2
+
+        if (game.isPlayer(game.me, 'host')) {
+          multCard = game.decMults()
         }
-        yard = game.decYards()
-        if (yC) {
-          yard = yC
+        multCard = await this.remoteCommunication(game, game.me, multCard)
+        if (game.isPlayer(game.me, 'remote')) {
+          game.decMults(multCard.num - 1)
         }
 
-        if (mltCard === 'King') {
+        if (game.isPlayer(game.me, 'host')) {
+          yard = game.decYards()
+        }
+        yard = await this.remoteCommunication(game, game.me, yard)
+        if (game.isPlayer(game.me, 'remote')) {
+          game.decYards(yard - 1)
+        }
+
+        if (multCard.card === 'King') {
           multiplier = 10
-        } else if (mltCard === 'Queen') {
+        } else if (multCard.card === 'Queen') {
           multiplier = 5
-        } else if (mltCard === 'Jack') {
+        } else if (multCard.card === 'Jack') {
           multiplier = 1 // Recently changed from 0
         }
 
@@ -635,28 +634,35 @@ export default class Run {
         odds = 12
       }
 
-      tmp = Utils.randInt(1, odds)
-      if (mCoddsdie2) {
-        tmp = mCoddsdie2
+      tmp = null
+      if (game.isPlayer(game.me, 'host')) {
+        tmp = Utils.randInt(1, odds)
       }
+      tmp = await this.remoteCommunication(game, game.me, tmp)
+
       okResult = tmp === 1 // 1 in 'odds' odds of getting OK
       kickDist = -10 - tmp
-      retDist = tmp + Utils.rollDie()
-      if (die1) {
-        retDist = tmp + die1
+      if (game.isPlayer(game.me, 'host')) {
+        retDist = tmp + Utils.rollDie()
       }
+      retDist = await this.remoteCommunication(game, game.me, retDist)
+
       // Squib Kick
     } else {
-      tmp = Utils.rollDie()
-      if (die1) {
-        tmp = die1
+      tmp = null
+      if (game.isPlayer(game.me, 'host')) {
+        tmp = Utils.rollDie()
       }
+      tmp = await this.remoteCommunication(game, game.me, tmp)
       kickDist = -15 - 5 * tmp
       if (retType === 'RR') {
-        tmp = Utils.rollDie() + Utils.rollDie()
-        if (die1 && mCoddsdie2) {
-          tmp = die1 + mCoddsdie2
+        tmp = null
+
+        if (game.isPlayer(game.me, 'host')) {
+          tmp = Utils.rollDie() + Utils.rollDie()
         }
+        tmp = await this.remoteCommunication(game, game.me, tmp)
+
         retDist = tmp
       } else {
         retDist = 0
@@ -667,11 +673,10 @@ export default class Run {
 
     if (touchback) {
       await alertBox(this, 'Deep kick!')
-      // moveBall('c');
+      await this.moveBall(game, 'clear')
     } else {
       await alertBox(this, oName + ' kick...')
       game.thisPlay.dist = kickDist
-      // moveBall('k');
       game.spot += kickDist
     }
 
@@ -691,17 +696,16 @@ export default class Run {
 
     let msg = ''
     if (!touchback) {
+      await this.moveBall(game, 'kick')
+      await alertBox(this, Math.abs(kickDist) + '-yard kick')
       await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
-      this.multCard.innerText = mltCard
+      this.multCard.innerText = multCard.card
       await animationWaitForCompletion(this.multCard, 'picked')
       this.timesContainer.innerText = multiplier + 'X'
       await animationWaitForCompletion(this.timesContainer, 'picked')
       this.yardCard.innerText = yard
       await animationWaitForCompletion(this.yardCard, 'picked')
-
-      animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-      animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
 
       if (retDist === 0) {
         msg += 'No return'
@@ -724,14 +728,14 @@ export default class Run {
         }
 
         game.thisPlay.dist = retDist
-        // moveBall('k');
+        await this.moveBall(game, 'kick')
         game.spot += retDist
         msg += (retDist > 0 ? '+' : '-') + Math.abs(retDist) + '-yard return!'
       }
     } else {
       msg += 'Touchback...'
       game.spot = 25
-      // moveBall('s');
+      await this.moveBall('show')
       // Return Timeout
       if (game.changeTime === 4) {
         await this.returnTime(game)
@@ -739,12 +743,11 @@ export default class Run {
       if (game.twoMinWarning) {
         game.twoMinWarning = false
       }
-      // LATER: Change to 'tb' or something better
-      game.changeTime = 1
+      game.changeTime = TB
     }
 
-    setBallSpot(this)
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    setBallSpot(this)
     await alertBox(this, msg)
   };
 
@@ -752,7 +755,6 @@ export default class Run {
     await this.prePlay(game, REG)
     await this.pickPlay(game)
 
-    // console.log(stat);
     if (game.status !== EXIT) {
       await this.lastChanceTO(game)
       await animationWaitForCompletion(this.fieldContainer, 'slide-away')
@@ -769,11 +771,17 @@ export default class Run {
         // Real and have a timeout, one's not been called
         if (game.isReal(p) && game.players[p].timeouts && !game.changeTime) {
           console.log('p: ' + p + ' changeTime: ' + game.changeTime)
-          alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end! Would the ' + game.players[p].team.name + ' like to call a timeout?')
+          alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end! Last chance for the ' + game.players[p].team.name + ' to call a timeout!')
 
-          await animationPrePick(this, game, p)
-          selection = await this.input.getInput(game, p, 'last')
-          await animationPostPick(this, game, p)
+          // Local players
+          if (game.isPlayer(p, 'local')) {
+            await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+            selection = await this.input.getInput(game, p, 'last', game.players[p].team.name + ' call a timeout?')
+            await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+          }
+
+          // Send remote message or receive remote message
+          selection = await this.remoteCommunication(game, p, selection, game.players[p].team.name + ' call a timeout?')
 
           if (selection === 'Y') {
             await this.timeout(game, p)
@@ -784,9 +792,8 @@ export default class Run {
   };
 
   async prePlay (game, stat) {
-    game.thisPlay.multiplier_card = null
-    game.thisPlay.multiplier_num = null
-    game.thisPlay.yard_card = null
+    game.thisPlay.multiplierCard = null
+    game.thisPlay.yardCard = null
     game.thisPlay.multiplier = null
     game.thisPlay.quality = null
     game.thisPlay.dist = null
@@ -848,7 +855,6 @@ export default class Run {
         // This is where the computer can call timeout or pick special play
         await alertBox(this, game.players[2].team.name + ' are picking their play...')
         document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = game.players[2].team.name + ' are picking their play...'
-        // await this.slideBoard()
         if (game.changeTime === 0) {
           await this.cpuTime(game)
         }
@@ -856,30 +862,19 @@ export default class Run {
         this.cpuPlay(game)
       }
 
-      while (!game.players[p].currentPlay && game.status !== EXIT) {
-        if (game.isReal(p)) {
-          await this.playPages(game, p)
-        } else {
-          await this.cpuPages(game)
-        }
-
-        if (game.players[p].currentPlay === 'TO') {
-          await this.timeout(game, p)
-        }
-      }
+      await this.playSelection(game, p, 'reg', game.players[p].team.name + ' pick your play...')
     }
 
     // Making sure you didn't exit
     if (game.status !== EXIT) {
       game.status = this.setStatus(game, game.players[1].currentPlay, game.players[2].currentPlay)
-      // debugger
 
       await alertBox(this, 'Both teams are lining up for the snap...')
 
-      // Exit out of the game
+    // Exit out of the game
     } else {
       await alertBox(this, 'Catch ya laterrrrr!')
-      // console.log(game);
+      // LATER: Save game somewhere
     }
   };
 
@@ -1128,7 +1123,7 @@ export default class Run {
       }
 
       game.players[2].currentPlay = playAbrv
-    } else if (state === 'xp') {
+    } else if (state === 'pat') {
       await alertBox(this, game.players[2].team.name + ' selecting PAT type...')
       let selection = 'XP'
 
@@ -1416,7 +1411,7 @@ export default class Run {
   };
 
   setStatus (game, p1, p2) {
-    let stat = 0
+    let stat = null
     const ono = game.offNum
 
     if ('SRLRSPLP'.includes(p1) && 'SRLRSPLP'.includes(p2)) {
@@ -1425,19 +1420,19 @@ export default class Run {
 
     if (!stat) {
       if (p1 === 'HM' || p2 === 'HM') {
-        stat = 17
+        stat = HAIL
       } else if (p1 === 'FG' || p2 === 'FG') {
-        stat = 15
+        stat = FG
       } else if (p1 === 'PT' || p2 === 'PT') {
-        stat = 16
+        stat = PUNT
       }
     }
 
     if (!stat) {
       if (p1 === 'TP') {
-        stat = ono === 1 ? 12 : 13
+        stat = ono === 1 ? OFF_TP : DEF_TP
       } else if (p2 === 'TP') {
-        stat = ono === 1 ? 13 : 12
+        stat = ono === 1 ? DEF_TP : OFF_TP
       } else {
         stat = REG
       }
@@ -1447,13 +1442,13 @@ export default class Run {
   };
 
   async doPlay (game, p1, p2) {
-    if (game.status >= REG && game.status <= 13) {
-      this.regPlay(game, p1, p2)
+    if (game.status >= REG && game.status <= DEF_TP) {
+      await this.regPlay(game, p1, p2)
     }
 
-    if (game.status === 14) {
+    if (game.status === SAME) {
       await this.samePlay(game)
-    } else if (game.status >= 12 && game.status <= 13) {
+    } else if (game.status === OFF_TP || game.status === DEF_TP) {
       await this.trickPlay(game)
     } else if (game.status === 15) {
       await this.fieldGoal(game, game.offNum)
@@ -1464,38 +1459,45 @@ export default class Run {
     }
   };
 
-  regPlay (game, pl1, pl2) {
-    // hno = game.home;  // Used for scoreboard updating
-    // let report = 'Here are the plays...\n' + pl1 + ' vs. ' + pl2;
-
+  async regPlay (game, pl1, pl2) {
+    let tmp = null
     this.drawPlay(game, 1, pl1)
     this.drawPlay(game, 2, pl2)
 
     // If both players picked the same play, 50/50 chance of Same Play Mechanism
     if (pl1 === pl2) {
-      if (pl1 === 'TP' || Utils.coinFlip()) {
-        // 14 = Same Play
-        game.status = 14
+      if (game.isPlayer(game.me, 'host')) {
+        tmp = Utils.coinFlip()
+      }
+      tmp = await this.remoteCommunication(game, game.me, tmp)
+      if (pl1 === 'TP' || tmp) {
+        game.status = SAME
       }
     }
-
-    // await alertBox(this, report);
   };
 
   drawPlay (game, plr, play) {
-    // console.log('drawPlay');
-    // const cardNum = "SRLRSPLPTPHM".indexOf(play) / 2;
-    // game.players[plr].decPlays(cardNum);
     game.players[plr].decPlays(play)
-    // console.log(game.players[plr].plays);
   };
 
   async samePlay (game) {
-    const coin = Utils.coinFlip()
+    let coin = null
     let multCard = null
 
     await alertBox(this, 'Same play!')
-    multCard = game.decMults()
+
+    if (game.isPlayer(game.me, 'host')) {
+      coin = Utils.coinFlip()
+    }
+    coin = await this.remoteCommunication(game, game.me, coin)
+
+    if (game.isPlayer(game.me, 'host')) {
+      multCard = game.decMults()
+    }
+    multCard = await this.remoteCommunication(game, game.me, multCard)
+    if (game.isPlayer(game.me, 'remote')) {
+      game.decMults(multCard.num - 1)
+    }
 
     if (multCard.card === 'King') {
       await this.bigPlay(game, coin ? game.offNum : game.defNum)
@@ -1509,7 +1511,7 @@ export default class Run {
         await this.changePoss(game, 'to')
       }
       game.thisPlay.dist = 0
-      game.thisPlay.yard_card = '/'
+      game.thisPlay.yardCard = '/'
     }
   };
 
@@ -1520,7 +1522,12 @@ export default class Run {
   };
 
   async bigPlay (game, num) {
-    const die = Utils.rollDie()
+    let die = null
+
+    if (game.isPlayer(game.me, 'host')) {
+      die = Utils.rollDie()
+    }
+    die = await this.remoteCommunication(game, game.me, die)
 
     // Offensive Big Play
     if (game.offNum === num) {
@@ -1567,14 +1574,20 @@ export default class Run {
     }
 
     // Prevent calculations
-    game.thisPlay.multiplier_card = '/'
-    game.thisPlay.yard_card = '/'
+    game.thisPlay.multiplierCard = '/'
+    game.thisPlay.yardCard = '/'
     game.thisPlay.multiplier = '/'
   }
 
   async trickPlay (game) {
-    const die = Utils.rollDie()
-    await alertBox(this, (game.status === 12 ? game.players[game.offNum].team.name : game.players[game.defNum].team.name) + ' trick play!')
+    let die = null
+
+    if (game.isPlayer(game.me, 'host')) {
+      die = Utils.rollDie()
+    }
+    die = await this.remoteCommunication(game, game.me, die)
+
+    await alertBox(this, (game.status === OFF_TP ? game.players[game.offNum].team.name : game.players[game.defNum].team.name) + ' trick play!')
 
     if (die === 2) {
       // If timeout called, return
@@ -1600,26 +1613,26 @@ export default class Run {
       }
 
       // Prevent calcuations
-      game.thisPlay.multiplier_card = '/'
-      game.thisPlay.yard_card = '/'
+      game.thisPlay.multiplierCard = '/'
+      game.thisPlay.yardCard = '/'
     } else if (die === 3) {
-      game.thisPlay.multiplier_card = '/'
+      game.thisPlay.multiplierCard = '/'
       game.thisPlay.multiplier = -3
     } else if (die === 4) {
-      game.thisPlay.multiplier_card = '/'
+      game.thisPlay.multiplierCard = '/'
       game.thisPlay.multiplier = 4
     } else if (die === 5) {
-      await this.bigPlay(game, game.status === 12 ? game.offNum : game.defNum)
+      await this.bigPlay(game, game.status === OFF_TP ? game.offNum : game.defNum)
       // die === 1 && die === 6
     } else {
-      if (game.status === 12) {
+      if (game.status === OFF_TP) {
         game.thisPlay.bonus = 5
       } else {
         game.thisPlay.bonus = -5
       }
 
       // Place play based on die roll
-      game.players[(game.status === 12 ? game.offNum : game.defNum)].currentPlay = die === 1 ? 'LP' : 'LR'
+      game.players[(game.status === OFF_TP ? game.offNum : game.defNum)].currentPlay = die === 1 ? 'LP' : 'LR'
     }
   };
 
@@ -1628,7 +1641,12 @@ export default class Run {
     let make = true
     const spt = 100 - game.spot
     const fdst = spt + 17
-    let die = Utils.rollDie()
+    let die = null
+
+    if (game.isPlayer(ono, 'host')) {
+      die = Utils.rollDie()
+    }
+    die = await this.remoteCommunication(game, ono, die)
 
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     await alertBox(this, name + ' attempting a ' + fdst + '-yard field goal...')
@@ -1636,11 +1654,16 @@ export default class Run {
     // Ice kicker
     if (game.changeTime === 4 && game.lastCallTO !== game.offNum) {
       die++
-      console.log('Kicker iced!')
+      await alertBox(this, 'Kicker iced!')
     }
 
     if (fdst > 65) {
-      const tmp = Utils.randInt(1, 1000)
+      let tmp = null
+
+      if (game.isPlayer(ono, 'host')) {
+        tmp = Utils.randInt(1, 1000)
+      }
+      tmp = await this.remoteCommunication(game, ono, tmp)
       make = tmp === fdst // 1 in 1000 chance you get fdst
     } else if ((fdst >= 60 && die < 6) || (fdst >= 50 && die < 5) || (fdst >= 40 && die < 4) || (fdst >= 30 && die < 3) || (fdst >= 20 && die < 2)) {
       make = false
@@ -1679,24 +1702,44 @@ export default class Run {
     let possession = true
     let kickDist = 0
     let retDist = 0
+    let tmp = null
+    let downEl = null
+
+    if (game.offNum === game.away) {
+      downEl = this.scoreboardContainerBotLeft
+    } else {
+      downEl = this.scoreboardContainerBotRight
+    }
+
+    downEl.innerText = game.status === SAFETY_KICK ? 'Safety Kick' : 'Kickoff'
+    animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
+    animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
 
     // Safety Kick
-    if (game.status === -4) {
+    if (game.status === SAFETY_KICK) {
       // Probably reset graphics
       game.spot = 35
-      // moveBall('s');
+      await this.moveBall(game, 'show')
       // Punt
     } else {
       // Add Recap for punt, maybe remove first down sticks
     }
 
-    // printDown('PUNT');
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     await alertBox(this, oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...')
 
     // Check block (not on Safety Kick)
-    if (game.status !== -4 && Utils.rollDie() === 6) {
-      if (Utils.rollDie() === 6) { // 1 in 36 chance, must roll TWO sixes in a row
+    if (game.isPlayer(game.me, 'host')) {
+      tmp = Utils.rollDie()
+    }
+    tmp = await this.remoteCommunication(game, game.me, tmp)
+    if (game.status !== -4 && tmp === 6) {
+      tmp = null
+      if (game.isPlayer(game.me, 'host')) {
+        tmp = Utils.rollDie()
+      }
+      tmp = await this.remoteCommunication(game, game.me, tmp)
+      if (tmp === 6) { // 1 in 36 chance, must roll TWO sixes in a row
         block = true
       }
     }
@@ -1704,7 +1747,22 @@ export default class Run {
     // Get yard card
     if (!block) {
       // Yard card times 10 and, if heads, add 20
-      kickDist = 10 * game.decYards() / 2 + 20 * Utils.coinFlip()
+      tmp = null
+      if (game.isPlayer(game.me, 'host')) {
+        tmp = Utils.coinFlip()
+      }
+      tmp = await this.remoteCommunication(game, game.me, tmp)
+
+      let yard = null
+      if (game.isPlayer(game.me, 'host')) {
+        yard = game.decYards()
+      }
+      yard = await this.remoteCommunication(game, game.me, yard)
+      if (game.isPlayer(game.me, 'remote')) {
+        game.decYards(yard - 1)
+      }
+
+      kickDist = 10 * yard / 2 + 20 * tmp
 
       // Check for touchbacks
       if (game.spot + kickDist > 100) {
@@ -1716,21 +1774,31 @@ export default class Run {
 
     if (touchback) {
       await alertBox(this, 'Deep kick!')
-      // moveBall('c');
+      await this.moveBall(game, 'clear')
     } else if (block) {
       await alertBox(this, dName + ' blocked the punt!!!')
       // addRecap( blocked punt )
       // Regular punt/safety kick
     } else {
       game.thisPlay.dist = kickDist
-      // moveBall('k');
+      await this.moveBall(game, 'kick')
     }
 
     game.spot += kickDist
 
     // Check muff, but not on safety kick
-    if (!touchback && !block && game.status !== -4 && Utils.rollDie() === 6) {
-      if (Utils.rollDie() === 6) {
+    tmp = null
+    if (game.isPlayer(game.me, 'host')) {
+      tmp = Utils.rollDie()
+    }
+    tmp = await this.remoteCommunication(game, game.me, tmp)
+    if (!touchback && !block && game.status !== -4 && tmp === 6) {
+      tmp = null
+      if (game.isPlayer(game.me, 'host')) {
+        tmp = Utils.rollDie()
+      }
+      tmp = await this.remoteCommunication(game, game.me, tmp)
+      if (tmp === 6) {
         possession = false
       }
     }
@@ -1751,19 +1819,35 @@ export default class Run {
     let msg = 'The return: '
 
     if (possession && !touchback && !block) {
-      const mltCard = game.decMults().card
-      const yrd = game.decYards()
-      let mlt = -0.5
+      let multCard
+      let yard
+      let mult = -0.5
 
-      if (mltCard === 'King') {
-        mlt = 7
-      } else if (mltCard === 'Queen') {
-        mlt = 4
-      } else if (mltCard === 'Jack') {
-        mlt = 1
+      if (game.isPlayer(game.me, 'host')) {
+        multCard = game.decMults()
+      }
+      multCard = await this.remoteCommunication(game, game.me, multCard)
+      if (game.isPlayer(game.me, 'remote')) {
+        game.decMults(multCard.num - 1)
       }
 
-      retDist = Math.round(mlt * yrd)
+      if (game.isPlayer(game.me, 'host')) {
+        yard = game.decYards()
+      }
+      yard = await this.remoteCommunication(game, game.me, yard)
+      if (game.isPlayer(game.me, 'remote')) {
+        game.decYards(yard - 1)
+      }
+
+      if (multCard.card === 'King') {
+        mult = 7
+      } else if (multCard.card === 'Queen') {
+        mult = 4
+      } else if (multCard.card === 'Jack') {
+        mult = 1
+      }
+
+      retDist = Math.round(mult * yard)
 
       if (retDist === 0) {
         msg += 'No return.'
@@ -1779,7 +1863,7 @@ export default class Run {
         }
 
         game.thisPlay.dist = retDist
-        // moveBall('k');
+        await this.moveBall(game, 'kick')
         game.spot += retDist
 
         msg += dName + ' return for ' + retDist + ' yards.'
@@ -1787,11 +1871,11 @@ export default class Run {
     } else if (touchback) {
       msg += dName + ' takes a touchback...'
       game.spot = 20
-      // moveBall('s')  // Maybe
+      await this.moveBall(game, 'show')
     }
 
     // If you didn't score, post-punt
-    if (game.status === -4 || game.status === 16) {
+    if (game.status === SAFETY_KICK || game.status === PUNT) {
       game.status = 6
       game.down = 0 // CHECK: This is a band-aid
     }
@@ -1800,9 +1884,14 @@ export default class Run {
   };
 
   async hailMary (game) {
-    const die = Utils.rollDie()
     let msg = null
     let dst = 0
+    let die = null
+
+    if (game.isPlayer(ono, 'host')) {
+      die = Utils.rollDie()
+    }
+    die = await this.remoteCommunication(game, ono, die)
 
     await alertBox(this, game.players[game.offNum].team.name + ' hail mary!')
     document.querySelector('.' + (game.away === game.offNum ? 'away' : 'home') + ' .hm' + game.players[game.offNum].hm).classList.add('called')
@@ -1827,8 +1916,8 @@ export default class Run {
       await alertBox(this, msg)
     }
 
-    game.thisPlay.multiplier_card = '/'
-    game.thisPlay.yard_card = '/'
+    game.thisPlay.multiplierCard = '/'
+    game.thisPlay.yardCard = '/'
     game.thisPlay.multiplier = '/'
     game.thisPlay.dist = dst
 
@@ -1840,13 +1929,12 @@ export default class Run {
     const p1 = game.players[1].currentPlay
     const p2 = game.players[2].currentPlay
 
-    if ((game.status > 10 && game.status <= 14) || game.status === 17) {
-      this.calcDist(game, p1, p2)
+    if ((game.status >= REG && game.status <= SAME) || game.status === HAIL) {
+      await this.calcDist(game, p1, p2)
 
-      console.log('Play over - ball is moving...')
       await this.reportPlay(game, p1, p2)
 
-      // if (!game.twoPtConv && game.status < 15 || game.status > 16) {
+      // if (!game.twoPtConv && game.status < FG || game.status > PUNT) {
       //     saveDist(game.offNum)  // LATER: When we have stats
       // }
 
@@ -1855,13 +1943,9 @@ export default class Run {
       }
     }
 
-    // await animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    setBallSpot(this)
-
     await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist)
 
-    console.log('Updating scoreboard...')
-    if (!game.isOT() && game.otPoss < 0 && !game.twoPtConv && (game.status < 15 || game.status === 17)) {
+    if (!game.isOT() && game.otPoss < 0 && !game.twoPtConv && (game.status < FG || game.status === HAIL)) {
       await this.updateDown(game)
     }
 
@@ -1869,34 +1953,40 @@ export default class Run {
       await this.timeChanger(game)
     }
 
-    // await alertBox(this, 'Teams huddling up...\nPress Enter...\n');
-
-    if (game.status > 0 && game.status < 10) {
+    if (game.status > INIT && game.status < REG) {
       game.status = REG
     }
-    console.log(game.status)
-    // }
   };
 
-  calcDist (game, p1, p2) {
-    console.log('Drawing cards...')
-
-    if (!game.thisPlay.multiplier_card) {
-      game.thisPlay.multiplier_card = game.decMults()
+  async calcDist (game, p1, p2) {
+    if (!game.thisPlay.multiplierCard) {
+      if (game.isPlayer(game.me, 'host')) {
+        game.thisPlay.multiplierCard = game.decMults()
+      }
+      game.thisPlay.multiplierCard = await this.remoteCommunication(game, game.me, game.thisPlay.multiplierCard)
+      if (game.isPlayer(game.me, 'remote')) {
+        game.decMults(game.thisPlay.multiplierCard.num - 1)
+      }
     }
 
-    if (!game.thisPlay.yard_card) {
-      game.thisPlay.yard_card = game.decYards()
+    if (!game.thisPlay.yardCard) {
+      if (game.isPlayer(game.me, 'host')) {
+        game.thisPlay.yardCard = game.decYards()
+      }
+      game.thisPlay.yardCard = await this.remoteCommunication(game, game.me, game.thisPlay.yardCard)
+      if (game.isPlayer(game.me, 'remote')) {
+        game.decYards(game.thisPlay.yardCard - 1)
+      }
     }
 
-    if (!game.thisPlay.multiplier && game.thisPlay.multiplier_card === '/') {
+    if (!game.thisPlay.multiplier && game.thisPlay.multiplierCard === '/') {
       game.thisPlay.multiplier = '/'
-    } else if (game.thisPlay.multiplier_card !== '/') {
-      game.thisPlay.multiplier = this.calcTimes(game, p1, p2, game.thisPlay.multiplier_card.num)
+    } else if (game.thisPlay.multiplierCard !== '/') {
+      game.thisPlay.multiplier = this.calcTimes(game, p1, p2, game.thisPlay.multiplierCard.num)
     }
 
     if (!game.thisPlay.dist) {
-      game.thisPlay.dist = Math.round(game.thisPlay.yard_card * game.thisPlay.multiplier) + game.thisPlay.bonus
+      game.thisPlay.dist = Math.round(game.thisPlay.yardCard * game.thisPlay.multiplier) + game.thisPlay.bonus
     }
 
     // Check for touchdowns
@@ -1939,20 +2029,13 @@ export default class Run {
 
   async reportPlay (game, p1, p2) {
     const times = !game.thisPlay.multiplier ? '/' : null
-    const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card
+    const mCard = game.thisPlay.multiplierCard === '/' ? '/' : game.thisPlay.multiplierCard.card
 
     animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
     animationSimple(this.scoreboardContainerBotRight, 'collapsed')
 
     document.querySelector('.' + (game.away === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
     document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
-    // await this.slideBoard()
-
-    // This is it, but not right order, probably
-
-    // PROBLEM HERE
-    // debugger
-    // await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
     this.plCard1.innerText = game.players[1].currentPlay
     await animationWaitForCompletion(this.plCard1, 'picked')
@@ -1964,30 +2047,16 @@ export default class Run {
     await animationWaitForCompletion(this.multCard, 'picked')
     this.timesContainer.innerText = (times || game.thisPlay.multiplier) + 'X'
     await animationWaitForCompletion(this.timesContainer, 'picked')
-    this.yardCard.innerText = game.thisPlay.yard_card
+    this.yardCard.innerText = game.thisPlay.yardCard
     await animationWaitForCompletion(this.yardCard, 'picked')
 
-    animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-    animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
+    // animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
+    // animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
+
+    this.setLastPlay(game)
 
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     setBallSpot(this)
-
-    // await alertBox(this, 'Multiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times || game.thisPlay.multiplier) + 'X\n')
-
-    // const field = document.querySelector('.field-container')
-    // // field.addEventListener('transitionend', () => {
-
-    // // })
-    // if (field.classList.contains('slide-away')) {
-    //   field.classList.remove('slide-away')
-    // //   field.style.display = 'block'
-    // } else {
-    //   field.classList.add('slide-away')
-    // //   field.style.display = 'none'
-    // }
-
-    // alert('Player 1: ' + p1 + ' vs. Player 2: ' + p2 + '\nMultiplier Card: ' + mCard + '\nYard Card: ' + game.thisPlay.yard_card + '\nMultiplier: ' + (times ? times : game.thisPlay.multiplier) + 'X\nDistance: ' + game.thisPlay.dist + ' yard' + (game.thisPlay.dist !== 1 ? 's' : '') + '\nTeams are huddling up. Press Enter...\n');
   };
 
   async checkScore (game, bon, dst) {
@@ -2075,7 +2144,6 @@ export default class Run {
     this.showBoard(game, document.querySelector('.scoreboard-container'))
 
     // addRecap ( touchdown )
-    // debugger
     if (this.patNec(game)) {
       await this.pat(game)
     }
@@ -2085,45 +2153,62 @@ export default class Run {
     }
   };
 
-  // QUESTION FOR DANIEL
   patNec (game) {
     const endGameNoTO = game.qtr === 4 && game.currentTime === 0 && game.changeTime !== 4
     const endOT = game.isOT() && (game.otPoss === 1 || (game.otPoss === 2 && game.turnover))
     const scoreDiff = game.players[game.offNum].score > game.players[game.defNum].score || game.players[game.defNum].score - game.players[game.offNum].score > 2
 
     return !((endGameNoTO || endOT) && scoreDiff)
-    // return !(endGameNoTO || endOT) || !scoreDiff;
-    // return !endGameNoTO && !endOT || !scoreDiff;
   };
 
   async pat (game) {
     const oNum = game.offNum
     const oName = game.players[oNum].team.name
-    let selection = '2P' // Default in 3OT+
+    let selection = null // Default in 3OT+
 
     if (game.qtr < 7) { // Must go for 2 in 3OT+
-      if (game.isReal(oNum)) {
-        await this.playPages(game, oNum, 'pat')
-      } else {
-        await this.cpuPages(game, 'xp')
+      // PAT decision
+      // Real players
+      if (game.isPlayer(game.offNum, 'local')) {
+        await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+        selection = await this.input.getInput(game, game.offNum, 'pat', oName + ' pick PAT type...')
+        await animationWaitForCompletion(this.cardsContainer, 'slide-down')
       }
 
-      selection = game.players[oNum].currentPlay
+      // Send remote message or receive remote message
+      selection = await this.remoteCommunication(game, game.offNum, selection, oName + ' pick PAT type...')
+
+      // Computer picking (or fallback for failed communication)
+      if (!selection) {
+        await alertBox(this, oName + ' choosing PAT type...')
+        await this.cpuPages(game, 'pat')
+        selection = game.players[2].currentPlay
+      }
+    } else {
+      selection = '2P'
     }
 
     if (selection === '2P') {
       // printDown('2PT');
       game.spot = 98
-      // moveBall('s');
-      if (game.changeTime !== 4) {
-        game.changeTime = 7 // Two-point
+      setBallSpot(this)
+      if (game.changeTime !== TIMEOUT) {
+        game.changeTime = TWOPT // Two-point
       }
       game.twoPtConv = true
     } else {
       // printDown('XP');
-      let die = Utils.rollDie()
+      let die
+      if (game.isPlayer(game.me, 'host')) {
+        die = Utils.rollDie()
+      }
+      die = await this.remoteCommunication(game, game.me, die)
       if (die === 6) {
-        die = Utils.coinFlip()
+        die = null
+        if (game.isPlayer(game.me, 'host')) {
+          die = Utils.coinFlip()
+        }
+        die = await this.remoteCommunication(game, game.me, die)
         if (!die) {
           die = 6
         }
@@ -2155,17 +2240,18 @@ export default class Run {
     // if init kick then just get it right
 
     if (game.down !== 0) {
-      console.log('Update down: ' + game.spot)
       game.spot += game.thisPlay.dist
-      console.log(game.spot)
     }
 
-    // if (game.spt != 0 || game.status > 0 && game.status < 10) { // Update the spot }
+    setBallSpot(this)
 
     // Sticks
     if (game.spot === game.firstDown) {
       await alertBox(this, 'Sticks...')
-      coin = Utils.coinFlip()
+      if (game.isPlayer(game.me, 'host')) {
+        coin = Utils.coinFlip()
+      }
+      coin = await this.remoteCommunication(game, game.me, coin)
 
       if (!coin) {
         await alertBox(this, 'Almost!')
@@ -2216,10 +2302,9 @@ export default class Run {
   async timeChanger (game) {
     console.log('timeChanger')
     if (game.qtr <= 4 && game.changeTime === 0) {
+      await this.tickingClock(game.currentTime, game.currentTime - 0.5)
       game.currentTime -= 0.5
-      console.log(game.currentTime)
       // Inc TOP for offense
-      // print_time(game.currentTime);
     }
 
     // LATER: Add this for OT
@@ -2235,19 +2320,19 @@ export default class Run {
     if (game.qtr > 4 && game.otPoss === 0) {
       game.currentTime = -0.5
     }
-
-    await this.tickingClock(game.currentTime + 0.5, game.currentTime)
   };
 
   async tickingClock (oldTime, newTime) {
     const clockTime = document.querySelector('.clock .time')
     let curTime = oldTime
-    while (curTime > newTime) {
-      clockTime.innerText = this.printTime(curTime)
-      curTime -= 1 / 60
-      await sleep(10)
+    if (oldTime !== 'end') {
+      while (curTime > newTime) {
+        clockTime.innerText = this.printTime(curTime)
+        curTime -= 1 / 60
+        await sleep(10)
+      }
     }
-    clockTime.innerText = this.printTime(this.game.currentTime)
+    clockTime.innerText = this.printTime(newTime)
   }
 
   ot_qtr_switch (game) {

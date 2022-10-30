@@ -3,9 +3,8 @@
 export default class Play {
   bonus = null
   dist = null
-  multiplier_card = null
-  multiplier_num = null
-  yard_card = null
+  multiplierCard = null
+  yardCard = null
   multiplier = null
   quality = null
   quality_array = ['Best', 'Good', 'Okay', 'Decent', 'Worst']

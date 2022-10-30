@@ -84,29 +84,33 @@ export default class Game {
     this.mults = [4, 4, 4, 3]
   }
 
-  decMults () {
+  decMults (index = null) {
     let card = -1
 
-    while (card === -1) {
-      card = Utils.randInt(0, 3)
-      // Out of this card, try again
-      if (!this.mults[card]) {
-        card = -1
-      } else {
-        this.mults[card]--
+    if (index) {
+      card = index
+    } else {
+      while (card === -1) {
+        card = Utils.randInt(0, 3)
+        // Out of this card, try again
+        if (!this.mults[card]) {
+          card = -1
+        } else {
+          this.mults[card]--
 
-        // Check if mults is empty
-        if (this.mults[card] <= 0) {
-          let refill = true
-          // Check to see if the plays array is empty
-          this.mults.forEach(mult => {
-            if (mult > 0) {
-              refill = false
+          // Check if mults is empty
+          if (this.mults[card] <= 0) {
+            let refill = true
+            // Check to see if the plays array is empty
+            this.mults.forEach(mult => {
+              if (mult > 0) {
+                refill = false
+              }
+            })
+
+            if (refill) {
+              this.fillMults()
             }
-          })
-
-          if (refill) {
-            this.fillMults()
           }
         }
       }
@@ -118,29 +122,33 @@ export default class Game {
     return { card: cards[card], num: card + 1 }
   }
 
-  decYards () {
+  decYards (index = null) {
     let card = -1
 
-    while (card === -1) {
-      card = Utils.randInt(0, 9)
+    if (index) {
+      card = index
+    } else {
+      while (card === -1) {
+        card = Utils.randInt(0, 9)
 
-      if (!this.yards[card]) {
-        card = -1
-      } else {
-        this.yards[card]--
+        if (!this.yards[card]) {
+          card = -1
+        } else {
+          this.yards[card]--
 
-        // Check if yards is empty
-        if (this.yards[card] <= 0) {
-          let refill = true
-          // Check to see if the plays array is empty
-          this.yards.forEach(yard => {
-            if (yard > 0) {
-              refill = false
+          // Check if yards is empty
+          if (this.yards[card] <= 0) {
+            let refill = true
+            // Check to see if the plays array is empty
+            this.yards.forEach(yard => {
+              if (yard > 0) {
+                refill = false
+              }
+            })
+
+            if (refill) {
+              this.fillYards()
             }
-          })
-
-          if (refill) {
-            this.fillYards()
           }
         }
       }
