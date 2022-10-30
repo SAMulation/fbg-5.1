@@ -10,7 +10,7 @@ export default class Stat {
     this.currentFirstDowns = 0
     this.currentTurnorvers = 0
     this.currentTimeOfPoss = 0
-    this.qtrScore = 0
+    this.qtrScore = []
 
     // Lifetime stats
     // Just passed string: New User

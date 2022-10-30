@@ -6,7 +6,7 @@ import Utils from './utils.js'
 import { CHANGE, INIT, INIT_OTC } from './defaults.js'
 
 export default class Game {
-  constructor (team1, team2, gameType, numberPlayers, home, qtrLength, stats1, stats2, input = new ButtonInput(), mults = null, yards = null) {
+  constructor (connection, team1, team2, gameType, numberPlayers, home, qtrLength, stats1, stats2, input = new ButtonInput(), mults = null, yards = null) {
     this.gameType = gameType
     this.numberPlayers = numberPlayers
     this.home = home
@@ -33,6 +33,10 @@ export default class Game {
     this.mults = mults
     this.yards = yards
     this.lastSpot = this.spot
+    this.recap = []
+    this.me = connection.me
+
+    this.connection = connection
 
     // Pass input class to game constructor
     this.run = new Run(this, input)
@@ -64,6 +68,14 @@ export default class Game {
 
   isOT () {
     return this.qtr > 4
+  }
+
+  isPlayer (p, cond) {
+    if (cond === 'host') {
+      return this.connection.host
+    } else if (cond === 'local') {
+      return p === this.me || (this.connection.type === 'local' && this.numberPlayers == 2)
+    }
   }
 
   fillMults () {

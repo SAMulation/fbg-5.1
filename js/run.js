@@ -1,4 +1,5 @@
 /* global alert */
+import Stat from './stat.js'
 import Utils from './utils.js'
 import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT } from './defaults.js'
 import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer } from './graphics.js'
@@ -25,10 +26,26 @@ export default class Run {
     this.timesContainer = document.querySelector('.board-container .times-container')
     this.cardsContainer = document.querySelector('.cards-container')
     this.actualCards = this.cardsContainer.querySelector('.cards')
-    this.alertMessage = this.cardsContainer.querySelector('.bar')
+    this.timeoutButton = this.cardsContainer.querySelector('.to-butt')
+    this.alertMessage = this.cardsContainer.querySelector('.bar-msg')
     this.ball = document.querySelector('.field-container .ball')
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
+  }
+
+  makeBarSlideable (el) {
+    document.querySelector('.bar-msg').disabled = true
+    document.querySelector('.bar-msg').addEventListener('click', async () => {
+      await animationWaitForCompletion(el, 'slide-down', !this.cardsContainer.classList.contains('slide-down'))
+
+      if (this.cardsContainer.classList.contains('slide-down')) {
+        this.timeoutButton.disabled = true
+      } else {
+        if (this.timeoutButton.timeouts) {
+          this.timeoutButton.disabled = false
+        }
+      }
+    })
   }
 
   async prepareHTML () {
@@ -38,6 +55,7 @@ export default class Run {
     await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
     this.actualCards.innerText = '' // Clear out default cards
     await animationWaitThenHide(this.gameSetup, 'slide-away') // Slide away game setup screen
+    this.makeBarSlideable(this.cardsContainer)
   }
 
   async playGame (channel) {
@@ -118,6 +136,42 @@ export default class Run {
     }
   };
 
+  // Commented code will handle host/remote random decisions
+  async handleRandomDecisions (game, p, result) {
+    let value = null
+    // const conf = null
+    if (game.connection.type === 'local') {
+      value = result
+    } // else if (game.connection.type === 'remote') {
+    // if (game.connection.host) {
+    //   value = result
+    //   game.connection.channel.trigger('client-send-msg', { value })
+    //   conf = await game.connection.channel.trigger('client-send-msg', {})
+    // // I'm waiting
+    // } else {
+    //   value = await game.connection.channel.trigger('client-send-msg', value)
+    //   game.connection.channel.trigger('client-send-msg', { 'sent' })
+    // }
+    // }
+
+    return value
+  }
+
+  async remoteCommunication (game, p, value = null, msg = null) {
+    if (game.connection.type === 'remote') {
+    // if (game.isPlayer(p, 'host')) {
+    //   // Send value to REMOTE player
+    //   sendInputToRemote(value)
+    // } else {
+    //   await alertBox(this, msg)
+    //   // Receive value from REMOTE player
+    //   value = await receiveInputFromRemote()
+    // }
+    }
+
+    return value
+  }
+
   async coinToss (game) {
     const awayName = game.players[game.away].team.name
     const homeName = game.players[game.home].team.name
@@ -127,38 +181,48 @@ export default class Run {
     let decPick = null
     let recFirst = 'away'
 
-    // LATER: Move this
-    // await animationWaitForCompletion(this.scoreboardContainer, 'slide-away')
-    // animationSimple(this.scoreboardContainer, 'slide-away')
-
     // Coin toss decision
-    if (game.isReal(game.away)) {
+    // Real players
+    if (game.isPlayer(game.away, 'local')) {
       await alertBox(this, awayName + ' pick heads or tails for coin toss...')
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
       await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // Computer picking
-    } else {
+    }
+
+    // Send remote message or receive remote message
+    coinPick = await this.remoteCommunication(game, game.away, coinPick, 'Coin Toss: ' + awayName + ' choosing...')
+
+    // Computer picking (or fallback for failed communication)
+    if (!coinPick) {
       await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
       coinPick = Utils.coinFlip() ? 'H' : 'T'
     }
 
     // Show result
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
-    result += 'Annnnnnnnnnnnnd... '
+    result += ' ... '
     // Some sort of graphic
     actFlip = Utils.coinFlip() ? 'H' : 'T'
+
+    actFlip = await this.remoteCommunication(game, game.away, actFlip)
+
     result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
     await alertBox(this, result)
 
     // Decide if want to kick or receive
-    if (game.numberPlayers === 2 || (actFlip === coinPick && game.isReal(game.away)) || (actFlip !== coinPick && game.isReal(game.home))) {
+    if ((actFlip === coinPick && game.isPlayer(game.away, 'local')) || (actFlip !== coinPick && game.isPlayer(game.home, 'local'))) {
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
       await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // Computer choosing
-    } else {
-      await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing...')
+    }
+
+    // Send remote message or receive remote message
+    decPick = await this.remoteCommunication(game, game.away, decPick, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
+
+    // Computer choosing (or fallback for failed communication)
+    if (!decPick) {
+      await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
 
       decPick = Utils.randInt(1, 2)
       if (game.qtr < 4) {
@@ -197,12 +261,15 @@ export default class Run {
       if (game.gameType !== 'otc') {
         // LATER: Might need this for graphic resetting
       }
-      game.status = REG // Should lead to first play
+      game.status = REG // Should lead to first play MAYBE DON'T WANT THIS
       game.currentTime = 0
     }
   };
 
-  // CHECKPOINT: YOU'RE HERE
+  addRecap (game, time, msg) {
+    game.recap.push({ time, msg })
+    // LATER: Add to recap element on page
+  }
 
   // What ALL is this function doing?
   async resetVar (game) {
@@ -211,17 +278,11 @@ export default class Run {
       // printNames()
       for (let p = 1; p <= 2; p++) {
         game.players[p].score = 0
-        // printScore(p);
-        // game.players[p].stats.totalYards = 0;
-        // game.players[p].stats.passYards = 0;
-        // game.players[p].stats.runYards = 0;
-        // game.players[p].stats.timePoss = 0;
-        // game.players[p].stats.firstDowns = 0;
-        // game.players[p].stats.turnovers = 0;
-        // game.players[p].stats.qtrScore = 0;
+        game.players[p].stats = new Stat(game.players[p].stats)
+        game.players[p].stats.qtrScore.push(0)
       }
-      // Add initial entry to addRecap( initial );
-      // Make a spot to store the scores for each qtr
+
+      this.addRecap(game, 'Start', 'Game Start')
 
       // OT Challenge Stuff
       // This could be more elegant
@@ -689,7 +750,7 @@ export default class Run {
       // moveBall('s');
       // Return Timeout
       if (game.changeTime === 4) {
-        this.returnTime(game.lastCallTO)
+        await this.returnTime(game)
       }
       if (game.twoMinWarning) {
         game.twoMinWarning = false
@@ -1121,7 +1182,7 @@ export default class Run {
 
       game.players[2].currentPlay = kckDec
     } else if (state === 'ret') {
-      alertBox(game.players[2].team.name + ' selecting return type...')
+      await alertBox(game.players[2].team.name + ' selecting return type...')
       await this.cpuTime(game)
 
       const qtr = game.qtr
@@ -1529,11 +1590,11 @@ export default class Run {
     }
   };
 
-  returnTime (last) {
-    this.game.players[last].timeouts++
-    console.log('Timeout returned to ' + this.game.players[last].team.name + '...')
-    // LATER: Graphically show timeout returning on scoreboard
-  }
+  async returnTime (game) {
+    game.players[game.lastCallTO].timeouts++
+    document.querySelector('.' + (game.away === game.lastCallTO ? 'away' : 'home') + ' .to' + game.players[game.lastCallTO].timeouts).classList.remove('called')
+    await alertBox('Timeout returned to ' + game.players[game.lastCallTO].team.name + '...')
+  };
 
   async bigPlay (game, num) {
     const die = Utils.rollDie()
@@ -1556,7 +1617,7 @@ export default class Run {
       if (die >= 1 && die <= 3) {
         // If timeout called, return
         if (game.changeTime === 4) {
-          this.returnTime(game.lastCallTO)
+          await this.returnTime(game)
         }
 
         game.changeTime = 2
@@ -1595,7 +1656,7 @@ export default class Run {
     if (die === 2) {
       // If timeout called, return
       if (game.changeTime === 4) {
-        this.returnTime(game.lastCallTO)
+        await this.returnTime(game)
       }
       game.changeTime = 2
 

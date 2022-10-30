@@ -23,14 +23,14 @@
 
   /* Cards */
   
-  button {
+  /* button {
     background-color: rgb(75, 75, 75);
     border: 2px solid black;
     color: black;
     padding: 10px;
     margin: 2px;
     line-height: 1.5rem;
-  }
+  } */
 
   button:disabled {
     color: #9c9c9c;

@@ -113,12 +113,22 @@ const initGame = (site) => {
   }
 
   for (let p = 1; p <= site.numberPlayers; p++) {
-    while (!user[p]) {
-      user[p] = prompt('What should I call player ' + p + '?', 'Player')
+    if (!window.localStorage.getItem('user' + p)) {
+      while (!user[p]) {
+        user[p] = prompt('What should I call player ' + p + '?', 'Player')
+        window.localStorage.setItem('user' + p, user[p])
+      }
+    } else {
+      user[p] = window.localStorage.getItem('user' + p)
     }
   }
 
-  return new Game(site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, user[1], user[2], window.inputType)
+  let me = 0
+  if (site.numberPlayers > 0) {
+    me = site.host ? 1 : 2
+  }
+
+  return new Game({ me, type: site.connectionType, host: site.host, channel: site.channel }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, user[1], user[2], window.inputType)
 }
 
 // MAIN FUNCTION CALLS

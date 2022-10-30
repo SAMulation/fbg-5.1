@@ -82,6 +82,7 @@
   .team {
     align-self: center;
     text-decoration: none;
+    text-underline-offset: 20%;
   }
 
   .home.team {

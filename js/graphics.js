@@ -1,4 +1,5 @@
 /* global alert */
+
 // Display alert messages somewhere cool (or in alert or in console)
 export const alertBox = async (run, msg) => {
   // This is the preferred route
