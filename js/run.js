@@ -360,7 +360,7 @@ export default class Run {
         game.otPoss = 2
         game.spot = 75
         game.firstDown = 85
-        this.moveBall('show')
+        this.moveBall(game, 'show')
         this.printMsgDown(game, this.scoreboardContainer)
         this.printMsgSpot(game, this.scoreboardContainer)
       } else {
@@ -383,13 +383,14 @@ export default class Run {
 
   moveBall (game, mode = null) {
     if (mode === 'clear') {
-      this.ball.style.display = 'none'
+      this.ball.classList.toggle('hidden', true)
     } else if (mode === 'show') {
-      this.ball.style.display = ''
+      this.ball.classList.toggle('hidden', false)
     } else {
       if (mode !== 'kick') {
         alertBox('The ball is hiked...')
       }
+      this.ball.classList.toggle('hidden', false)
       setBallSpot(this)
       if (mode === 'show/clear') {
         this.moveBall(game, 'clear')
@@ -411,12 +412,12 @@ export default class Run {
     } else {
       // Reset board
       game.spot = 65
-      this.moveBall('show')
+      this.moveBall(game, 'show')
 
-      await this.kickPage(game, game.offNum)
+      await this.kickPage(game)
 
       if (game.status !== EXIT) {
-        await this.returnPage(game, game.defNum)
+        await this.returnPage(game)
       }
       if (game.status !== EXIT) {
         await this.kickDec(game)
@@ -438,7 +439,7 @@ export default class Run {
     // 'fg' = missed field goal
 
     if (mode !== '' && mode !== 'k' && mode !== 'nop') {
-      // moveBall('c');  // Which cleared the ball
+      // moveBall(game, 'c');  // Which cleared the ball
     }
 
     if (mode !== 'nop' && mode !== 'ot' && game.isOT() && !game.twoPtConv && game.otPoss > 0) {
@@ -496,72 +497,64 @@ export default class Run {
     }
   };
 
-  async kickPage (game, oNum) {
-    const oName = game.players[oNum].team.name
-    // printDown('KICK');
-    // let kckDec = null;
-    while (game.players[oNum].currentPlay === '' && game.status !== EXIT) {
-      if (game.isReal(oNum)) {
-        await alertBox(this, oName + ' pick kickoff type...')
-        await this.playPages(game, oNum, 'kick')
-      } else {
-        await this.cpuPages(game, 'kick')
+  setLastPlay (game) {
+    game.lastPlay = game.players[game.away].currentPlay + ' v ' + game.players[game.home].currentPlay + ' | ' + (game.thisPlay.dist === 0 ? 'No gain' : (game.thisPlay.dist + '-yard ' + (game.thisPlay.dist < 0 ? 'loss' : 'gain')))
+  }
+
+  async playSelection (game, p, type, msg) {
+    this.scoreboardContainerTopLeft.innerText = (p === game.away ? 'Pick your play' : game.lastPlay)
+    this.scoreboardContainerTopRight.innerText = (p === game.away ? game.lastPlay : 'Pick your play')
+    animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
+    animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
+
+    while (!game.players[p].currentPlay && game.status !== EXIT) {
+      // Local players
+      if (game.isPlayer(p, 'local')) {
+        await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+        game.players[p].currentPlay = await this.input.getInput(game, p, type, msg)
+        await animationWaitForCompletion(this.cardsContainer, 'slide-down')
       }
 
-      if (game.players[oNum].currentPlay === 'TO') {
-        await this.timeout(game, oNum)
+      // Send remote message or receive remote message
+      game.players[p].currentPlay = await this.remoteCommunication(game, p, game.players[p].currentPlay, msg)
+
+      // Computer picking (or fallback for failed communication)
+      if (!game.players[p].currentPlay) {
+        await this.cpuPages(game, type)
+      }
+
+      // Handle timeouts being called
+      if (game.players[p].currentPlay === 'TO') {
+        await this.timeout(game, p)
       }
     }
+
+    animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
+    animationSimple(this.scoreboardContainerTopRight, 'collapsed')
   }
 
-  async playPickedAnimation (game) {
-    // animationWaitForCompletion(this.boardContainer, 'slide-away')
-    // await animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    // await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // animationWaitForCompletion(this.fieldContainer, 'slide-away')
-    // animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    document.querySelector('.pl-card2').innerText = game.players[2].currentPlay
-    document.querySelector('.pl-card2').classList.add('picked')
-  }
+  async kickPage (game) {
+    const oName = game.players[game.offNum].team.name
+    let downEl = null
 
-  async returnPage (game, dNum, pick = null) {
-    const dName = game.players[dNum].team.name
-    while (game.players[dNum].currentPlay === '' && game.status !== EXIT) {
-      if (game.isReal(dNum)) {
-        await alertBox(this, dName + ' pick return type...')
-        await this.playPages(game, dNum, 'ret', pick)
-      } else {
-        await this.cpuPages(game, 'ret', pick)
-      }
-
-      if (game.players[dNum].currentPlay === 'TO') {
-        await this.timeout(game, dNum)
-      }
+    if (game.offNum === game.away) {
+      downEl = this.scoreboardContainerBotLeft
+    } else {
+      downEl = this.scoreboardContainerBotRight
     }
+
+    downEl.innerText = 'Kickoff'
+    animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
+    animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
+
+    await this.playSelection(game, game.offNum, 'kick', oName + ' pick kickoff type...')
   }
 
-  // const aliceTumbling = [
-  //   { transform: 'rotate(0) scale(1)' },
-  //   { transform: 'rotate(360deg) scale(0)' }
-  // ];
+  async returnPage (game) {
+    const dName = game.players[game.defNum].team.name
 
-  // const aliceTiming = {
-  //   duration: 2000,
-  //   iterations: 1,
-  //   fill: 'forwards'
-  // }
-
-  // const alice1 = document.querySelector("#alice1");
-  // const alice2 = document.querySelector("#alice2");
-  // const alice3 = document.querySelector("#alice3");
-
-  // const sequence = async () => {
-  //   await alice1.animate(aliceTumbling, aliceTiming).finished
-  //   await alice2.animate(aliceTumbling, aliceTiming).finished
-  //   await alice3.animate(aliceTumbling, aliceTiming).finished
-  // }
-
-  // sequence()
+    await this.playSelection(game, game.defNum, 'ret', dName + ' pick return type...')
+  }
 
   async showPlayResults (game) {
     const boardIn = [
@@ -791,25 +784,20 @@ export default class Run {
   };
 
   async prePlay (game, stat) {
-    // console.log(game) // LATER: Suppress this ASAP
-    // console.log('prePlay');
-    game.thisPlay.multiplier_card = 999
-    game.thisPlay.multiplier_num = 999
-    game.thisPlay.yard_card = 999
-    game.thisPlay.multiplier = 999
-    game.thisPlay.quality = 999
-    game.thisPlay.dist = 999
+    game.thisPlay.multiplier_card = null
+    game.thisPlay.multiplier_num = null
+    game.thisPlay.yard_card = null
+    game.thisPlay.multiplier = null
+    game.thisPlay.quality = null
+    game.thisPlay.dist = null
     game.thisPlay.bonus = 0
-    game.players[1].currentPlay = ''
-    game.players[2].currentPlay = ''
+    game.players[1].currentPlay = null
+    game.players[2].currentPlay = null
 
-    animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
-    animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
-
-    // Make sure board is showing
-    // await this.slideBoard()
-
-    // HERE: TURN THIS INTO A FUNCTION
+    if (game.status > KICK) {
+      animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
+      animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
+    }
 
     resetBoardContainer(this)
 
@@ -853,7 +841,7 @@ export default class Run {
   async pickPlay (game) {
     // console.log('pickPlay');
     for (let p = 1; p <= 2; p++) {
-      game.players[p].currentPlay = ''
+      game.players[p].currentPlay = null
 
       // Computer Stuff
       if (game.status !== EXIT && p === 2 && !game.isReal(2)) {
@@ -868,7 +856,7 @@ export default class Run {
         this.cpuPlay(game)
       }
 
-      while (game.players[p].currentPlay === '' && game.status !== EXIT) {
+      while (!game.players[p].currentPlay && game.status !== EXIT) {
         if (game.isReal(p)) {
           await this.playPages(game, p)
         } else {
@@ -1003,7 +991,7 @@ export default class Run {
     }
 
     await alertBox(this, msg)
-    game.players[p].currentPlay = ''
+    game.players[p].currentPlay = null
   };
 
   cpuPlay (game) {
@@ -1120,7 +1108,7 @@ export default class Run {
     }
   };
 
-  async cpuPages (game, state = 'reg', pick = null) {
+  async cpuPages (game, state = 'reg') {
     if (state === 'reg') {
       let total = 0
       let playNum = -1
@@ -1186,10 +1174,6 @@ export default class Run {
       }
 
       game.players[2].currentPlay = retDec
-    }
-
-    if (pick) {
-      game.players[2].currentPlay = pick
     }
   };
 
@@ -1897,26 +1881,23 @@ export default class Run {
   calcDist (game, p1, p2) {
     console.log('Drawing cards...')
 
-    if (game.thisPlay.multiplier_card === 999) {
+    if (!game.thisPlay.multiplier_card) {
       game.thisPlay.multiplier_card = game.decMults()
     }
 
-    if (game.thisPlay.yard_card === 999) {
+    if (!game.thisPlay.yard_card) {
       game.thisPlay.yard_card = game.decYards()
     }
 
-    if (game.thisPlay.multiplier === 999 && game.thisPlay.multiplier_card === '/') {
+    if (!game.thisPlay.multiplier && game.thisPlay.multiplier_card === '/') {
       game.thisPlay.multiplier = '/'
     } else if (game.thisPlay.multiplier_card !== '/') {
       game.thisPlay.multiplier = this.calcTimes(game, p1, p2, game.thisPlay.multiplier_card.num)
     }
 
-    if (game.thisPlay.dist === 999) {
+    if (!game.thisPlay.dist) {
       game.thisPlay.dist = Math.round(game.thisPlay.yard_card * game.thisPlay.multiplier) + game.thisPlay.bonus
     }
-
-    // Test TDs
-    // game.spot = 1000;
 
     // Check for touchdowns
     if (game.spot + game.thisPlay.dist >= 100) {
@@ -1944,17 +1925,20 @@ export default class Run {
 
     if (p1Num === 4 || p2Num === 4) {
       match = 1
+      game.thisPlay.quality = '/'
     } else {
       match = MATCHUP[game.offNum === 1 ? p1Num : p2Num][game.offNum === 1 ? p2Num : p1Num]
     }
 
-    game.thisPlay.quality = MATCHUP[game.offNum === 1 ? p1Num : p2Num][game.offNum === 1 ? p2Num : p1Num]
+    if (game.thisPlay.quality !== '/') {
+      game.thisPlay.quality = match
+    }
 
     return MULTI[multIdx - 1][match - 1]
   };
 
   async reportPlay (game, p1, p2) {
-    const times = game.thisPlay.multiplier === 999 ? '/' : null
+    const times = !game.thisPlay.multiplier ? '/' : null
     const mCard = game.thisPlay.multiplier_card === '/' ? '/' : game.thisPlay.multiplier_card.card
 
     animationSimple(this.scoreboardContainerBotLeft, 'collapsed')

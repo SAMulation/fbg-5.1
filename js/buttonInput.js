@@ -2,13 +2,13 @@ import BaseInput from './baseInput.js'
 import { animationWaitForCompletion } from './graphics.js'
 
 export default class ButtonInput extends BaseInput {
-  async getInput (game, p, type) {
+  async getInput (game, p, type, msg = null) {
     // Get legal choices
     this.makeChoices(game, type, p)
 
     this.getButtonInput(game, p)
     return new Promise(resolve => {
-      this.bindButtons(game, document.querySelectorAll('button.card'), document.querySelector('.to-butt'), resolve, p)
+      this.bindButtons(game, document.querySelectorAll('button.card'), document.querySelector('.to-butt'), resolve, p, msg)
     })
   }
 
@@ -37,17 +37,16 @@ export default class ButtonInput extends BaseInput {
     }
   }
 
-  bindButtons (game, buttons, timeout, resolve, p) {
-    // const toggleCardsContainer = async () => {
-    //   await animationWaitForCompletion(game.run.cardsContainer, 'slide-down', !game.run.cardsContainer.classList.contains('slide-down'))
-    // }
-
-    // game.run.alertMessage.addEventListener('click', toggleCardsContainer)
+  bindButtons (game, buttons, timeout, resolve, p, msg) {
     timeout.timeouts = game.players[p].timeouts
     game.run.alertMessage.disabled = false
     if (timeout.innerText && timeout.timeouts && game.changeTime === 0) {
       timeout.disabled = false
       timeout.changeTime = 0
+    }
+
+    if (msg) {
+      game.run.alertMessage.innerText = msg
     }
 
     buttons.forEach(button => {

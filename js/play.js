@@ -1,13 +1,13 @@
 // LATER: CHANGE ALL 999 to null
 
 export default class Play {
-  bonus = 999
-  dist = 999
-  multiplier_card = 999
-  multiplier_num = 999
-  yard_card = 999
-  multiplier = 999
-  quality = 999
+  bonus = null
+  dist = null
+  multiplier_card = null
+  multiplier_num = null
+  yard_card = null
+  multiplier = null
+  quality = null
   quality_array = ['Best', 'Good', 'Okay', 'Decent', 'Worst']
 
   // get(attr) {
@@ -18,7 +18,9 @@ export default class Play {
   //     this[attr] = value;
   // }
   getQuality () {
-    if (this.quality === 999) {
+    if (this.quality === '/') {
+      return this.quality
+    } else if (this.quality === null) {
       return 'Best'
     } else {
       return this.quality_array[this.quality - 1]

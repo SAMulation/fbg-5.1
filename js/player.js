@@ -11,7 +11,7 @@ export default class Player {
     this.timeouts = time
     this.plays = plays
     this.stats = stats
-    this.currentPlay = ''
+    this.currentPlay = null
     this.hm = hm // This is hail mary, I'm moving this here
 
     // Computer

@@ -67,20 +67,20 @@ export const animationWaitThenHide = async (el, cls, on = true) => {
 }
 
 export const animationPrePick = async (run, game, p) => {
-  if (game.isReal(p)) {
-    await animationWaitForCompletion(run.cardsContainer, 'slide-down', false)
-  }
-  animationSimple(run.scoreboardContainerTopLeft, 'collapsed', false)
-  animationSimple(run.scoreboardContainerTopRight, 'collapsed', false)
+  // if (game.isReal(p)) {
+  await animationWaitForCompletion(run.cardsContainer, 'slide-down', false)
+  // }
+  // animationSimple(run.scoreboardContainerTopLeft, 'collapsed', false)
+  // animationSimple(run.scoreboardContainerTopRight, 'collapsed', false)
 }
 
 export const animationPostPick = async (run, game, p) => {
-  animationSimple(run.scoreboardContainerTopLeft, 'collapsed')
-  animationSimple(run.scoreboardContainerTopRight, 'collapsed')
+  // animationSimple(run.scoreboardContainerTopLeft, 'collapsed')
+  // animationSimple(run.scoreboardContainerTopRight, 'collapsed')
 
-  if (game.isReal(p)) {
-    await animationWaitForCompletion(run.cardsContainer, 'slide-down')
-  }
+  // if (game.isReal(p)) {
+  await animationWaitForCompletion(run.cardsContainer, 'slide-down')
+  // }
 }
 
 export const resetBoardContainer = (run) => {

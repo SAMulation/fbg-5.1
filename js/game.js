@@ -6,7 +6,7 @@ import Utils from './utils.js'
 import { CHANGE, INIT, INIT_OTC } from './defaults.js'
 
 export default class Game {
-  constructor (connection, team1, team2, gameType, numberPlayers, home, qtrLength, stats1, stats2, input = new ButtonInput(), mults = null, yards = null) {
+  constructor (connection, team1, team2, numberPlayers, gameType, home, qtrLength, stats1, stats2, input = new ButtonInput(), mults = null, yards = null) {
     this.gameType = gameType
     this.numberPlayers = numberPlayers
     this.home = home
@@ -36,6 +36,7 @@ export default class Game {
     this.recap = []
     this.me = connection.me
     this.statusOnExit = INIT
+    this.lastPlay = 'Start of game'
 
     this.connection = connection
 
