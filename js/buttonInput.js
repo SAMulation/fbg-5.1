@@ -24,24 +24,15 @@ export default class ButtonInput extends BaseInput {
 
     // Loop through legalChoices and add buttons
     for (let i = 0; i < this.legalChoices.length; i++) {
-      const btn = document.createElement('button')
-      const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
-      btn.appendChild(t)
-      // btn.classList.add('play')
-      btn.classList.add('card')
-      // Set data-playType to play abrv, used throughout
-      btn.setAttribute('data-playType', this.legalChoices[i].abrv)
-
-      // Append child to container div
-      if (this.legalChoices[i].abrv === 'TO') {
-        btn.innerText = 'Timeouts (' + game.players[p].timeouts + ')'
-        // Disable Timeout button if out of timeouts
-        // if (game.players[p].timeouts === 0 || game.changeTime) {
-        //   btn.setAttribute('disabled', '')
-        // }
-        timeout.appendChild(btn)
-      } else {
+      if (this.legalChoices[i].abrv !== 'TO') {
+        const btn = document.createElement('button')
+        const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
+        btn.appendChild(t)
+        btn.classList.add('card')
+        btn.setAttribute('data-playType', this.legalChoices[i].abrv)
         buttonArea.appendChild(btn)
+      } else {
+        timeout.innerText = 'Timeouts (' + game.players[p].timeouts + ')'
       }
     }
   }
@@ -54,8 +45,9 @@ export default class ButtonInput extends BaseInput {
     // game.run.alertMessage.addEventListener('click', toggleCardsContainer)
     timeout.timeouts = game.players[p].timeouts
     game.run.alertMessage.disabled = false
-    if (timeout.timeouts && game.changeTime === 0) {
+    if (timeout.innerText && timeout.timeouts && game.changeTime === 0) {
       timeout.disabled = false
+      timeout.changeTime = 0
     }
 
     buttons.forEach(button => {

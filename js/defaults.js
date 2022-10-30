@@ -19,7 +19,7 @@ export const TWOMIN = 9 // Actively in two minute warning
 // STATUS CONSTANTS
 export const SAFETY_KICK = -4
 export const KICKOFF = -3
-export const KICK = -1
+export const KICK = -1 // First kickoff of half
 export const INIT = 0
 export const INIT_OTC = 1
 export const REG = 11

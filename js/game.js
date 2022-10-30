@@ -35,6 +35,7 @@ export default class Game {
     this.lastSpot = this.spot
     this.recap = []
     this.me = connection.me
+    this.statusOnExit = INIT
 
     this.connection = connection
 
