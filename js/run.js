@@ -1,4 +1,6 @@
+/* global Pusher */
 /* global alert */
+
 import Stat from './stat.js'
 import Utils from './utils.js'
 import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT } from './defaults.js'
@@ -58,8 +60,12 @@ export default class Run {
     this.makeBarSlideable(this.cardsContainer)
   }
 
-  async playGame (channel) {
-    this.channel = channel // Pass from script.js via game.js
+  async playGame () {
+    this.channel = this.game.connection.pusher.subscribe('private-game-' + this.game.connection.gamecode)
+    this.channel.bind('client-value', (data) => {
+      this.currentReceiveResolve(data.value)
+    })
+
     await this.prepareHTML() // Set up game board and field
     await this.gameLoop(this.game, INIT) // Start the game loop
   };
@@ -118,7 +124,7 @@ export default class Run {
   async handleRandomDecisions (game, p, result) {
     let value = null
     // const conf = null
-    if (game.connection.type === 'local') {
+    if (game.connection.host) {
       value = result
     } // else if (game.connection.type === 'remote') {
     // if (game.connection.host) {
@@ -135,18 +141,28 @@ export default class Run {
     return value
   }
 
+  sendInputToRemote (value) {
+    this.channel.trigger('client-value', { value })
+  }
+
+  async receiveInputFromRemote () {
+    return new Promise((resolve, reject) => {
+      this.currentReceiveResolve = resolve
+    })
+  }
+
   async remoteCommunication (game, p, value = null, msg = null) {
-    if (game.connection.type === 'remote') {
-    // if (game.isPlayer(p, 'host')) {
-    //   // Send value to REMOTE player
-    //   await sendInputToRemote(value)
-    // } else {
-    //   if (msg) {
-    //     await alertBox(this, msg)
-    //   }
-    //   // Receive value from REMOTE player
-    //   value = await receiveInputFromRemote()
-    // }
+    if (game.connection.type === 'remote' || game.connection.type === 'host') {
+      if (value !== null) {
+      // Send value to REMOTE player
+        this.sendInputToRemote(value)
+      } else {
+        if (msg) {
+          await alertBox(this, msg)
+        }
+        // Receive value from REMOTE player
+        value = await this.receiveInputFromRemote()
+      }
     }
 
     return value
@@ -700,7 +716,7 @@ export default class Run {
       await alertBox(this, Math.abs(kickDist) + '-yard kick')
       await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
-      this.multCard.innerText = multCard.card
+      this.multCard.innerText = multCard?.card || '/'
       await animationWaitForCompletion(this.multCard, 'picked')
       this.timesContainer.innerText = multiplier + 'X'
       await animationWaitForCompletion(this.timesContainer, 'picked')

@@ -57,7 +57,7 @@ export default class Game {
   }
 
   async runIt (channel) {
-    await this.run.playGame(channel)
+    await this.run.playGame(this.connection)
   }
 
   opp (num) {
@@ -76,7 +76,7 @@ export default class Game {
     if (cond === 'host') {
       return this.connection.host
     } else if (cond === 'local') {
-      return p === this.me || (this.connection.type === 'local' && this.numberPlayers == 2)
+      return p === this.me || (this.connection.host && p === 1)
     }
   }
 
@@ -87,30 +87,31 @@ export default class Game {
   decMults (index = null) {
     let card = -1
 
-    if (index) {
-      card = index
-    } else {
-      while (card === -1) {
+    while (card === -1) {
+      if (index) {
+        card = index
+      } else {
         card = Utils.randInt(0, 3)
-        // Out of this card, try again
-        if (!this.mults[card]) {
-          card = -1
-        } else {
-          this.mults[card]--
+      }
 
-          // Check if mults is empty
-          if (this.mults[card] <= 0) {
-            let refill = true
-            // Check to see if the plays array is empty
-            this.mults.forEach(mult => {
-              if (mult > 0) {
-                refill = false
-              }
-            })
+      // Out of this card, try again
+      if (!this.mults[card]) {
+        card = -1
+      } else {
+        this.mults[card]--
 
-            if (refill) {
-              this.fillMults()
+        // Check if mults is empty
+        if (this.mults[card] <= 0) {
+          let refill = true
+          // Check to see if the plays array is empty
+          this.mults.forEach(mult => {
+            if (mult > 0) {
+              refill = false
             }
+          })
+
+          if (refill) {
+            this.fillMults()
           }
         }
       }
@@ -125,30 +126,30 @@ export default class Game {
   decYards (index = null) {
     let card = -1
 
-    if (index) {
-      card = index
-    } else {
-      while (card === -1) {
+    while (card === -1) {
+      if (index) {
+        card = index
+      } else {
         card = Utils.randInt(0, 9)
+      }
 
-        if (!this.yards[card]) {
-          card = -1
-        } else {
-          this.yards[card]--
+      if (!this.yards[card]) {
+        card = -1
+      } else {
+        this.yards[card]--
 
-          // Check if yards is empty
-          if (this.yards[card] <= 0) {
-            let refill = true
-            // Check to see if the plays array is empty
-            this.yards.forEach(yard => {
-              if (yard > 0) {
-                refill = false
-              }
-            })
-
-            if (refill) {
-              this.fillYards()
+        // Check if yards is empty
+        if (this.yards[card] <= 0) {
+          let refill = true
+          // Check to see if the plays array is empty
+          this.yards.forEach(yard => {
+            if (yard > 0) {
+              refill = false
             }
+          })
+
+          if (refill) {
+            this.fillYards()
           }
         }
       }
