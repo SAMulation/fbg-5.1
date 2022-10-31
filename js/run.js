@@ -191,16 +191,16 @@ export default class Run {
     // Computer picking (or fallback for failed communication)
     if (!coinPick) {
       await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
-      coinPick = await Utils.coinFlip() ? 'H' : 'T'
+      coinPick = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
+      // Maybe away
     }
 
     // Show result
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
     result += ' ... '
     // Some sort of graphic
-    actFlip = await Utils.coinFlip() ? 'H' : 'T'
-
-    actFlip = await this.remoteCommunication(game, game.away, actFlip)
+    actFlip = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
+    // Maybe away
 
     result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
     await alertBox(this, result)
@@ -606,7 +606,7 @@ export default class Run {
 
     if (kickType === 'RK') {
       if (retType === 'RR') {
-        tmp = await Utils.rollDie()
+        tmp = await Utils.rollDie(game, game.me)
         kickDist = 5 * tmp - 65
         multCard = await game.decMults(game.me)
         yard = await game.decYards(game.me)
@@ -632,17 +632,17 @@ export default class Run {
         odds = 12
       }
 
-      tmp = await Utils.randInt(1, odds)
+      tmp = await Utils.randInt(1, odds, game, game.me)
       okResult = tmp === 1 // 1 in 'odds' odds of getting OK
       kickDist = -10 - tmp
-      retDist = tmp + await Utils.rollDie()
+      retDist = tmp + await Utils.rollDie(game, game.me)
 
       // Squib Kick
     } else {
-      tmp = await Utils.rollDie()
+      tmp = await Utils.rollDie(game, game.me)
       kickDist = -15 - 5 * tmp
       if (retType === 'RR') {
-        retDist = await Utils.rollDie() + await Utils.rollDie()
+        retDist = await Utils.rollDie(game, game.me) + await Utils.rollDie(game, game.me)
       } else {
         retDist = 0
       }
@@ -838,7 +838,7 @@ export default class Run {
           await this.cpuTime(game)
         }
 
-        this.cpuPlay(game)
+        await this.cpuPlay(game)
       }
 
       await this.playSelection(game, p, 'reg', game.players[p].team.name + ' pick your play...')
@@ -968,7 +968,7 @@ export default class Run {
     game.players[p].currentPlay = null
   };
 
-  cpuPlay (game) {
+  async cpuPlay (game) {
     if (game.offNum === 2) {
       const qtr = game.qtr
       const curtim = game.currentTime
@@ -1061,7 +1061,7 @@ export default class Run {
 
       // 4th down, regular choices
       if (!dec && dwn === 4) {
-        if (Utils.coinFlip() && (spt >= 98 || (spt >= 50 && spt <= 70)) && fdn - spt <= 3) {
+        if (await Utils.coinFlip() && (spt >= 98 || (spt >= 50 && spt <= 70)) && fdn - spt <= 3) {
           dec = 'GO'
         }
 
@@ -1445,10 +1445,8 @@ export default class Run {
 
     // If both players picked the same play, 50/50 chance of Same Play Mechanism
     if (pl1 === pl2) {
-      if (game.isPlayer(game.me, 'host')) {
-        tmp = await Utils.coinFlip()
-      }
-      tmp = await this.remoteCommunication(game, game.me, tmp)
+      tmp = await Utils.coinFlip(game, game.me)
+
       if (pl1 === 'TP' || tmp) {
         game.status = SAME
       }
@@ -1465,18 +1463,9 @@ export default class Run {
 
     await alertBox(this, 'Same play!')
 
-    if (game.isPlayer(game.me, 'host')) {
-      coin = await Utils.coinFlip()
-    }
-    coin = await this.remoteCommunication(game, game.me, coin)
+    coin = await Utils.coinFlip(game, game.me)
 
-    if (game.isPlayer(game.me, 'host')) {
-      multCard = await game.decMults()
-    }
-    multCard = await this.remoteCommunication(game, game.me, multCard)
-    if (game.isPlayer(game.me, 'remote')) {
-      await game.decMults(multCard.num - 1)
-    }
+    multCard = await game.decMults(game.me)
 
     if (multCard.card === 'King') {
       await this.bigPlay(game, coin ? game.offNum : game.defNum)
@@ -1502,11 +1491,7 @@ export default class Run {
 
   async bigPlay (game, num) {
     let die = null
-
-    if (game.isPlayer(game.me, 'host')) {
-      die = await Utils.rollDie()
-    }
-    die = await this.remoteCommunication(game, game.me, die)
+    die = await Utils.rollDie(game, game.me)
 
     // Offensive Big Play
     if (game.offNum === num) {
@@ -1560,11 +1545,7 @@ export default class Run {
 
   async trickPlay (game) {
     let die = null
-
-    if (game.isPlayer(game.me, 'host')) {
-      die = await Utils.rollDie()
-    }
-    die = await this.remoteCommunication(game, game.me, die)
+    die = await Utils.rollDie(game, game.me)
 
     await alertBox(this, (game.status === OFF_TP ? game.players[game.offNum].team.name : game.players[game.defNum].team.name) + ' trick play!')
 
@@ -1621,11 +1602,7 @@ export default class Run {
     const spt = 100 - game.spot
     const fdst = spt + 17
     let die = null
-
-    if (game.isPlayer(game.offNum, 'host')) {
-      die = await Utils.rollDie()
-    }
-    die = await this.remoteCommunication(game, game.offNum, die)
+    die = await Utils.rollDie(game, game.me)
 
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     await alertBox(this, name + ' attempting a ' + fdst + '-yard field goal...')
@@ -1638,11 +1615,7 @@ export default class Run {
 
     if (fdst > 65) {
       let tmp = null
-
-      if (game.isPlayer(game.offNum, 'host')) {
-        tmp = await Utils.randInt(1, 1000)
-      }
-      tmp = await this.remoteCommunication(game, game.offNum, tmp)
+      tmp = await Utils.randInt(1, 1000, game, game.me)
       make = tmp === fdst // 1 in 1000 chance you get fdst
     } else if ((fdst >= 60 && die < 6) || (fdst >= 50 && die < 5) || (fdst >= 40 && die < 4) || (fdst >= 30 && die < 3) || (fdst >= 20 && die < 2)) {
       make = false
@@ -1708,16 +1681,11 @@ export default class Run {
     await alertBox(this, oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...')
 
     // Check block (not on Safety Kick)
-    if (game.isPlayer(game.me, 'host')) {
-      tmp = await Utils.rollDie()
-    }
-    tmp = await this.remoteCommunication(game, game.me, tmp)
+    tmp = await Utils.rollDie(game, game.me)
+
     if (game.status !== -4 && tmp === 6) {
       tmp = null
-      if (game.isPlayer(game.me, 'host')) {
-        tmp = await Utils.rollDie()
-      }
-      tmp = await this.remoteCommunication(game, game.me, tmp)
+      tmp = await Utils.rollDie(game, game.me)
       if (tmp === 6) { // 1 in 36 chance, must roll TWO sixes in a row
         block = true
       }
@@ -1726,7 +1694,7 @@ export default class Run {
     // Get yard card
     if (!block) {
       // Yard card times 10 and, if heads, add 20
-      tmp = await Utils.coinFlip(game, this.me)
+      tmp = await Utils.coinFlip(game, game.me)
 
       const yard = await game.decYards(game.me)
 
@@ -1756,16 +1724,10 @@ export default class Run {
 
     // Check muff, but not on safety kick
     tmp = null
-    if (game.isPlayer(game.me, 'host')) {
-      tmp = await Utils.rollDie()
-    }
-    tmp = await this.remoteCommunication(game, game.me, tmp)
+    tmp = await Utils.rollDie(game, game.me)
     if (!touchback && !block && game.status !== -4 && tmp === 6) {
       tmp = null
-      if (game.isPlayer(game.me, 'host')) {
-        tmp = await Utils.rollDie()
-      }
-      tmp = await this.remoteCommunication(game, game.me, tmp)
+      tmp = await Utils.rollDie(game, game.me)
       if (tmp === 6) {
         possession = false
       }
@@ -1839,11 +1801,7 @@ export default class Run {
     let msg = null
     let dst = 0
     let die = null
-
-    if (game.isPlayer(game.offNum, 'host')) {
-      die = await Utils.rollDie()
-    }
-    die = await this.remoteCommunication(game, game.offNum, die)
+    die = await Utils.rollDie(game, game.me)
 
     await alertBox(this, game.players[game.offNum].team.name + ' hail mary!')
     document.querySelector('.' + (game.away === game.offNum ? 'away' : 'home') + ' .hm' + game.players[game.offNum].hm).classList.add('called')
@@ -2013,7 +1971,7 @@ export default class Run {
         if (bon > dst) {
           good = true
         } else if (bon === dst) {
-          coin = await Utils.coinFlip()
+          coin = await Utils.coinFlip(game, game.me)
 
           if (coin) {
             good = true
@@ -2139,16 +2097,10 @@ export default class Run {
     } else {
       // printDown('XP');
       let die
-      if (game.isPlayer(game.me, 'host')) {
-        die = await Utils.rollDie()
-      }
-      die = await this.remoteCommunication(game, game.me, die)
+      die = await Utils.rollDie(game, game.me)
       if (die === 6) {
         die = null
-        if (game.isPlayer(game.me, 'host')) {
-          die = await Utils.coinFlip()
-        }
-        die = await this.remoteCommunication(game, game.me, die)
+        die = await Utils.coinFlip(game, game.me)
         if (!die) {
           die = 6
         }
@@ -2188,10 +2140,7 @@ export default class Run {
     // Sticks
     if (game.spot === game.firstDown) {
       await alertBox(this, 'Sticks...')
-      if (game.isPlayer(game.me, 'host')) {
-        coin = await Utils.coinFlip()
-      }
-      coin = await this.remoteCommunication(game, game.me, coin)
+      coin = await Utils.coinFlip(game, game.me)
 
       if (!coin) {
         await alertBox(this, 'Almost!')
