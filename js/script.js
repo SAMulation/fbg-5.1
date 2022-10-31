@@ -7,7 +7,7 @@ import ButtonInput from './buttonInput.js'
 import PromptInput from './promptInput.js'
 import FormInput from './formInput.js'
 import { TEAMS } from './teams.js'
-import Utils from './utils.js'
+import Utils from './remoteUtils.js'
 const channel = null
 
 // Enable pusher logging - don't include this in production
@@ -87,8 +87,18 @@ const connections = (site, type) => {
   }
 }
 
-const submitTeams = (site, submit) => {
-  submit.addEventListener('submit', event => {
+const generateCode = async (site) => {
+  if (site.connectionType === 'host') {
+    site.gamecode = await Utils.randInt(1000, 9999)
+    alert("Here's your game code: " + site.gamecode)
+  } else if (site.connectionType === 'remote') {
+    site.gamecode = prompt('Enter your game code:')
+    // LATER: Make sure to validate this somewhere
+  }
+}
+
+const submitTeams = async (site, submit) => {
+  submit.addEventListener('submit', async event => {
     event.preventDefault()
     let el
     const value = [-1, -1]
@@ -96,13 +106,7 @@ const submitTeams = (site, submit) => {
     site.connectionType = submit.elements.connection.value
     connections(site, site.connectionType)
 
-    if (site.connectionType === 'host') {
-      site.gamecode = Utils.randInt(1000, 9999)
-      alert("Here's your game code: " + site.gamecode)
-    } else if (site.connectionType === 'remote') {
-      site.gamecode = prompt('Enter your game code:')
-      // LATER: Make sure to validate this somewhere
-    }
+    await generateCode(site)
 
     for (let t = 0; t < 2 && valid; t++) {
       el = document.getElementById('p' + (t + 1) + 'Team')

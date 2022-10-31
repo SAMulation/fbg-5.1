@@ -191,14 +191,14 @@ export default class Run {
     // Computer picking (or fallback for failed communication)
     if (!coinPick) {
       await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
-      coinPick = Utils.coinFlip() ? 'H' : 'T'
+      coinPick = await Utils.coinFlip() ? 'H' : 'T'
     }
 
     // Show result
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
     result += ' ... '
     // Some sort of graphic
-    actFlip = Utils.coinFlip() ? 'H' : 'T'
+    actFlip = await Utils.coinFlip() ? 'H' : 'T'
 
     actFlip = await this.remoteCommunication(game, game.away, actFlip)
 
@@ -219,7 +219,7 @@ export default class Run {
     if (!decPick) {
       await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
 
-      decPick = Utils.randInt(1, 2)
+      decPick = await Utils.randInt(1, 2)
       if (game.qtr < 4) {
         decPick = decPick === 1 ? 'K' : 'R'
       } // else: Leave it as 1 or 2 for OT possession picking
@@ -606,28 +606,10 @@ export default class Run {
 
     if (kickType === 'RK') {
       if (retType === 'RR') {
-        if (game.isPlayer(game.me, 'host')) {
-          tmp = Utils.rollDie()
-        }
-        tmp = await this.remoteCommunication(game, game.me, tmp)
-
+        tmp = await Utils.rollDie()
         kickDist = 5 * tmp - 65
-
-        if (game.isPlayer(game.me, 'host')) {
-          multCard = game.decMults()
-        }
-        multCard = await this.remoteCommunication(game, game.me, multCard)
-        if (game.isPlayer(game.me, 'remote')) {
-          game.decMults(multCard.num - 1)
-        }
-
-        if (game.isPlayer(game.me, 'host')) {
-          yard = game.decYards()
-        }
-        yard = await this.remoteCommunication(game, game.me, yard)
-        if (game.isPlayer(game.me, 'remote')) {
-          game.decYards(yard - 1)
-        }
+        multCard = await game.decMults()
+        yard = await game.decYards()
 
         if (multCard.card === 'King') {
           multiplier = 10
@@ -650,36 +632,17 @@ export default class Run {
         odds = 12
       }
 
-      tmp = null
-      if (game.isPlayer(game.me, 'host')) {
-        tmp = Utils.randInt(1, odds)
-      }
-      tmp = await this.remoteCommunication(game, game.me, tmp)
-
+      tmp = await Utils.randInt(1, odds)
       okResult = tmp === 1 // 1 in 'odds' odds of getting OK
       kickDist = -10 - tmp
-      if (game.isPlayer(game.me, 'host')) {
-        retDist = tmp + Utils.rollDie()
-      }
-      retDist = await this.remoteCommunication(game, game.me, retDist)
+      retDist = tmp + await Utils.rollDie()
 
       // Squib Kick
     } else {
-      tmp = null
-      if (game.isPlayer(game.me, 'host')) {
-        tmp = Utils.rollDie()
-      }
-      tmp = await this.remoteCommunication(game, game.me, tmp)
+      tmp = await Utils.rollDie()
       kickDist = -15 - 5 * tmp
       if (retType === 'RR') {
-        tmp = null
-
-        if (game.isPlayer(game.me, 'host')) {
-          tmp = Utils.rollDie() + Utils.rollDie()
-        }
-        tmp = await this.remoteCommunication(game, game.me, tmp)
-
-        retDist = tmp
+        retDist = await Utils.rollDie() + await Utils.rollDie()
       } else {
         retDist = 0
       }
@@ -1126,11 +1089,11 @@ export default class Run {
       let playAbrv = ''
 
       while (total === 0) {
-        playNum = Utils.randInt(0, 4)
+        playNum = await Utils.randInt(0, 4)
 
         // Make it harder to pick Trick Play
         if (playNum === 4) {
-          playNum = Utils.randInt(0, 4)
+          playNum = await Utils.randInt(0, 4)
         }
 
         // Translate to abrv
@@ -1483,7 +1446,7 @@ export default class Run {
     // If both players picked the same play, 50/50 chance of Same Play Mechanism
     if (pl1 === pl2) {
       if (game.isPlayer(game.me, 'host')) {
-        tmp = Utils.coinFlip()
+        tmp = await Utils.coinFlip()
       }
       tmp = await this.remoteCommunication(game, game.me, tmp)
       if (pl1 === 'TP' || tmp) {
@@ -1503,16 +1466,16 @@ export default class Run {
     await alertBox(this, 'Same play!')
 
     if (game.isPlayer(game.me, 'host')) {
-      coin = Utils.coinFlip()
+      coin = await Utils.coinFlip()
     }
     coin = await this.remoteCommunication(game, game.me, coin)
 
     if (game.isPlayer(game.me, 'host')) {
-      multCard = game.decMults()
+      multCard = await game.decMults()
     }
     multCard = await this.remoteCommunication(game, game.me, multCard)
     if (game.isPlayer(game.me, 'remote')) {
-      game.decMults(multCard.num - 1)
+      await game.decMults(multCard.num - 1)
     }
 
     if (multCard.card === 'King') {
@@ -1541,7 +1504,7 @@ export default class Run {
     let die = null
 
     if (game.isPlayer(game.me, 'host')) {
-      die = Utils.rollDie()
+      die = await Utils.rollDie()
     }
     die = await this.remoteCommunication(game, game.me, die)
 
@@ -1599,7 +1562,7 @@ export default class Run {
     let die = null
 
     if (game.isPlayer(game.me, 'host')) {
-      die = Utils.rollDie()
+      die = await Utils.rollDie()
     }
     die = await this.remoteCommunication(game, game.me, die)
 
@@ -1660,7 +1623,7 @@ export default class Run {
     let die = null
 
     if (game.isPlayer(game.offNum, 'host')) {
-      die = Utils.rollDie()
+      die = await Utils.rollDie()
     }
     die = await this.remoteCommunication(game, game.offNum, die)
 
@@ -1677,7 +1640,7 @@ export default class Run {
       let tmp = null
 
       if (game.isPlayer(game.offNum, 'host')) {
-        tmp = Utils.randInt(1, 1000)
+        tmp = await Utils.randInt(1, 1000)
       }
       tmp = await this.remoteCommunication(game, game.offNum, tmp)
       make = tmp === fdst // 1 in 1000 chance you get fdst
@@ -1746,13 +1709,13 @@ export default class Run {
 
     // Check block (not on Safety Kick)
     if (game.isPlayer(game.me, 'host')) {
-      tmp = Utils.rollDie()
+      tmp = await Utils.rollDie()
     }
     tmp = await this.remoteCommunication(game, game.me, tmp)
     if (game.status !== -4 && tmp === 6) {
       tmp = null
       if (game.isPlayer(game.me, 'host')) {
-        tmp = Utils.rollDie()
+        tmp = await Utils.rollDie()
       }
       tmp = await this.remoteCommunication(game, game.me, tmp)
       if (tmp === 6) { // 1 in 36 chance, must roll TWO sixes in a row
@@ -1765,17 +1728,17 @@ export default class Run {
       // Yard card times 10 and, if heads, add 20
       tmp = null
       if (game.isPlayer(game.me, 'host')) {
-        tmp = Utils.coinFlip()
+        tmp = await Utils.coinFlip()
       }
       tmp = await this.remoteCommunication(game, game.me, tmp)
 
       let yard = null
       if (game.isPlayer(game.me, 'host')) {
-        yard = game.decYards()
+        yard = await game.decYards()
       }
       yard = await this.remoteCommunication(game, game.me, yard)
       if (game.isPlayer(game.me, 'remote')) {
-        game.decYards(yard - 1)
+        await game.decYards(yard - 1)
       }
 
       kickDist = 10 * yard / 2 + 20 * tmp
@@ -1805,13 +1768,13 @@ export default class Run {
     // Check muff, but not on safety kick
     tmp = null
     if (game.isPlayer(game.me, 'host')) {
-      tmp = Utils.rollDie()
+      tmp = await Utils.rollDie()
     }
     tmp = await this.remoteCommunication(game, game.me, tmp)
     if (!touchback && !block && game.status !== -4 && tmp === 6) {
       tmp = null
       if (game.isPlayer(game.me, 'host')) {
-        tmp = Utils.rollDie()
+        tmp = await Utils.rollDie()
       }
       tmp = await this.remoteCommunication(game, game.me, tmp)
       if (tmp === 6) {
@@ -1840,19 +1803,19 @@ export default class Run {
       let mult = -0.5
 
       if (game.isPlayer(game.me, 'host')) {
-        multCard = game.decMults()
+        multCard = await game.decMults()
       }
       multCard = await this.remoteCommunication(game, game.me, multCard)
       if (game.isPlayer(game.me, 'remote')) {
-        game.decMults(multCard.num - 1)
+        await game.decMults(multCard.num - 1)
       }
 
       if (game.isPlayer(game.me, 'host')) {
-        yard = game.decYards()
+        yard = await game.decYards()
       }
       yard = await this.remoteCommunication(game, game.me, yard)
       if (game.isPlayer(game.me, 'remote')) {
-        game.decYards(yard - 1)
+        await game.decYards(yard - 1)
       }
 
       if (multCard.card === 'King') {
@@ -1905,7 +1868,7 @@ export default class Run {
     let die = null
 
     if (game.isPlayer(game.offNum, 'host')) {
-      die = Utils.rollDie()
+      die = await Utils.rollDie()
     }
     die = await this.remoteCommunication(game, game.offNum, die)
 
@@ -1977,21 +1940,21 @@ export default class Run {
   async calcDist (game, p1, p2) {
     if (!game.thisPlay.multiplierCard) {
       if (game.isPlayer(game.me, 'host')) {
-        game.thisPlay.multiplierCard = game.decMults()
+        game.thisPlay.multiplierCard = await game.decMults()
       }
       game.thisPlay.multiplierCard = await this.remoteCommunication(game, game.me, game.thisPlay.multiplierCard)
       if (game.isPlayer(game.me, 'remote')) {
-        game.decMults(game.thisPlay.multiplierCard.num - 1)
+        await game.decMults(game.thisPlay.multiplierCard.num - 1)
       }
     }
 
     if (!game.thisPlay.yardCard) {
       if (game.isPlayer(game.me, 'host')) {
-        game.thisPlay.yardCard = game.decYards()
+        game.thisPlay.yardCard = await game.decYards()
       }
       game.thisPlay.yardCard = await this.remoteCommunication(game, game.me, game.thisPlay.yardCard)
       if (game.isPlayer(game.me, 'remote')) {
-        game.decYards(game.thisPlay.yardCard - 1)
+        await game.decYards(game.thisPlay.yardCard - 1)
       }
     }
 
@@ -2089,7 +2052,7 @@ export default class Run {
         if (bon > dst) {
           good = true
         } else if (bon === dst) {
-          coin = Utils.coinFlip()
+          coin = await Utils.coinFlip()
 
           if (coin) {
             good = true
@@ -2216,13 +2179,13 @@ export default class Run {
       // printDown('XP');
       let die
       if (game.isPlayer(game.me, 'host')) {
-        die = Utils.rollDie()
+        die = await Utils.rollDie()
       }
       die = await this.remoteCommunication(game, game.me, die)
       if (die === 6) {
         die = null
         if (game.isPlayer(game.me, 'host')) {
-          die = Utils.coinFlip()
+          die = await Utils.coinFlip()
         }
         die = await this.remoteCommunication(game, game.me, die)
         if (!die) {
@@ -2265,7 +2228,7 @@ export default class Run {
     if (game.spot === game.firstDown) {
       await alertBox(this, 'Sticks...')
       if (game.isPlayer(game.me, 'host')) {
-        coin = Utils.coinFlip()
+        coin = await Utils.coinFlip()
       }
       coin = await this.remoteCommunication(game, game.me, coin)
 

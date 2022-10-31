@@ -2,7 +2,7 @@ import Player from './player.js'
 import Play from './play.js'
 import Run from './run.js'
 import ButtonInput from './buttonInput.js'
-import Utils from './remoteUtils'
+import Utils from './remoteUtils.js'
 import { CHANGE, INIT, INIT_OTC } from './defaults.js'
 
 export default class Game {
