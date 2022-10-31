@@ -2,7 +2,7 @@ import Player from './player.js'
 import Play from './play.js'
 import Run from './run.js'
 import ButtonInput from './buttonInput.js'
-import Utils from './utils.js'
+import Utils from './remoteUtils'
 import { CHANGE, INIT, INIT_OTC } from './defaults.js'
 
 export default class Game {
@@ -73,10 +73,12 @@ export default class Game {
   }
 
   isPlayer (p, cond) {
-    if (cond === 'host') {
-      return this.connection.host
-    } else if (cond === 'local') {
-      return p === this.me || (this.connection.host && p === 1)
+    if (cond === 'local') {
+      return p === this.me || this.connection.connections[p] === 'local'
+    } else if (cond === 'host') {
+      return this.connection.connections[p] === 'host'
+    } else if (cond === 'remote') {
+      return this.connection.connections[p] === 'remote'
     }
   }
 
@@ -84,14 +86,14 @@ export default class Game {
     this.mults = [4, 4, 4, 3]
   }
 
-  decMults (index = null) {
+  async decMults (index = null) {
     let card = -1
 
     while (card === -1) {
       if (index) {
         card = index
       } else {
-        card = Utils.randInt(0, 3)
+        card = await Utils.randInt(0, 3)
       }
 
       // Out of this card, try again
@@ -123,14 +125,14 @@ export default class Game {
     return { card: cards[card], num: card + 1 }
   }
 
-  decYards (index = null) {
+  async decYards (index = null) {
     let card = -1
 
     while (card === -1) {
       if (index) {
         card = index
       } else {
-        card = Utils.randInt(0, 9)
+        card = await Utils.randInt(0, 9)
       }
 
       if (!this.yards[card]) {

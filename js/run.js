@@ -2,7 +2,7 @@
 /* global alert */
 
 import Stat from './stat.js'
-import Utils from './utils.js'
+import Utils from './remoteUtils.js'
 import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT } from './defaults.js'
 import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer } from './graphics.js'
 
@@ -152,7 +152,7 @@ export default class Run {
   }
 
   async remoteCommunication (game, p, value = null, msg = null) {
-    if (game.connection.type === 'remote' || game.connection.type === 'host') {
+    if (game.connection.connections[p] === 'remote' || game.connection.connections[p] === 'host') {
       if (value !== null) {
       // Send value to REMOTE player
         this.sendInputToRemote(value)
@@ -424,7 +424,7 @@ export default class Run {
     await this.prePlay(game, game.status)
 
     if (game.status === SAFETY_KICK) {
-      await this.punt(game, game.offNum, -4) // Safety Kick
+      await this.punt(game) // Safety Kick
 
     // Regular old kickoff
     } else {
@@ -1466,11 +1466,11 @@ export default class Run {
       await this.samePlay(game)
     } else if (game.status === OFF_TP || game.status === DEF_TP) {
       await this.trickPlay(game)
-    } else if (game.status === 15) {
-      await this.fieldGoal(game, game.offNum)
-    } else if (game.status === 16) {
-      await this.punt(game, game.offNum, 16)
-    } else if (game.status === 17) {
+    } else if (game.status === FG) {
+      await this.fieldGoal(game)
+    } else if (game.status === PUNT) {
+      await this.punt(game)
+    } else if (game.status === HAIL) {
       await this.hailMary(game)
     }
   };
@@ -1652,17 +1652,17 @@ export default class Run {
     }
   };
 
-  async fieldGoal (game, ono) {
+  async fieldGoal (game) {
     const name = game.players[game.offNum].team.name
     let make = true
     const spt = 100 - game.spot
     const fdst = spt + 17
     let die = null
 
-    if (game.isPlayer(ono, 'host')) {
+    if (game.isPlayer(game.offNum, 'host')) {
       die = Utils.rollDie()
     }
-    die = await this.remoteCommunication(game, ono, die)
+    die = await this.remoteCommunication(game, game.offNum, die)
 
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     await alertBox(this, name + ' attempting a ' + fdst + '-yard field goal...')
@@ -1676,10 +1676,10 @@ export default class Run {
     if (fdst > 65) {
       let tmp = null
 
-      if (game.isPlayer(ono, 'host')) {
+      if (game.isPlayer(game.offNum, 'host')) {
         tmp = Utils.randInt(1, 1000)
       }
-      tmp = await this.remoteCommunication(game, ono, tmp)
+      tmp = await this.remoteCommunication(game, game.offNum, tmp)
       make = tmp === fdst // 1 in 1000 chance you get fdst
     } else if ((fdst >= 60 && die < 6) || (fdst >= 50 && die < 5) || (fdst >= 40 && die < 4) || (fdst >= 30 && die < 3) || (fdst >= 20 && die < 2)) {
       make = false
@@ -1689,7 +1689,7 @@ export default class Run {
 
     if (make) {
       await alertBox(this, name + ' field goal is good!')
-      this.scoreChange(game, ono, 3)
+      this.scoreChange(game, game.offNum, 3)
       if (game.isOT()) {
         // Maybe the graphics are different here
       } else {
@@ -1710,7 +1710,7 @@ export default class Run {
     }
   };
 
-  async punt (game, ono, stat) {
+  async punt (game) {
     const oName = game.players[game.offNum].team.name
     const dName = game.players[game.defNum].team.name
     let block = false
@@ -1904,10 +1904,10 @@ export default class Run {
     let dst = 0
     let die = null
 
-    if (game.isPlayer(ono, 'host')) {
+    if (game.isPlayer(game.offNum, 'host')) {
       die = Utils.rollDie()
     }
-    die = await this.remoteCommunication(game, ono, die)
+    die = await this.remoteCommunication(game, game.offNum, die)
 
     await alertBox(this, game.players[game.offNum].team.name + ' hail mary!')
     document.querySelector('.' + (game.away === game.offNum ? 'away' : 'home') + ' .hm' + game.players[game.offNum].hm).classList.add('called')

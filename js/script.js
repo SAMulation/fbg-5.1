@@ -63,19 +63,45 @@ const setTeamLists = (lists) => {
   })
 }
 
-const submitTeams = (submit) => {
+const connections = (site, type) => {
+  if (type === 'single') {
+    site.connections[1] = 'local'
+    site.connections[2] = 'computer'
+    site.numberPlayers = 1
+    site.me = 1
+  } else if (type === 'host') {
+    site.connections[1] = 'host'
+    site.connections[2] = 'remote'
+    site.numberPlayers = 2
+    site.me = 1
+  } else if (type === 'remote') {
+    site.connections[1] = 'remote'
+    site.connections[2] = 'host'
+    site.numberPlayers = 2
+    site.me = 2
+  } else if (type === 'computer') {
+    site.connections[1] = 'computer'
+    site.connections[2] = 'computer'
+    site.numberPlayers = 0
+    site.me = 0
+  }
+}
+
+const submitTeams = (site, submit) => {
   submit.addEventListener('submit', event => {
     event.preventDefault()
     let el
     const value = [-1, -1]
     let valid = true
     site.connectionType = submit.elements.connection.value
+    connections(site, site.connectionType)
 
     if (site.connectionType === 'host') {
       site.gamecode = Utils.randInt(1000, 9999)
       alert("Here's your game code: " + site.gamecode)
     } else if (site.connectionType === 'remote') {
       site.gamecode = prompt('Enter your game code:')
+      // LATER: Make sure to validate this somewhere
     }
 
     for (let t = 0; t < 2 && valid; t++) {
@@ -132,15 +158,10 @@ const initGame = (site) => {
     }
   }
 
-  let me = 0
-  if (site.numberPlayers > 0) {
-    me = site.host ? 1 : 2
-  }
-
-  return new Game({ me, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, user[1], user[2], window.inputType)
+  return new Game({ me: site.me, connections: site.connections, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, user[1], user[2], window.inputType)
 }
 
 // MAIN FUNCTION CALLS
 setTeamLists(document.querySelectorAll('.teamList'))
-submitTeams(document.querySelector('#gameForm'))
+submitTeams(site, document.querySelector('#gameForm'))
 pressPlayButton(document.querySelector('.playButton'), site)
