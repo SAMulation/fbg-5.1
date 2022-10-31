@@ -179,20 +179,17 @@ export default class Run {
 
     // Coin toss decision
     // Real players
-    if (game.isPlayer(game.away, 'local')) {
+    if (game.connection.connections[game.away] !== 'remote') {
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
+      this.sendInputToRemote(coinPick)
       await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    }
-
-    // Send remote message or receive remote message
-    coinPick = await this.remoteCommunication(game, game.away, coinPick, 'Coin Toss: ' + awayName + ' choosing...')
-
-    // Computer picking (or fallback for failed communication)
-    if (!coinPick) {
+    } else if (game.connection.connections[game.away] === 'remote') {
+      coinPick = await this.receiveInputFromRemote()
+    // Computer picking
+    } else {
       await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
       coinPick = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
-      // Maybe away
     }
 
     // Show result
@@ -206,17 +203,15 @@ export default class Run {
     await alertBox(this, result)
 
     // Decide if want to kick or receive
-    if ((actFlip === coinPick && game.isPlayer(game.away, 'local')) || (actFlip !== coinPick && game.isPlayer(game.home, 'local'))) {
+    if ((actFlip === coinPick && game.connection.connections[game.away] !== 'remote') || (actFlip !== coinPick && game.connection.connections[game.home] !== 'remote')) {
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
+      this.sendInputToRemote(decPick)
       await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    }
-
-    // Send remote message or receive remote message
-    decPick = await this.remoteCommunication(game, game.away, decPick, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
-
-    // Computer choosing (or fallback for failed communication)
-    if (!decPick) {
+    } else if ((actFlip === coinPick && game.connection.connections[game.away] === 'remote') || (actFlip !== coinPick && game.connection.connections[game.home] === 'remote')) {
+      decPick = await this.receiveInputFromRemote()
+    // Computer choosing
+    } else {
       await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
 
       decPick = await Utils.randInt(1, 2)
