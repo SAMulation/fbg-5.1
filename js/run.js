@@ -608,8 +608,8 @@ export default class Run {
       if (retType === 'RR') {
         tmp = await Utils.rollDie()
         kickDist = 5 * tmp - 65
-        multCard = await game.decMults()
-        yard = await game.decYards()
+        multCard = await game.decMults(game.me)
+        yard = await game.decYards(game.me)
 
         if (multCard.card === 'King') {
           multiplier = 10
@@ -1726,20 +1726,9 @@ export default class Run {
     // Get yard card
     if (!block) {
       // Yard card times 10 and, if heads, add 20
-      tmp = null
-      if (game.isPlayer(game.me, 'host')) {
-        tmp = await Utils.coinFlip()
-      }
-      tmp = await this.remoteCommunication(game, game.me, tmp)
+      tmp = await Utils.coinFlip(game, this.me)
 
-      let yard = null
-      if (game.isPlayer(game.me, 'host')) {
-        yard = await game.decYards()
-      }
-      yard = await this.remoteCommunication(game, game.me, yard)
-      if (game.isPlayer(game.me, 'remote')) {
-        await game.decYards(yard - 1)
-      }
+      const yard = await game.decYards(game.me)
 
       kickDist = 10 * yard / 2 + 20 * tmp
 
@@ -1798,25 +1787,9 @@ export default class Run {
     let msg = 'The return: '
 
     if (possession && !touchback && !block) {
-      let multCard
-      let yard
+      const multCard = await game.decMults(game.me)
+      const yard = await game.decYards(game.me)
       let mult = -0.5
-
-      if (game.isPlayer(game.me, 'host')) {
-        multCard = await game.decMults()
-      }
-      multCard = await this.remoteCommunication(game, game.me, multCard)
-      if (game.isPlayer(game.me, 'remote')) {
-        await game.decMults(multCard.num - 1)
-      }
-
-      if (game.isPlayer(game.me, 'host')) {
-        yard = await game.decYards()
-      }
-      yard = await this.remoteCommunication(game, game.me, yard)
-      if (game.isPlayer(game.me, 'remote')) {
-        await game.decYards(yard - 1)
-      }
 
       if (multCard.card === 'King') {
         mult = 7
@@ -1939,23 +1912,11 @@ export default class Run {
 
   async calcDist (game, p1, p2) {
     if (!game.thisPlay.multiplierCard) {
-      if (game.isPlayer(game.me, 'host')) {
-        game.thisPlay.multiplierCard = await game.decMults()
-      }
-      game.thisPlay.multiplierCard = await this.remoteCommunication(game, game.me, game.thisPlay.multiplierCard)
-      if (game.isPlayer(game.me, 'remote')) {
-        await game.decMults(game.thisPlay.multiplierCard.num - 1)
-      }
+      game.thisPlay.multiplierCard = await game.decMults(game.me)
     }
 
     if (!game.thisPlay.yardCard) {
-      if (game.isPlayer(game.me, 'host')) {
-        game.thisPlay.yardCard = await game.decYards()
-      }
-      game.thisPlay.yardCard = await this.remoteCommunication(game, game.me, game.thisPlay.yardCard)
-      if (game.isPlayer(game.me, 'remote')) {
-        await game.decYards(game.thisPlay.yardCard - 1)
-      }
+      game.thisPlay.yardCard = await game.decYards(game.me)
     }
 
     if (!game.thisPlay.multiplier && game.thisPlay.multiplierCard === '/') {

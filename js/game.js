@@ -86,15 +86,11 @@ export default class Game {
     this.mults = [4, 4, 4, 3]
   }
 
-  async decMults (index = null) {
+  async decMults (p = null) {
     let card = -1
 
     while (card === -1) {
-      if (index) {
-        card = index
-      } else {
-        card = await Utils.randInt(0, 3)
-      }
+      card = await Utils.randInt(0, 3, this, p)
 
       // Out of this card, try again
       if (!this.mults[card]) {
@@ -125,15 +121,11 @@ export default class Game {
     return { card: cards[card], num: card + 1 }
   }
 
-  async decYards (index = null) {
+  async decYards (p = null) {
     let card = -1
 
     while (card === -1) {
-      if (index) {
-        card = index
-      } else {
-        card = await Utils.randInt(0, 9)
-      }
+      card = await Utils.randInt(0, 9, this, p)
 
       if (!this.yards[card]) {
         card = -1
