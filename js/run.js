@@ -179,16 +179,23 @@ export default class Run {
 
     // Coin toss decision
     // Real players
-    if (game.connection.connections[game.away] !== 'remote') {
+    if (game.me === game.away) {
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
-      this.sendInputToRemote(coinPick)
       await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    } else if (game.connection.connections[game.away] === 'remote') {
-      coinPick = await this.receiveInputFromRemote()
-    // Computer picking
     } else {
       await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
+    }
+
+    if (game.connection.type === 'host' || game.connection.type === 'remote') {
+      if (game.connection.connections[game.me] === 'host') {
+        this.sendInputToRemote(coinPick)
+      } else {
+        coinPick = await this.receiveInputFromRemote()
+      }
+    }
+
+    if (game.connection.connections[game.away] === 'computer') {
       coinPick = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
     }
 
@@ -197,23 +204,30 @@ export default class Run {
     result += ' ... '
     // Some sort of graphic
     actFlip = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
+    console.log('actFlip: ' + actFlip)
     // Maybe away
 
     result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
     await alertBox(this, result)
 
     // Decide if want to kick or receive
-    if ((actFlip === coinPick && game.connection.connections[game.away] !== 'remote') || (actFlip !== coinPick && game.connection.connections[game.home] !== 'remote')) {
+    if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
-      this.sendInputToRemote(decPick)
       await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    } else if ((actFlip === coinPick && game.connection.connections[game.away] === 'remote') || (actFlip !== coinPick && game.connection.connections[game.home] === 'remote')) {
-      decPick = await this.receiveInputFromRemote()
-    // Computer choosing
     } else {
       await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
+    }
 
+    if (game.connection.type === 'host' || game.connection.type === 'remote') {
+      if (game.connection.connections[game.me] === 'host') {
+        this.sendInputToRemote(decPick)
+      } else {
+        decPick = await this.receiveInputFromRemote()
+      }
+    }
+
+    if (game.connection.connections[game.away] === 'computer') {
       decPick = await Utils.randInt(1, 2)
       if (game.qtr < 4) {
         decPick = decPick === 1 ? 'K' : 'R'
@@ -515,32 +529,45 @@ export default class Run {
   }
 
   async playSelection (game, p, type, msg) {
+    let selection = null
     this.scoreboardContainerTopLeft.innerText = (p === game.away ? 'Pick your play' : game.lastPlay)
     this.scoreboardContainerTopRight.innerText = (p === game.away ? game.lastPlay : 'Pick your play')
     animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
     animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
 
-    while (!game.players[p].currentPlay && game.status !== EXIT) {
-      // Local players
-      if (game.isPlayer(p, 'local')) {
-        await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-        game.players[p].currentPlay = await this.input.getInput(game, p, type, msg)
-        await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-      }
+    // while (!game.players[p].currentPlay && game.status !== EXIT) {
+    // Local players
+    if (game.me === p) {
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+      selection = await this.input.getInput(game, p, type, msg)
+      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    } else {
+      await alertBox(this, msg)
+    }
 
-      // Send remote message or receive remote message
-      game.players[p].currentPlay = await this.remoteCommunication(game, p, game.players[p].currentPlay, msg)
-
-      // Computer picking (or fallback for failed communication)
-      if (!game.players[p].currentPlay) {
-        await this.cpuPages(game, type)
-      }
-
-      // Handle timeouts being called
-      if (game.players[p].currentPlay === 'TO') {
-        await this.timeout(game, p)
+    if (game.connection.type === 'host' || game.connection.type === 'remote') {
+      if (game.connection.connections[p] === 'host') {
+        this.sendInputToRemote(selection)
+      } else {
+        selection = await this.receiveInputFromRemote()
       }
     }
+
+    // Computer picking
+    if (game.connection.connections[p] === 'computer') {
+      await this.cpuPages(game, type)
+    }
+
+    // Handle timeouts being called
+    if (game.players[p].currentPlay === 'TO') {
+      await this.timeout(game, p)
+    }
+
+    if (selection) {
+      game.players[p].currentPlay = selection
+    }
+
+    // }
 
     animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
     animationSimple(this.scoreboardContainerTopRight, 'collapsed')

@@ -75,8 +75,8 @@ const connections = (site, type) => {
     site.numberPlayers = 2
     site.me = 1
   } else if (type === 'remote') {
-    site.connections[1] = 'remote'
-    site.connections[2] = 'host'
+    site.connections[1] = 'host'
+    site.connections[2] = 'remote'
     site.numberPlayers = 2
     site.me = 2
   } else if (type === 'computer') {
