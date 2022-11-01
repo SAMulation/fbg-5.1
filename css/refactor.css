@@ -269,6 +269,7 @@ input {
   display: grid;
   grid-template-rows: 1fr 6fr 6fr 1fr;
   grid-template-columns: 1fr 4fr 4fr 4fr;
+  justify-items: center;
   gap: 2vw;
 
   transition: transform .5s, opacity 1s;
@@ -323,6 +324,7 @@ input {
   align-items: center;
   justify-content: center;
   font-size: 2rem;
+  max-width: 110px;
 }
 
 .board-container .pl-card2 {
@@ -452,4 +454,55 @@ input {
   flex-basis: 25%;
   border: 1vw solid white;
   border-radius: 2vw;
+}
+
+/* Responsive */
+@media (min-width: 599px) {
+  .scoreboard-container {
+    grid-template:
+    /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
+    [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
+    /
+    /* Formerly 10vh */
+    [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2fr [clockl] auto [mid] auto [clockr] 2fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
+    max-height: 170px;
+    align-items: center;
+  }
+
+  .scoreboard-container .clock {
+    height: 136px;
+  }
+
+  .score {
+    font-size: 60px
+  }
+
+  .team {
+    font-size: 50px
+  }
+
+  .clock .time {
+    font-size: 40px;
+  }
+
+  .top-msg, .bot-msg {
+    font-size: 12px;
+  }
+
+.board-container .pl-card1,
+.board-container .pl-card2,
+.board-container .mult-card,
+.board-container .yard-card,
+.board-container .quality-container,
+.board-container .times-container {
+  border: 4px solid black;
+}
+
+  .cards-container .cards button.card {
+    flex-basis: 100px;
+    border: 4px solid white;
+    font-size: .75rem;
+    line-height: 1.1rem;
+  }
+
 }

@@ -6,7 +6,7 @@ export default {
     let answer = Math.floor(Math.random() * (max - min + 1) + min) // The maximum is inclusive and the minimum is inclusive
 
     if (p) {
-      if (game.connection.connections[p] === 'remote') {
+      if (game.connection === 'remote') {
         answer = await game.run.receiveInputFromRemote()
       } else {
         game.run.sendInputToRemote(answer)
@@ -20,7 +20,7 @@ export default {
     let answer = this.randInt(0, 1)
 
     if (p) {
-      if (game.connection.connections[p] === 'remote') {
+      if (game.connection === 'remote') {
         answer = await game.run.receiveInputFromRemote()
       } else {
         game.run.sendInputToRemote(answer)
@@ -34,7 +34,7 @@ export default {
     let answer = this.randInt(1, 6)
 
     if (p) {
-      if (game.connection.connections[p] === 'remote') {
+      if (game.connection === 'remote') {
         answer = await game.run.receiveInputFromRemote()
       } else {
         game.run.sendInputToRemote(answer)

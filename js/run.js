@@ -187,6 +187,9 @@ export default class Run {
       await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
     }
 
+    console.log('Connection type: ' + game.connection.type + ', Connections[me]: ' + game.connection.connections[game.me])
+    console.log(game.me + ' coinPick before: ' + coinPick)
+
     if (game.connection.type === 'host' || game.connection.type === 'remote') {
       if (game.connection.connections[game.me] === 'host') {
         this.sendInputToRemote(coinPick)
@@ -194,6 +197,8 @@ export default class Run {
         coinPick = await this.receiveInputFromRemote()
       }
     }
+
+    console.log(game.me + ' coinPick after: ' + coinPick)
 
     if (game.connection.connections[game.away] === 'computer') {
       coinPick = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
@@ -203,13 +208,16 @@ export default class Run {
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
     result += ' ... '
     // Some sort of graphic
+    console.log(game.me + ' actFlip before: ' + actFlip)
+
     actFlip = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
-    console.log('actFlip: ' + actFlip)
+    console.log(game.me + ' actFlip after: ' + actFlip)
+
     // Maybe away
 
     result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
     await alertBox(this, result)
-
+    console.log('checkpoint')
     // Decide if want to kick or receive
     if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
@@ -219,6 +227,8 @@ export default class Run {
       await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
     }
 
+    console.log(game.me + ' decPick before: ' + decPick)
+
     if (game.connection.type === 'host' || game.connection.type === 'remote') {
       if (game.connection.connections[game.me] === 'host') {
         this.sendInputToRemote(decPick)
@@ -226,6 +236,8 @@ export default class Run {
         decPick = await this.receiveInputFromRemote()
       }
     }
+
+    console.log(game.me + ' decPick after: ' + decPick)
 
     if (game.connection.connections[game.away] === 'computer') {
       decPick = await Utils.randInt(1, 2)
@@ -415,7 +427,7 @@ export default class Run {
       this.ball.classList.toggle('hidden', false)
     } else {
       if (mode !== 'kick') {
-        await alertBox('The ball is hiked...')
+        await alertBox(this, 'The ball is hiked...')
       }
       this.ball.classList.toggle('hidden', false)
       setBallSpot(this)
@@ -1153,7 +1165,7 @@ export default class Run {
 
       game.players[2].currentPlay = kckDec
     } else if (state === 'ret') {
-      await alertBox(game.players[2].team.name + ' selecting return type...')
+      await alertBox(this, game.players[2].team.name + ' selecting return type...')
       await this.cpuTime(game)
 
       const qtr = game.qtr
@@ -1508,7 +1520,7 @@ export default class Run {
   async returnTime (game) {
     game.players[game.lastCallTO].timeouts++
     document.querySelector('.' + (game.away === game.lastCallTO ? 'away' : 'home') + ' .to' + game.players[game.lastCallTO].timeouts).classList.remove('called')
-    await alertBox('Timeout returned to ' + game.players[game.lastCallTO].team.name + '...')
+    await alertBox(this, 'Timeout returned to ' + game.players[game.lastCallTO].team.name + '...')
   };
 
   async bigPlay (game, num) {

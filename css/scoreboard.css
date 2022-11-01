@@ -27,18 +27,6 @@
     transition: transform 1s, opacity 1s;
   }
 
-  /* Responsive */
-@media (min-width: 600px) {
-  .scoreboard-container {
-    grid-template:
-    /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
-    [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
-    /
-    /* Formerly 10vh */
-    [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2fr [clockl] auto [mid] auto [clockr] 2fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
-  }
-}
-
   .scoreboard-container * {
     font-family: sans-serif;
     color: white;
@@ -82,7 +70,7 @@
   .team {
     align-self: center;
     text-decoration: none;
-    text-underline-offset: 20%;
+    text-underline-offset: 5px;
   }
 
   .home.team {
