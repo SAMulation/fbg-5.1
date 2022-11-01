@@ -53,6 +53,9 @@ export default class Run {
   async prepareHTML (game) {
     setSpot(this, 65) // Place ball
     await this.moveBall(game, 'show/clear')
+    // Set teams' colors
+    document.documentElement.style.setProperty('--away-color1', game.players[game.away].team.color1)
+    document.documentElement.style.setProperty('--home-color1', game.players[game.home].team.color1)
     animationSimple(this.cardsContainer, 'slide-down') // Slide cards container down
     await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
     this.actualCards.innerText = '' // Clear out default cards
@@ -66,7 +69,7 @@ export default class Run {
       this.currentReceiveResolve(data.value)
     })
 
-    await this.prepareHTML() // Set up game board and field
+    await this.prepareHTML(game) // Set up game board and field
     await this.gameLoop(this.game, INIT) // Start the game loop
   };
 

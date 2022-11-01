@@ -13,7 +13,11 @@
       [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2.5fr [clockl] 2fr [mid] 2fr [clockr] 2.5fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
     align-items: center;
     transition: transform .5s, opacity 1s;
+    padding: 1% 0;
+    z-index: 15;
   }
+
+
 
   .scoreboard-container.slide-away {
     transform: translateX(150%);
@@ -51,13 +55,15 @@
 
   .away.bg {
     grid-column: left / mid;
-    background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
+    /* background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%); */
+    background: var(--away-color1);
     border-radius: var(--rad) 0 0 var(--rad);
   }
   
   .home.bg {
     grid-column: mid / right;
-    background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
+    /* background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%); */
+    background: var(--home-color1);
     border-radius: 0 var(--rad) var(--rad) 0;
   }
 

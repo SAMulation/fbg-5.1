@@ -57,7 +57,7 @@ body {
   /* grid-template-columns: minmax(0, 1fr);
   grid-template-rows: min-content minmax(0, 2fr) minmax(0, 1fr); */
   
-  row-gap: 2%;
+  row-gap: 1%;
 }
 
 /* Responsive */
@@ -78,7 +78,7 @@ body {
 } */
 
 .main-container > * {
-    padding: 1rem;
+    /* padding: 1rem; */
     text-align: center;
     /* border: 2px solid black; */
 }
@@ -467,6 +467,7 @@ input {
     [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2fr [clockl] auto [mid] auto [clockr] 2fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
     max-height: 170px;
     align-items: center;
+    padding: 17px 0;
   }
 
   .scoreboard-container .clock {
@@ -506,3 +507,15 @@ input {
   }
 
 }
+
+@media screen and (orientation:portrait) { 
+  .scoreboard-container {
+    display: grid;
+    grid-template:
+      /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
+      [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
+      /
+      /* Formerly 10vh */
+      [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2.5fr [clockl] 2fr [mid] 2fr [clockr] 2.5fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
+  }
+ }
