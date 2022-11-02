@@ -3,6 +3,7 @@
 
 import Stat from './stat.js'
 import Utils from './remoteUtils.js'
+import { Queue } from './queue.js'
 import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT } from './defaults.js'
 import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer } from './graphics.js'
 
@@ -33,7 +34,7 @@ export default class Run {
     this.ball = document.querySelector('.field-container .ball')
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
-    this.nextRemoteValue
+    this.inbox = new Queue()
   }
 
   makeBarSlideable (el) {
@@ -67,7 +68,8 @@ export default class Run {
   async playGame () {
     this.channel = this.game.connection.pusher.subscribe('private-game-' + this.game.connection.gamecode)
     this.channel.bind('client-value', (data) => {
-      this.currentReceiveResolve(data.value)
+      if (data.value === null || data.value === undefined) throw new Error('got empty value from remote')
+      this.inbox.enqueue(data.value)
     })
 
     await this.prepareHTML(game) // Set up game board and field
@@ -146,13 +148,12 @@ export default class Run {
   }
 
   sendInputToRemote (value) {
+    if (value === null || value === undefined) throw new Error('attempted to send empty value')
     this.channel.trigger('client-value', { value })
   }
 
   async receiveInputFromRemote () {
-    return new Promise((resolve, reject) => {
-      this.currentReceiveResolve = resolve
-    })
+    return await this.inbox.dequeue()
   }
 
   async remoteCommunication (game, p, value = null, msg = null) {
