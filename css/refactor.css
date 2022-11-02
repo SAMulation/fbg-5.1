@@ -49,25 +49,30 @@ body {
   box-shadow: 0 0 3px rgba(black, 0.33);
 
   display: grid;
-  grid-template: 
-    [top-all] min-content [top-board] minmax(0, 2fr) [top-cards] minmax(0, 1fr) [bot-all]
+  /* grid-template: 
+    [top] min-content [field-top] minmax(0, 2fr) [cards-top] minmax(0, 1fr) [bot]
+    /
+    [left-all] minmax(0, 1fr) [modal-left] minmax(0, 3fr) [modal-right] minmax(0, 1fr) [right-all]; */
+  
+    grid-template: 
+    [top] 26vw [field-top] minmax(0, 1fr) [cards-top] 20vh [bot-msg] 6vh [bot]
     /
     [left-all] minmax(0, 1fr) [modal-left] minmax(0, 3fr) [modal-right] minmax(0, 1fr) [right-all];
 
   /* grid-template-columns: minmax(0, 1fr);
   grid-template-rows: min-content minmax(0, 2fr) minmax(0, 1fr); */
   
-  row-gap: 1%;
+  row-gap: 0%;
 }
 
-/* Responsive */
+/* Responsive
 @media (min-width: 601px) {
   div.main-container {
-    grid-template-rows: [top-all] minmax(0, 1fr) [top-board] minmax(0, 2fr) [top-cards] minmax(0, 1fr) [bot-all];
+    grid-template-rows: [top] minmax(0, 1fr) [field-top] minmax(0, 2fr) [cards-top] minmax(0, 1fr) [bot];
     max-width: 600px;
     margin: 0 auto;
   }
-}
+} */
 
 /* .scoreboard-container, .field-container, .board-container, .cards-container {
     grid-column: 2 / 3;
@@ -158,13 +163,13 @@ input {
   background: dodgerblue;
   border: 1vw solid white;
   border-radius: 2vw;
-  grid-area: top-all / left-all / bot-all / right-all;
+  grid-area: top / left-all / bot / right-all;
   z-index: 20;
   display: '';
 }
 
 .field-container {
-  grid-area: top-all / left-all / bot-all / right-all;
+  grid-area: top / left-all / bot / right-all;
   max-height: 100%;
   max-width: 600px;
   padding: 0;
@@ -180,9 +185,11 @@ input {
   
   display: grid;
   grid-template:
-    [top] minmax(0, 20%) [top-endzone] minmax(0, 8%) [top-field] minmax(0, 64%) [bot-endzone] minmax(0, 8%) [bot]
+    [top] 26vw [top-endzone] minmax(0, 8%) [top-field] minmax(0, 64%) [bot-endzone] minmax(0, 8%) [bot-msg] 6vh [bot]
     /
     [left] minmax(0, 1fr) [right];
+
+  margin-bottom: 1px;
 }
 
 .field-container::-webkit-scrollbar {
@@ -243,7 +250,7 @@ input {
 }
 
 .field-container .bot-endzone {
-  grid-row: bot-endzone / bot;
+  grid-row: bot-endzone / bot-msg;
 
   border: 5px solid white;
   border-top: none;
@@ -262,8 +269,9 @@ input {
 .board-container {
   background: white;
   border: 1.5vw solid black;
-  grid-area: top-board / left-all / top-cards / right-all;
-  height: 100%;
+  grid-area: field-top / left-all / bot-msg / right-all;
+  align-self: center;
+  height: 75%;
   max-width: 600px;
 
   display: grid;
@@ -356,12 +364,12 @@ input {
 .cards-container {
   overflow: hidden;
   background: rgb(129, 0, 17);
-  grid-area: top-cards / left-all / bot-all / right-all;
+  grid-area: cards-top / left-all / bot / right-all;
   max-width: 600px;
 
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 15% 85%;
+  grid-template-rows: 6vh 20vh;
   row-gap: 3%;
   padding: 0;
   z-index: 10;
@@ -371,10 +379,14 @@ input {
 
 .cards-container.slide-down {
   /* background: rgb(129, 0, 17, 0); */
-  transform: translateY(85%);
+  transform: translateY(20vh);
 }
 
-.cards-container .bar * {
+.bot-holder { 
+  grid-area: bot-msg / left-all / bot / bot / right-all;
+}
+
+.cards-container .bar *, .bot-holder {
   font-size: 0.75rem;
   background: black;
   color: white;
@@ -458,6 +470,21 @@ input {
 
 /* Responsive */
 @media (min-width: 599px) {
+  .main-container {
+    grid-template-rows: [top] 170px [field-top] minmax(0, 1fr) [cards-top] 20vh [bot-msg] 6vh [bot];
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .field-container {
+    display: grid;
+    grid-template:
+      [top] 170px [top-endzone] minmax(0, 8%) [top-field] minmax(0, 64%) [bot-endzone] minmax(0, 8%) [bot-msg] 3vh [bot]
+      /
+      [left] minmax(0, 1fr) [right];
+  
+  }
+
   .scoreboard-container {
     grid-template:
     /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
@@ -500,15 +527,15 @@ input {
 }
 
   .cards-container .cards button.card {
-    flex-basis: 100px;
+    flex-basis: 110px;
     border: 4px solid white;
-    font-size: .75rem;
+    /* font-size: .75rem; */
     line-height: 1.1rem;
   }
 
 }
 
-@media screen and (orientation:portrait) { 
+/* @media screen and (orientation:portrait) { 
   .scoreboard-container {
     display: grid;
     grid-template:
@@ -518,4 +545,4 @@ input {
       /* Formerly 10vh */
       [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2.5fr [clockl] 2fr [mid] 2fr [clockr] 2.5fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
   }
- }
+ } */
