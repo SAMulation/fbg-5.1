@@ -3,7 +3,7 @@
     --rad: 2vw;
 
     max-width: 600px;
-    grid-area: top-all / left-all / top-board / right-all;
+    grid-area: top / left-all / field-top / right-all;
     display: grid;
     grid-template:
       /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
@@ -57,14 +57,14 @@
     grid-column: left / mid;
     /* background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%); */
     /* background: var(--away-color1); */
-    background: linear-gradient(to left, var(--away-color1), black);
+    background: linear-gradient(to left, var(--away-color1) 50%, black);
     border-radius: var(--rad) 0 0 var(--rad);
   }
   
   .home.bg {
     grid-column: mid / right;
     /* background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%); */
-    background: linear-gradient(to right, var(--home-color1), black);
+    background: linear-gradient(to right, var(--home-color1) 50%, black);
     /* background: var(--home-color1); */
     border-radius: 0 var(--rad) var(--rad) 0;
   }
@@ -182,14 +182,14 @@
     /* background: rgb(36,20,0);
     background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%); */
     /* background: var(--home-color1); */
-    background: linear-gradient(to right, var(--home-color1), black);
+    background: linear-gradient(to right, var(--home-color1) 50%, black);
   }
 
   .away-msg {
     grid-column: left / mid;
     padding-right: 10vw;
     /* background: var(--away-color1); */
-    background: linear-gradient(to left, var(--away-color1), black);
+    background: linear-gradient(to left, var(--away-color1) 50%, black);
     /* background: rgb(2,0,36);
     background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%); */
   }
