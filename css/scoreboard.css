@@ -56,14 +56,16 @@
   .away.bg {
     grid-column: left / mid;
     /* background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%); */
-    background: var(--away-color1);
+    /* background: var(--away-color1); */
+    background: linear-gradient(to left, var(--away-color1), black);
     border-radius: var(--rad) 0 0 var(--rad);
   }
   
   .home.bg {
     grid-column: mid / right;
     /* background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%); */
-    background: var(--home-color1);
+    background: linear-gradient(to right, var(--home-color1), black);
+    /* background: var(--home-color1); */
     border-radius: 0 var(--rad) var(--rad) 0;
   }
 
@@ -177,15 +179,19 @@
   .home-msg {
     grid-column: mid / right;
     padding-left: 10vw;
-    background: rgb(36,20,0);
-    background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%);
+    /* background: rgb(36,20,0);
+    background: linear-gradient(90deg, rgba(36,20,0,1) 0%, rgba(208,144,3,1) 68%, rgba(255,154,0,1) 100%); */
+    /* background: var(--home-color1); */
+    background: linear-gradient(to right, var(--home-color1), black);
   }
 
   .away-msg {
     grid-column: left / mid;
     padding-right: 10vw;
-    background: rgb(2,0,36);
-    background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%);
+    /* background: var(--away-color1); */
+    background: linear-gradient(to left, var(--away-color1), black);
+    /* background: rgb(2,0,36);
+    background: linear-gradient(270deg, rgba(2,0,36,1) 0%, rgba(3,3,208,1) 68%, rgba(0,31,255,1) 100%); */
   }
 
   .top-msg.home-msg {
