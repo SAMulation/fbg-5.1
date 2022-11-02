@@ -64,6 +64,10 @@ export default class Game {
     return num === 1 ? 2 : 1
   }
 
+  isMultiplayer () {
+    return this.connection.type === 'host' || this.connection.type === 'remote'
+  }
+
   isReal (num) {
     return this.numberPlayers !== 0 && (num === 1 || this.numberPlayers === 2)
   }

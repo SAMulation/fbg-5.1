@@ -6,7 +6,7 @@ export default {
     let answer = Math.floor(Math.random() * (max - min + 1) + min) // The maximum is inclusive and the minimum is inclusive
 
     if (p) {
-      if (game.connection === 'remote') {
+      if (game.connection.type === 'remote') {
         answer = await game.run.receiveInputFromRemote()
       } else {
         game.run.sendInputToRemote(answer)
@@ -17,30 +17,10 @@ export default {
   },
 
   async coinFlip (game = null, p = null) {
-    let answer = this.randInt(0, 1)
-
-    if (p) {
-      if (game.connection === 'remote') {
-        answer = await game.run.receiveInputFromRemote()
-      } else {
-        game.run.sendInputToRemote(answer)
-      }
-    }
-
-    return answer
+    return await this.randInt(0, 1, game, p)
   },
 
   async rollDie (game = null, p = null) {
-    let answer = this.randInt(1, 6)
-
-    if (p) {
-      if (game.connection === 'remote') {
-        answer = await game.run.receiveInputFromRemote()
-      } else {
-        game.run.sendInputToRemote(answer)
-      }
-    }
-
-    return answer
+    return await this.randInt(1, 6, game, p)
   }
 }

@@ -33,6 +33,7 @@ export default class Run {
     this.ball = document.querySelector('.field-container .ball')
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
+    this.nextRemoteValue
   }
 
   makeBarSlideable (el) {
@@ -194,7 +195,7 @@ export default class Run {
     console.log(game.me + ' coinPick before: ' + coinPick)
 
     if (game.connection.type === 'host' || game.connection.type === 'remote') {
-      if (game.connection.connections[game.me] === 'host') {
+      if (game.me === game.away) {
         this.sendInputToRemote(coinPick)
       } else {
         coinPick = await this.receiveInputFromRemote()
@@ -233,7 +234,7 @@ export default class Run {
     console.log(game.me + ' decPick before: ' + decPick)
 
     if (game.connection.type === 'host' || game.connection.type === 'remote') {
-      if (game.connection.connections[game.me] === 'host') {
+      if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
         this.sendInputToRemote(decPick)
       } else {
         decPick = await this.receiveInputFromRemote()
@@ -555,22 +556,17 @@ export default class Run {
     if (game.me === p) {
       await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
       selection = await this.input.getInput(game, p, type, msg)
+      if (game.isMultiplayer()) {
+        this.sendInputToRemote(selection)
+      }
       await animationWaitForCompletion(this.cardsContainer, 'slide-down')
     } else {
       await alertBox(this, msg)
-    }
-
-    if (game.connection.type === 'host' || game.connection.type === 'remote') {
-      if (game.connection.connections[p] === 'host') {
-        this.sendInputToRemote(selection)
-      } else {
+      if (game.isMultiplayer()) {
         selection = await this.receiveInputFromRemote()
+      } else {
+        await this.cpuPages(game, type)
       }
-    }
-
-    // Computer picking
-    if (game.connection.connections[p] === 'computer') {
-      await this.cpuPages(game, type)
     }
 
     // Handle timeouts being called
