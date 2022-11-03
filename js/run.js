@@ -439,7 +439,7 @@ export default class Run {
 
   async moveBall (game, mode = null, val = null) {
     if (mode === 'clear') {
-      this.ball.classList.toggle('hidden', true)
+      // this.ball.classList.toggle('hidden', true)
     } else if (mode === 'show') {
       this.ball.classList.toggle('hidden', false)
     } else {
