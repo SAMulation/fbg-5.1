@@ -85,12 +85,12 @@ export const animationPostPick = async (run, game, p) => {
 
 export const resetBoardContainer = (run) => {
   // Clear values
-  run.plCard1.innerText = ''
-  run.plCard2.innerText = ''
-  run.multCard.innerText = ''
-  run.yardCard.innerText = ''
-  run.qualityContainer.innerText = ''
-  run.timesContainer.innerText = ''
+  run.plCard1.querySelector('.back').innerText = ''
+  run.plCard2.querySelector('.back').innerText = ''
+  run.multCard.querySelector('.back').innerText = ''
+  run.yardCard.querySelector('.back').innerText = ''
+  run.qualityContainer.querySelector('.back').innerText = ''
+  run.timesContainer.querySelector('.back').innerText = ''
 
   // Remove classes
   run.plCard1.classList.remove('picked')

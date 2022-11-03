@@ -192,6 +192,10 @@ input {
   margin-bottom: 1px;
 }
 
+.field-container:hover {
+  transform: rotate(180deg);
+}
+
 .field-container::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
 }
@@ -268,7 +272,7 @@ input {
 
 .board-container {
   background: white;
-  border: 1.5vw solid black;
+  border: 4px solid black;
   grid-area: field-top / left-all / bot-msg / right-all;
   align-self: center;
   height: 75%;
@@ -276,7 +280,7 @@ input {
 
   display: grid;
   grid-template-rows: 1fr 6fr 6fr 1fr;
-  grid-template-columns: 1fr 4fr 4fr 4fr;
+  grid-template-columns: 1fr 4fr 4fr 4fr 1fr;
   justify-items: center;
   gap: 2vw;
 
@@ -323,9 +327,10 @@ input {
 .board-container .yard-card,
 .board-container .quality-container,
 .board-container .times-container {
-  background:rgb(129, 0, 17);
-  border: 1vw solid black;
-  border-radius: 2vw;
+  /* background:rgb(129, 0, 17); */
+  background: white;
+  /* border: 2px solid black; */
+  border-radius: 5px;
   height: 100%;
   width: 100%;
   display: flex;
@@ -465,7 +470,86 @@ input {
   flex-shrink: 0;
   flex-basis: 25%;
   border: 1vw solid white;
-  border-radius: 2vw;
+  border-radius: 5px;
+}
+
+
+
+/* @media screen and (orientation:portrait) { 
+  .scoreboard-container {
+    display: grid;
+    grid-template:
+      [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
+      /
+      [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2.5fr [clockl] 2fr [mid] 2fr [clockr] 2.5fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
+  }
+ } */
+
+.flip-card {
+  /* position: relative; */
+  perspective: 500px;
+}
+
+.card-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+
+  transition: transform 1s;
+  transform-style: preserve-3d;
+}
+
+.flip-card:hover .card-content, .flip-card.picked .card-content {
+  transform: rotateY( 180deg ) ;
+  transition: transform 0.5s;
+}
+
+.front,
+.back {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: white;
+  text-align: center;
+  font-size: .75rem;
+  border-radius: 5px;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+}
+
+.front {
+  background: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.front-top {
+  font-size: 10vw;
+}
+
+.front-bot {
+  font-size: 3vw;
+}
+
+.quality-container .front-top, .times-container .front-top {
+  font-size: 7vw;
+}
+
+.quality-container .front-bot, .times-container .front-bot {
+  font-size: 2vw;
+}
+
+.back {
+  background: #005A9C;
+  color: white;
+  transform: rotateY(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
 }
 
 /* Responsive */
@@ -517,14 +601,14 @@ input {
     font-size: 12px;
   }
 
-.board-container .pl-card1,
-.board-container .pl-card2,
-.board-container .mult-card,
-.board-container .yard-card,
-.board-container .quality-container,
-.board-container .times-container {
-  border: 4px solid black;
-}
+  .board-container .pl-card1,
+  .board-container .pl-card2,
+  .board-container .mult-card,
+  .board-container .yard-card,
+  .board-container .quality-container,
+  .board-container .times-container {
+    /* border: 4px solid black; */
+  }
 
   .cards-container .cards button.card {
     flex-basis: 110px;
@@ -533,16 +617,20 @@ input {
     line-height: 1.1rem;
   }
 
-}
-
-/* @media screen and (orientation:portrait) { 
-  .scoreboard-container {
-    display: grid;
-    grid-template:
-      /* [top] 15% [hm] 3% [content-top] minmax(auto, 32%) [mid] minmax(auto, 32%) [content-bot] 3% [to] 15% [bot] */
-      [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
-      /
-      /* Formerly 10vh */
-      [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2.5fr [clockl] 2fr [mid] 2fr [clockr] 2.5fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
+  .front-top {
+    font-size: 4rem;
   }
- } */
+  
+  .front-bot {
+    font-size: 1rem;
+  }
+
+  .quality-container .front-top, .times-container .front-top {
+    font-size: 3rem;
+  }
+  
+  .quality-container .front-bot, .times-container .front-bot {
+    font-size: .75rem;
+  }
+
+}
