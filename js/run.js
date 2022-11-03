@@ -598,25 +598,69 @@ export default class Run {
 
   async kickPage (game) {
     const oName = game.players[game.offNum].team.name
-    let downEl = null
+    //   let downEl = null
 
-    if (game.offNum === game.away) {
-      downEl = this.scoreboardContainerBotLeft
-    } else {
-      downEl = this.scoreboardContainerBotRight
+    //   if (game.offNum === game.away) {
+    //     downEl = this.scoreboardContainerBotLeft
+    //   } else {
+    //     downEl = this.scoreboardContainerBotRight
+    //   }
+
+    //   downEl.innerText = 'Kickoff'
+    //   animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
+    //   animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
+
+    //   await this.playSelection(game, game.offNum, 'kick', oName + ' pick kickoff type...')
+    // Handle computer timeouts, special plays
+    while (game.status !== EXIT && !game.players[game.offNum].currentPlay) {
+      let selection = null
+      if (!game.isReal(game.offNum)) {
+        if (game.changeTime === 0) {
+          await this.cpuTime(game)
+        }
+        await this.cpuPlay(game)
+      }
+
+      // Get play
+      selection = await this.input.getInput(game, game.offNum, 'kick', oName + ' pick kickoff type...')
+
+      // Handle timeouts being called
+      if (game.players[game.offNum].currentPlay === 'TO') {
+        await this.timeout(game, game.offNum)
+      }
+
+      if (selection) {
+        game.players[game.offNum].currentPlay = selection
+      }
     }
-
-    downEl.innerText = 'Kickoff'
-    animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
-    animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
-
-    await this.playSelection(game, game.offNum, 'kick', oName + ' pick kickoff type...')
   }
 
   async returnPage (game) {
     const dName = game.players[game.defNum].team.name
 
-    await this.playSelection(game, game.defNum, 'ret', dName + ' pick return type...')
+    // await this.playSelection(game, game.defNum, 'ret', dName + ' pick return type...')
+
+    while (game.status !== EXIT && !game.players[game.defNum].currentPlay) {
+      let selection = null
+      if (!game.isReal(game.defNum)) {
+        if (game.changeTime === 0) {
+          await this.cpuTime(game)
+        }
+        await this.cpuPlay(game)
+      }
+
+      // Get play
+      selection = await this.input.getInput(game, game.defNum, 'ret', dName + ' pick return type...')
+
+      // Handle timeouts being called
+      if (game.players[game.defNum].currentPlay === 'TO') {
+        await this.timeout(game, game.defNum)
+      }
+
+      if (selection) {
+        game.players[game.defNum].currentPlay = selection
+      }
+    }
   }
 
   async kickDec (game) {
@@ -891,7 +935,7 @@ export default class Run {
         selection = await this.input.getInput(game, p, 'reg', game.players[p].team.name + ' pick your play...')
 
         // Handle timeouts being called
-        if (game.players[p].currentPlay === 'TO') {
+        if (selection === 'TO' || game.players[p].currentPlay === 'TO') {
           await this.timeout(game, p)
         }
 

@@ -23,7 +23,7 @@ export default class ButtonInput extends BaseInput {
       if (game.isMultiplayer()) {
         selection = await game.run.receiveInputFromRemote()
       } else {
-        await game.run.cpuPages(game, type)
+        selection = await game.run.cpuPages(game, type)
       }
     }
 
@@ -31,6 +31,19 @@ export default class ButtonInput extends BaseInput {
   }
 
   async prepareAndGetUserInput (game, p, type, msg = null) {
+    if (type === 'kick') {
+      let downEl = null
+
+      if (game.offNum === game.away) {
+        downEl = this.scoreboardContainerBotLeft
+      } else {
+        downEl = this.scoreboardContainerBotRight
+      }
+      downEl.innerText = 'Kickoff'
+      animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
+      animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
+    }
+
     game.run.scoreboardContainerTopLeft.innerText = (p === game.away ? 'Pick your play' : game.lastPlay)
     game.run.scoreboardContainerTopRight.innerText = (p === game.away ? game.lastPlay : 'Pick your play')
     animationSimple(game.run.scoreboardContainerTopLeft, 'collapsed', false)
