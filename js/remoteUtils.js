@@ -5,7 +5,7 @@ export default {
     max = Math.floor(max)
     let answer = Math.floor(Math.random() * (max - min + 1) + min) // The maximum is inclusive and the minimum is inclusive
 
-    if (p) {
+    if (game && game.isMultiplayer()) {
       if (game.connection.type === 'remote') {
         answer = await game.run.receiveInputFromRemote()
       } else {

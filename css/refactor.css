@@ -193,7 +193,7 @@ input {
 }
 
 .field-container .just-field:hover {
-  transform: rotate(180deg);
+  /* transform: rotate(180deg); */
 }
 
 .field-container::-webkit-scrollbar {
