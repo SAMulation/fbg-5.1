@@ -841,15 +841,16 @@ export default class Run {
           console.log('p: ' + p + ' changeTime: ' + game.changeTime)
           alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end! Last chance for the ' + game.players[p].team.name + ' to call a timeout!')
 
-          // Local players
-          if (game.isPlayer(p, 'local')) {
-            await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-            selection = await this.input.getInput(game, p, 'last', game.players[p].team.name + ' call a timeout?')
-            await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-          }
+          // // Local players
+          // if (game.isPlayer(p, 'local')) {
+          //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+          //   selection = await this.input.getInput(game, p, 'last', game.players[p].team.name + ' call a timeout?')
+          //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+          // }
 
-          // Send remote message or receive remote message
-          selection = await this.remoteCommunication(game, p, selection, game.players[p].team.name + ' call a timeout?')
+          // // Send remote message or receive remote message
+          // selection = await this.remoteCommunication(game, p, selection, game.players[p].team.name + ' call a timeout?')
+          selection = await this.input.getInput(game, p, 'last', game.players[p].team.name + ' call a timeout?')
 
           if (selection === 'Y') {
             await this.timeout(game, p)
@@ -915,7 +916,6 @@ export default class Run {
 
   async pickPlay (game) {
     const start = game.offNum
-    const end = game.defNum
     const change = start === 1 ? 1 : -1
 
     for (let p = start; p === 1 || p === 2; p += change) {
@@ -2186,28 +2186,27 @@ export default class Run {
   async pat (game) {
     const oNum = game.offNum
     const oName = game.players[oNum].team.name
-    let selection = null // Default in 3OT+
+    let selection = '2P' // Default in 3OT+
 
     if (game.qtr < 7) { // Must go for 2 in 3OT+
       // PAT decision
       // Real players
-      if (game.isPlayer(game.offNum, 'local')) {
-        await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-        selection = await this.input.getInput(game, game.offNum, 'pat', oName + ' pick PAT type...')
-        await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-      }
+      // if (game.isPlayer(game.offNum, 'local')) {
+      //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+      //   selection = await this.input.getInput(game, game.offNum, 'pat', oName + ' pick PAT type...')
+      //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+      // }
 
-      // Send remote message or receive remote message
-      selection = await this.remoteCommunication(game, game.offNum, selection, oName + ' pick PAT type...')
+      // // Send remote message or receive remote message
+      // selection = await this.remoteCommunication(game, game.offNum, selection, oName + ' pick PAT type...')
 
       // Computer picking (or fallback for failed communication)
-      if (!selection) {
-        await alertBox(this, oName + ' choosing PAT type...')
-        await this.cpuPages(game, 'pat')
-        selection = game.players[2].currentPlay
-      }
-    } else {
-      selection = '2P'
+      // if (!selection) {
+      //   await alertBox(this, oName + ' choosing PAT type...')
+      //   await this.cpuPages(game, 'pat')
+      //   selection = game.players[2].currentPlay
+      // }
+      selection = await this.input.getInput(game, game.offNum, 'pat', game.players[p].team.name + ' pick PAT type...')
     }
 
     if (selection === '2P') {
