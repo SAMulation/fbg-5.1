@@ -630,9 +630,9 @@ export default class Run {
     animationSimple(this.scoreboardContainerBotRight, 'collapsed')
     await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
-    this.plCard1.innerText = game.players[1].currentPlay
+    this.plCard1.querySelector('.back').innerText = game.players[1].currentPlay
     await animationWaitForCompletion(this.plCard1, 'picked')
-    this.plCard2.innerText = game.players[2].currentPlay
+    this.plCard2.querySelector('.back').innerText = game.players[2].currentPlay
     await animationWaitForCompletion(this.plCard2, 'picked')
 
     setBallSpot(this)
@@ -713,11 +713,11 @@ export default class Run {
       await alertBox(this, Math.abs(kickDist) + '-yard kick')
       await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
-      this.multCard.innerText = multCard?.card || '/'
+      this.multCard.querySelector('.back').innerText = multCard?.card || '/'
       await animationWaitForCompletion(this.multCard, 'picked')
-      this.timesContainer.innerText = multiplier + 'X'
+      this.timesContainer.querySelector('.back').innerText = multiplier + 'X'
       await animationWaitForCompletion(this.timesContainer, 'picked')
-      this.yardCard.innerText = yard
+      this.yardCard.querySelector('.back').innerText = yard
       await animationWaitForCompletion(this.yardCard, 'picked')
 
       if (retDist === 0) {
@@ -1969,17 +1969,17 @@ export default class Run {
     document.querySelector('.' + (game.away === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
     document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
 
-    this.plCard1.innerText = game.players[1].currentPlay
+    this.plCard1.querySelector('.back').innerText = game.players[1].currentPlay
     await animationWaitForCompletion(this.plCard1, 'picked')
-    this.plCard2.innerText = game.players[2].currentPlay
+    this.plCard2.querySelector('.back').innerText = game.players[2].currentPlay
     await animationWaitForCompletion(this.plCard2, 'picked')
-    this.qualityContainer.innerText = game.thisPlay.getQuality()
+    this.qualityContainer.querySelector('.back').innerText = game.thisPlay.getQuality()
     await animationWaitForCompletion(this.qualityContainer, 'picked')
-    this.multCard.innerText = mCard
+    this.multCard.querySelector('.back').innerText = mCard
     await animationWaitForCompletion(this.multCard, 'picked')
-    this.timesContainer.innerText = (times || game.thisPlay.multiplier) + 'X'
+    this.timesContainer.querySelector('.back').innerText = (times || game.thisPlay.multiplier) + 'X'
     await animationWaitForCompletion(this.timesContainer, 'picked')
-    this.yardCard.innerText = game.thisPlay.yardCard
+    this.yardCard.querySelector('.back').innerText = game.thisPlay.yardCard
     await animationWaitForCompletion(this.yardCard, 'picked')
 
     // animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
