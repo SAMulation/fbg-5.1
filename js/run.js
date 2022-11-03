@@ -52,6 +52,14 @@ export default class Run {
     })
   }
 
+  async setBallSpot (run) {
+    const newSpot = run.game.spot
+    const lastSpot = run.game.lastSpot
+    await sleep(100)
+    run.docStyle.setProperty('--ball-spot', (run.field.offsetHeight / 100 * ((100 - newSpot) + 42)) + 'px')
+    await sleep(100)
+  }
+
   async prepareHTML (game) {
     setSpot(this, 65) // Place ball
     await this.moveBall(game, 'show/clear')
