@@ -196,30 +196,30 @@ export default class Run {
 
     // Coin toss decision
     // Real players
-    if (game.me === game.away) {
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-      coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    } else {
-      await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
-    }
+    // if (game.me === game.away) {
+    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+    //   coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
+    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // } else {
+    //   await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
+    // }
 
     console.log('Connection type: ' + game.connection.type + ', Connections[me]: ' + game.connection.connections[game.me])
     console.log(game.me + ' coinPick before: ' + coinPick)
-
-    if (game.connection.type === 'host' || game.connection.type === 'remote') {
-      if (game.me === game.away) {
-        this.sendInputToRemote(coinPick)
-      } else {
-        coinPick = await this.receiveInputFromRemote()
-      }
-    }
-
+    coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
     console.log(game.me + ' coinPick after: ' + coinPick)
 
-    if (game.connection.connections[game.away] === 'computer') {
-      coinPick = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
-    }
+    // if (game.connection.type === 'host' || game.connection.type === 'remote') {
+    //   if (game.me === game.away) {
+    //     this.sendInputToRemote(coinPick)
+    //   } else {
+    //     coinPick = await this.receiveInputFromRemote()
+    //   }
+    // }
+
+    // if (game.connection.connections[game.away] === 'computer') {
+    //   coinPick = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
+    // }
 
     // Show result
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
@@ -236,32 +236,33 @@ export default class Run {
     await alertBox(this, result)
     console.log('checkpoint')
     // Decide if want to kick or receive
-    if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-      decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    } else {
-      await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
-    }
+    // if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
+    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+    //   decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
+    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // } else {
+    //   await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
+    // }
 
     console.log(game.me + ' decPick before: ' + decPick)
+    decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
 
-    if (game.connection.type === 'host' || game.connection.type === 'remote') {
-      if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
-        this.sendInputToRemote(decPick)
-      } else {
-        decPick = await this.receiveInputFromRemote()
-      }
-    }
+    // if (game.connection.type === 'host' || game.connection.type === 'remote') {
+    //   if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
+    //     this.sendInputToRemote(decPick)
+    //   } else {
+    //     decPick = await this.receiveInputFromRemote()
+    //   }
+    // }
 
     console.log(game.me + ' decPick after: ' + decPick)
 
-    if (game.connection.connections[game.away] === 'computer') {
-      decPick = await Utils.randInt(1, 2)
-      if (game.qtr < 4) {
-        decPick = decPick === 1 ? 'K' : 'R'
-      } // else: Leave it as 1 or 2 for OT possession picking
-    }
+    // if (game.connection.connections[game.away] === 'computer') {
+    //   decPick = await Utils.randInt(1, 2)
+    //   if (game.qtr < 4) {
+    //     decPick = decPick === 1 ? 'K' : 'R'
+    //   } // else: Leave it as 1 or 2 for OT possession picking
+    // }
 
     result = (actFlip === coinPick ? awayName : homeName) + ' '
 
@@ -558,29 +559,27 @@ export default class Run {
   }
 
   async playSelection (game, p, type, msg) {
-    let selection = null
-    this.scoreboardContainerTopLeft.innerText = (p === game.away ? 'Pick your play' : game.lastPlay)
-    this.scoreboardContainerTopRight.innerText = (p === game.away ? game.lastPlay : 'Pick your play')
-    animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-    animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
+    const selection = null
+    // this.scoreboardContainerTopLeft.innerText = (p === game.away ? 'Pick your play' : game.lastPlay)
+    // this.scoreboardContainerTopRight.innerText = (p === game.away ? game.lastPlay : 'Pick your play')
+    // animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
+    // animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
 
-    // while (!game.players[p].currentPlay && game.status !== EXIT) {
-    // Local players
-    if (game.me === p) {
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-      selection = await this.input.getInput(game, p, type, msg)
-      if (game.isMultiplayer()) {
-        this.sendInputToRemote(selection)
-      }
-      await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    } else {
-      await alertBox(this, msg)
-      if (game.isMultiplayer()) {
-        selection = await this.receiveInputFromRemote()
-      } else {
-        await this.cpuPages(game, type)
-      }
-    }
+    // if (game.me === p) {
+    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
+    //   selection = await this.input.getInput(game, p, type, msg)
+    //   if (game.isMultiplayer()) {
+    //     this.sendInputToRemote(selection)
+    //   }
+    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
+    // } else {
+    //   await alertBox(this, msg)
+    //   if (game.isMultiplayer()) {
+    //     selection = await this.receiveInputFromRemote()
+    //   } else {
+    //     await this.cpuPages(game, type)
+    //   }
+    // }
 
     // Handle timeouts being called
     if (game.players[p].currentPlay === 'TO') {
@@ -871,23 +870,49 @@ export default class Run {
   };
 
   async pickPlay (game) {
-    // console.log('pickPlay');
-    for (let p = 1; p <= 2; p++) {
+    const start = game.offNum
+    const end = game.defNum
+    const change = start < end ? 1 : -1
+
+    for (let p = start; p !== end; p += change) {
+      let selection = null
       game.players[p].currentPlay = null
 
-      // Computer Stuff
-      if (game.status !== EXIT && p === 2 && !game.isReal(2)) {
-        // This is where the computer can call timeout or pick special play
-        await alertBox(this, game.players[2].team.name + ' are picking their play...')
-        document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = game.players[2].team.name + ' are picking their play...'
-        if (game.changeTime === 0) {
-          await this.cpuTime(game)
+      // Handle computer timeouts, special plays
+      while (game.status !== EXIT && !game.players[p].currentPlay) {
+        if (!game.isReal(p)) {
+          if (game.changeTime === 0) {
+            await this.cpuTime(game)
+          }
+          await this.cpuPlay(game)
         }
 
-        await this.cpuPlay(game)
+        // Get play
+        selection = await this.input.getInput(game, p, 'reg', game.players[p].team.name + ' pick your play...')
+
+        // Handle timeouts being called
+        if (game.players[p].currentPlay === 'TO') {
+          await this.timeout(game, p)
+        }
+
+        if (selection) {
+          game.players[p].currentPlay = selection
+        }
       }
 
-      await this.playSelection(game, p, 'reg', game.players[p].team.name + ' pick your play...')
+      // Computer Stuff
+      // if (game.status !== EXIT && p === 2 && !game.isReal(2)) {
+      //   // This is where the computer can call timeout or pick special play
+      //   await alertBox(this, game.players[2].team.name + ' are picking their play...')
+      //   document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = game.players[2].team.name + ' are picking their play...'
+      //   if (game.changeTime === 0) {
+      //     await this.cpuTime(game)
+      //   }
+
+      //   await this.cpuPlay(game)
+      // }
+
+      // await this.playSelection(game, p, 'reg', game.players[p].team.name + ' pick your play...')
     }
 
     // Making sure you didn't exit
@@ -1194,6 +1219,15 @@ export default class Run {
       }
 
       game.players[2].currentPlay = retDec
+    } else if (state === 'coin') {
+      return await Utils.coinFlip(game, game.me) ? 'H' : 'T'
+    } else if (state === 'kickDecOT' || state === 'kickDecReg') {
+      let decPick
+      decPick = await Utils.randInt(1, 2)
+      if (game.qtr < 4) {
+        decPick = decPick === 1 ? 'K' : 'R'
+      } // else: Leave it as 1 or 2 for OT possession picking
+      return decPick
     }
   };
 
