@@ -1,5 +1,5 @@
 export const TEAMS = [
-  { name: '49ers', city: 'San Francisco', abrv: 'SF', color1: '#AA00000', color2: '#B3995D' },
+  { name: '49ers', city: 'San Francisco', abrv: 'SF', color1: '#AA0000', color2: '#B3995D' },
   { name: 'Bears', city: 'Chicago', abrv: 'CHI', color1: '#0B162A', color2: '#C83803' },
   { name: 'Bengals', city: 'Cincinnati', abrv: 'CIN', color1: '#FB4F14', color2: '#000000' },
   { name: 'Bills', city: 'Buffalo', abrv: 'BUF', color1: '#00338D', color2: '#C60C30' },
