@@ -35,13 +35,13 @@ export default class ButtonInput extends BaseInput {
       let downEl = null
 
       if (game.offNum === game.away) {
-        downEl = this.scoreboardContainerBotLeft
+        downEl = game.run.scoreboardContainerBotLeft
       } else {
-        downEl = this.scoreboardContainerBotRight
+        downEl = game.run.scoreboardContainerBotRight
       }
       downEl.innerText = 'Kickoff'
-      animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
-      animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
+      animationSimple(game.run.scoreboardContainerBotLeft, 'collapsed', false)
+      animationSimple(game.run.scoreboardContainerBotRight, 'collapsed', false)
     }
 
     game.run.scoreboardContainerTopLeft.innerText = (p === game.away ? 'Pick your play' : game.lastPlay)
