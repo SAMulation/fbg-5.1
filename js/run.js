@@ -916,9 +916,9 @@ export default class Run {
   async pickPlay (game) {
     const start = game.offNum
     const end = game.defNum
-    const change = start < end ? 1 : -1
+    const change = start === 1 ? 1 : -1
 
-    for (let p = start; p !== end; p += change) {
+    for (let p = start; p === 1 || p === 2; p += change) {
       let selection = null
       game.players[p].currentPlay = null
 
