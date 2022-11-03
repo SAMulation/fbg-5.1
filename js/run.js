@@ -57,7 +57,11 @@ export default class Run {
     await this.moveBall(game, 'show/clear')
     // Set teams' colors
     document.documentElement.style.setProperty('--away-color1', game.players[game.away].team.color1)
+    document.documentElement.style.setProperty('--away-color2', game.players[game.away].team.color2)
     document.documentElement.style.setProperty('--home-color1', game.players[game.home].team.color1)
+    document.documentElement.style.setProperty('--home-color2', game.players[game.home].team.color2)
+    document.documentElement.style.setProperty('--me-color1', game.players[game.me].team.color1)
+    document.documentElement.style.setProperty('--me-color2', game.players[game.me].team.color2)
     animationSimple(this.cardsContainer, 'slide-down') // Slide cards container down
     await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
     this.actualCards.innerText = '' // Clear out default cards
