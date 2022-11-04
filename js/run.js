@@ -380,7 +380,7 @@ export default class Run {
     await this.resetTime(game)
 
     if (!game.over) {
-      if (!game.isOT()) {
+      if (game.qtr === 1) {
         await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
       }
 
@@ -1802,7 +1802,8 @@ export default class Run {
     if (game.status === SAFETY_KICK) {
       // Probably reset graphics
       game.spot = 35
-      await this.moveBall(game, 'show')
+      // await this.moveBall(game, 'show')
+      setBallSpot(this, 65)
       // Punt
     } else {
       // Add Recap for punt, maybe remove first down sticks
@@ -1914,7 +1915,7 @@ export default class Run {
         msg += dName + ' return for ' + retDist + ' yards.'
       }
     } else if (touchback) {
-      msg += dName + ' takes a touchback...'
+      msg += dName + ' take a touchback...'
       game.spot = 20
       await this.moveBall(game, 'show')
     }
