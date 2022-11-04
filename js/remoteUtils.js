@@ -1,3 +1,4 @@
+import { sleep } from './graphics.js'
 export default {
 
   async randInt (min, max, game = null, p = null) {
@@ -9,7 +10,8 @@ export default {
       if (game.connection.type === 'remote') {
         answer = await game.run.receiveInputFromRemote()
       } else {
-        game.run.sendInputToRemote(answer)
+        await game.run.sendInputToRemote(answer)
+        // await sleep(1)
       }
     }
 

@@ -164,13 +164,15 @@ export default class Run {
     return value
   }
 
-  sendInputToRemote (value) {
+  async sendInputToRemote (value) {
     if (value === null || value === undefined) throw new Error('attempted to send empty value')
     this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
     this.channel.trigger('client-value', { value })
+    await sleep(100)
   }
 
   async receiveInputFromRemote () {
+    await sleep(100)
     const value = await this.inbox.dequeue()
     this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
     return value
@@ -180,7 +182,7 @@ export default class Run {
     if (game.connection.connections[p] === 'remote' || game.connection.connections[p] === 'host') {
       if (value !== null) {
       // Send value to REMOTE player
-        this.sendInputToRemote(value)
+        await this.sendInputToRemote(value)
       } else {
         if (msg) {
           await alertBox(this, msg)
