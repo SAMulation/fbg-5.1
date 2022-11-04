@@ -2175,7 +2175,12 @@ export default class Run {
       msg2 = 'scored a touchdown!!!'
     }
 
-    await setBallSpot(this, 100)
+    if (msg1 === 'TD') {
+      await setBallSpot(this, 105)
+    } else if (msg1 === 'SAFE' || msg1 === 'RET') {
+      await setBallSpot(this, -5)
+    }
+
     await animationWaitForCompletion(nameEl, 'just-scored')
     nameEl.classList.toggle('poss')
     await animationWaitForCompletion(scoreEl, 'just-scored')
@@ -2201,7 +2206,7 @@ export default class Run {
     if (game.isOT()) {
       game.otPoss = 0
     } else {
-      game.status = -4
+      game.status = SAFETY_KICK
     }
     // addRecap( safety )
   };
