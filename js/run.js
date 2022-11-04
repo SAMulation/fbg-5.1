@@ -35,6 +35,7 @@ export default class Run {
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
     this.inbox = new Queue()
+    this.gameLog = []
   }
 
   makeBarSlideable (el) {
@@ -162,11 +163,14 @@ export default class Run {
 
   sendInputToRemote (value) {
     if (value === null || value === undefined) throw new Error('attempted to send empty value')
+    this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
     this.channel.trigger('client-value', { value })
   }
 
   async receiveInputFromRemote () {
-    return await this.inbox.dequeue()
+    const value = await this.inbox.dequeue()
+    this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
+    return value
   }
 
   async remoteCommunication (game, p, value = null, msg = null) {
@@ -2059,6 +2063,7 @@ export default class Run {
     document.querySelector('.' + (game.away === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
     document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
 
+    this.gameLog.push('Last play: ' + p1 + ' v ' + p2 + ' | ' + 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss'))
     this.plCard1.querySelector('.back').innerText = game.players[1].currentPlay
     await animationWaitForCompletion(this.plCard1, 'picked')
     this.plCard2.querySelector('.back').innerText = game.players[2].currentPlay
