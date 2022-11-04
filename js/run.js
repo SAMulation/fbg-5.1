@@ -52,13 +52,14 @@ export default class Run {
     })
   }
 
-  async setBallSpot (run) {
-    const newSpot = run.game.spot
-    const lastSpot = run.game.lastSpot
-    await sleep(100)
-    run.docStyle.setProperty('--ball-spot', (run.field.offsetHeight / 100 * ((100 - newSpot) + 42)) + 'px')
-    await sleep(100)
-  }
+  // async setBallSpot (run, forceSpot = null) {
+  //   const newSpot = forceSpot || run.game.spot
+  //   const lastSpot = run.game.lastSpot
+  //   await sleep(100)
+  //   console.log(run.field.offsetHeight)
+  //   run.docStyle.setProperty('--ball-spot', (run.field.offsetHeight / 100 * ((100 - newSpot) + 48)) + 'px')
+  //   await sleep(100)
+  // }
 
   async prepareHTML (game) {
     setSpot(this, 65) // Place ball
@@ -84,7 +85,7 @@ export default class Run {
       this.inbox.enqueue(data.value)
     })
 
-    await this.prepareHTML(game) // Set up game board and field
+    await this.prepareHTML(this.game) // Set up game board and field
     await this.gameLoop(this.game, INIT) // Start the game loop
   };
 
@@ -1748,8 +1749,7 @@ export default class Run {
     // LATER: Field goal graphics will go here
 
     if (make) {
-      await alertBox(this, name + ' field goal is good!')
-      this.scoreChange(game, game.offNum, 3)
+      await this.scoreChange(game, game.offNum, 3)
       if (game.isOT()) {
         // Maybe the graphics are different here
       } else {
@@ -2085,7 +2085,6 @@ export default class Run {
     const ono = game.offNum
     const dno = game.defNum
     const oname = game.players[ono].team.name
-    const dname = game.players[dno].team.name
     let good = false
     let coin
 
@@ -2103,16 +2102,14 @@ export default class Run {
         }
 
         if (good) {
-          await alertBox(this, oname + ' 2-point conversion good!')
-          this.scoreChange(game, ono, 2)
+          await this.scoreChange(game, ono, 2)
         } else {
           if (game.changeTime < 2 || game.changeTime > 3) {
             await alertBox(this, oname + ' 2-point conversion no good!')
           }
         }
       } else if ((game.spot + dst <= 0 || game.spot + dst >= 100) && game.turnover) {
-        await alertBox(this, dname + ' returned 2-pt!!!')
-        this.scoreChange(game, dno, 2)
+        await this.scoreChange(game, dno, 2)
       } else {
         if (game.changeTime < 2 || game.changeTime > 3) {
           await alertBox(this, oname + ' 2-point conversion no good!')
@@ -2138,20 +2135,55 @@ export default class Run {
     }
   };
 
-  scoreChange (game, scrNo, pts) {
-    // This is going to include a lot of action
-    // that will update the scoreboard
+  async scoreChange (game, scrNo, pts) {
+    const nameEl = document.querySelector(scrNo === game.away ? '.away' : '.home' + '.team')
+    const scoreEl = document.querySelector(scrNo === game.away ? '.away' : '.home' + '.score')
+    const temp = nameEl.innerText
+    let msg1, msg2
 
-    // All that's needed for logic
+    if (pts === 1) {
+      msg1 = 'XP'
+      msg2 = 'extra point was good!'
+    } else if (pts === 2 && game.status === 102) {
+      msg1 = 'SAFE'
+      msg2 = 'a safety!!'
+    } else if (pts === 2 && scrNo === game.defNum) {
+      msg1 = 'RET'
+      msg2 = 'returned 2-point conversion!!!'
+    } else if (pts === 2) {
+      msg1 = '2-PT'
+      msg2 = '2-point conversion is good!!'
+    } else if (pts === 3) {
+      msg1 = 'FG'
+      msg2 = 'field goal is good!!'
+    } else {
+      msg1 = 'TD'
+      msg2 = 'a touchdown!!!'
+    }
+
+    await setBallSpot(this, 100)
+    await animationWaitForCompletion(nameEl, 'just-scored')
+    nameEl.classList.toggle('poss')
+    await animationWaitForCompletion(scoreEl, 'just-scored')
+    nameEl.innerText = msg1
+    await animationWaitForCompletion(nameEl, 'just-scored', false)
+    await alertBox(this, game.players[scrNo].team.name + ' ' + msg2)
+
     game.players[scrNo].score += pts
+    this.printScore(game, this.scoreboardContainer)
+
+    await animationWaitForCompletion(scoreEl, 'just-scored', false)
+    await animationWaitForCompletion(nameEl, 'just-scored')
+    nameEl.innerText = temp
+    nameEl.classList.toggle('poss')
+    animationSimple(nameEl, 'just-scored', false)
 
     // Also add to the stats at this point
     // Add to the quarter score for the game recap
   };
 
   async safety (game) {
-    await alertBox(this, game.players[game.defNum].team.name + ' forced a safety!!')
-    this.scoreChange(game, game.defNum, 2)
+    await this.scoreChange(game, game.defNum, 2)
     if (game.isOT()) {
       game.otPoss = 0
     } else {
@@ -2161,9 +2193,7 @@ export default class Run {
   };
 
   async touchdown (game) {
-    await alertBox(this, game.players[game.offNum].team.name + ' scored a touchdown!!!')
-    this.scoreChange(game, game.offNum, 6)
-    this.showBoard(game, document.querySelector('.scoreboard-container'))
+    await this.scoreChange(game, game.offNum, 6)
 
     // addRecap ( touchdown )
     if (this.patNec(game)) {
@@ -2184,8 +2214,7 @@ export default class Run {
   };
 
   async pat (game) {
-    const oNum = game.offNum
-    const oName = game.players[oNum].team.name
+    const oName = game.players[game.offNum].team.name
     let selection = '2P' // Default in 3OT+
 
     if (game.qtr < 7) { // Must go for 2 in 3OT+
@@ -2206,7 +2235,7 @@ export default class Run {
       //   await this.cpuPages(game, 'pat')
       //   selection = game.players[2].currentPlay
       // }
-      selection = await this.input.getInput(game, game.offNum, 'pat', game.players[p].team.name + ' pick PAT type...')
+      selection = await this.input.getInput(game, game.offNum, 'pat', game.players[game.offNum].team.name + ' pick PAT type...')
     }
 
     if (selection === '2P') {
@@ -2231,10 +2260,9 @@ export default class Run {
       // printFG(die !== 6);
 
       if (die !== 6) {
-        await alertBox(this, oName + ' XP good!')
-        this.scoreChange(game, oNum, 1)
+        await this.scoreChange(game, game.offNum, 1)
       } else {
-        await alertBox(this, oName + ' XP no good...')
+        await alertBox(this, oName + ' extra point was no good...')
         // Might need some graphics here
       }
 
