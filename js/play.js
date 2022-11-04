@@ -17,7 +17,7 @@ export default class Play {
   //     this[attr] = value;
   // }
   getQuality () {
-    if (this.quality === '/') {
+    if (this.quality === 'Same' || this.quality === '/') {
       return this.quality
     } else if (this.quality === null) {
       return 'Best'
