@@ -11,7 +11,7 @@ import Utils from './remoteUtils.js'
 const channel = null
 
 // Enable pusher logging - don't include this in production
-// Pusher.logToConsole = true
+Pusher.logToConsole = true
 
 const pusher = new Pusher('41b31f79c4e658e350a5', {
   userAuthentication: {
