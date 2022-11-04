@@ -1184,7 +1184,7 @@ export default class Run {
 
       // 4th down, regular choices
       if (!dec && dwn === 4) {
-        if (await Utils.coinFlip() && (spt >= 98 || (spt >= 50 && spt <= 70)) && fdn - spt <= 3) {
+        if ((spt >= 98 || (spt >= 50 && spt <= 70)) && fdn - spt <= 3 && await Utils.coinFlip()) {
           dec = 'GO'
         }
 
@@ -1206,80 +1206,82 @@ export default class Run {
   };
 
   async cpuPages (game, p, state = 'reg') {
-    if (state === 'reg') {
-      let total = 0
-      let playNum = -1
-      let playAbrv = ''
+    if (!game.players[p].currentPlay) {
+      if (state === 'reg') {
+        let total = 0
+        let playNum = -1
+        let playAbrv = ''
 
-      while (total === 0) {
-        playNum = await Utils.randInt(0, 4)
-
-        // Make it harder to pick Trick Play
-        if (playNum === 4) {
+        while (total === 0) {
           playNum = await Utils.randInt(0, 4)
+
+          // Make it harder to pick Trick Play
+          if (playNum === 4) {
+            playNum = await Utils.randInt(0, 4)
+          }
+
+          // Translate to abrv
+          playAbrv = 'SRLRSPLPTP'.substring(2 * playNum, 2 * playNum + 2)
+          total = game.players[p].plays[playAbrv].count
         }
 
-        // Translate to abrv
-        playAbrv = 'SRLRSPLPTP'.substring(2 * playNum, 2 * playNum + 2)
-        total = game.players[p].plays[playAbrv].count
+        game.players[p].currentPlay = playAbrv
+      } else if (state === 'pat') {
+        await alertBox(this, game.players[p].team.name + ' selecting PAT type...')
+        let selection = 'XP'
+
+        const diff = game.players[1].score - game.players[p].score
+
+        if (diff === -5 || diff === -1 || diff === 2 || diff === 5 || diff === 9 || diff === 10 || diff === 13 || diff === 17 || diff === 18) {
+          selection = '2P'
+        }
+
+        game.players[p].currentPlay = selection
+      } else if (state === 'kick') {
+        await alertBox(this, game.players[p].team.name + ' selecting kickoff type...')
+        await this.cpuTime(game, p)
+
+        const qtr = game.qtr
+        const ctim = game.currentTime
+        const pScore = game.players[p].score
+        const notPScore = game.players[game.opp(p)].score
+        let kckDec = 'RK'
+
+        if ((qtr === 4 && ctim <= 3 && pScore < notPScore) || (((qtr === 3 && ctim <= 7) || qtr === 4) && notPScore - pScore > 8)) {
+          kckDec = 'OK'
+        } else if ((qtr === 2 || qtr === 4) && ctim <= 1 && pScore > notPScore) {
+          kckDec = 'SK'
+        }
+
+        game.players[p].currentPlay = kckDec
+      } else if (state === 'ret') {
+        await alertBox(this, game.players[p].team.name + ' selecting return type...')
+        await this.cpuTime(game, p)
+
+        const qtr = game.qtr
+        const ctim = game.currentTime
+        const pScore = game.players[p].score
+        const notPScore = game.players[game.opp(p)].score
+        let retDec = 'RR'
+
+        // Very late game and P1 losing -OR- later game and P1 losing badly
+        if ((qtr === 4 && ctim <= 3 && notPScore < pScore) || (((qtr === 3 && ctim <= 7) || qtr === 4) && pScore - notPScore > 8)) {
+          retDec = 'OR'
+        } else if (Utils.coinFlip()) {
+          retDec = 'TB'
+        }
+
+        game.players[p].currentPlay = retDec
+      } else if (state === 'coin') {
+        return await Utils.coinFlip(game, game.me) ? 'H' : 'T'
+      } else if (state === 'kickDecOT' || state === 'kickDecReg') {
+        let decPick
+        decPick = await Utils.randInt(1, 2)
+        if (game.qtr < 4) {
+          decPick = decPick === 1 ? 'K' : 'R'
+        } // else: Leave it as 1 or 2 for OT possession picking
+        return decPick
       }
-
-      game.players[p].currentPlay = playAbrv
-    } else if (state === 'pat') {
-      await alertBox(this, game.players[p].team.name + ' selecting PAT type...')
-      let selection = 'XP'
-
-      const diff = game.players[1].score - game.players[p].score
-
-      if (diff === -5 || diff === -1 || diff === 2 || diff === 5 || diff === 9 || diff === 10 || diff === 13 || diff === 17 || diff === 18) {
-        selection = '2P'
-      }
-
-      game.players[p].currentPlay = selection
-    } else if (state === 'kick') {
-      await alertBox(this, game.players[p].team.name + ' selecting kickoff type...')
-      await this.cpuTime(game, p)
-
-      const qtr = game.qtr
-      const ctim = game.currentTime
-      const pScore = game.players[p].score
-      const notPScore = game.players[game.opp(p)].score
-      let kckDec = 'RK'
-
-      if ((qtr === 4 && ctim <= 3 && pScore < notPScore) || (((qtr === 3 && ctim <= 7) || qtr === 4) && notPScore - pScore > 8)) {
-        kckDec = 'OK'
-      } else if ((qtr === 2 || qtr === 4) && ctim <= 1 && pScore > notPScore) {
-        kckDec = 'SK'
-      }
-
-      game.players[p].currentPlay = kckDec
-    } else if (state === 'ret') {
-      await alertBox(this, game.players[p].team.name + ' selecting return type...')
-      await this.cpuTime(game, p)
-
-      const qtr = game.qtr
-      const ctim = game.currentTime
-      const pScore = game.players[p].score
-      const notPScore = game.players[game.opp(p)].score
-      let retDec = 'RR'
-
-      // Very late game and P1 losing -OR- later game and P1 losing badly
-      if ((qtr === 4 && ctim <= 3 && notPScore < pScore) || (((qtr === 3 && ctim <= 7) || qtr === 4) && pScore - notPScore > 8)) {
-        retDec = 'OR'
-      } else if (Utils.coinFlip()) {
-        retDec = 'TB'
-      }
-
-      game.players[p].currentPlay = retDec
-    } else if (state === 'coin') {
-      return await Utils.coinFlip(game, game.me) ? 'H' : 'T'
-    } else if (state === 'kickDecOT' || state === 'kickDecReg') {
-      let decPick
-      decPick = await Utils.randInt(1, 2)
-      if (game.qtr < 4) {
-        decPick = decPick === 1 ? 'K' : 'R'
-      } // else: Leave it as 1 or 2 for OT possession picking
-      return decPick
     }
   };
 
