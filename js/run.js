@@ -1,11 +1,12 @@
 /* global Pusher */
-/* global alert */
+/* global alert, debugger */
 
 import Stat from './stat.js'
 import Utils from './remoteUtils.js'
 import { Queue } from './queue.js'
 import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT } from './defaults.js'
 import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer } from './graphics.js'
+import Game from './game.js'
 
 export default class Run {
   constructor (game, input) {
@@ -70,8 +71,10 @@ export default class Run {
     document.documentElement.style.setProperty('--away-color2', game.players[game.away].team.color2)
     document.documentElement.style.setProperty('--home-color1', game.players[game.home].team.color1)
     document.documentElement.style.setProperty('--home-color2', game.players[game.home].team.color2)
-    document.documentElement.style.setProperty('--me-color1', game.players[game.me].team.color1)
-    document.documentElement.style.setProperty('--me-color2', game.players[game.me].team.color2)
+    if (game.me) {
+      document.documentElement.style.setProperty('--me-color1', game.players[game.me].team.color1)
+      document.documentElement.style.setProperty('--me-color2', game.players[game.me].team.color2)
+    }
     animationSimple(this.cardsContainer, 'slide-down') // Slide cards container down
     await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
     this.actualCards.innerText = '' // Clear out default cards
@@ -621,9 +624,9 @@ export default class Run {
       let selection = null
       if (!game.isReal(game.offNum)) {
         if (game.changeTime === 0) {
-          await this.cpuTime(game)
+          await this.cpuTime(game, game.offNum)
         }
-        await this.cpuPlay(game)
+        await this.cpuPlay(game, game.offNum)
       }
 
       // Get play
@@ -649,9 +652,9 @@ export default class Run {
       let selection = null
       if (!game.isReal(game.defNum)) {
         if (game.changeTime === 0) {
-          await this.cpuTime(game)
+          await this.cpuTime(game, game.defNum)
         }
-        await this.cpuPlay(game)
+        await this.cpuPlay(game, game.defNum)
       }
 
       // Get play
@@ -931,9 +934,9 @@ export default class Run {
       while (game.status !== EXIT && !game.players[p].currentPlay) {
         if (!game.isReal(p)) {
           if (game.changeTime === 0) {
-            await this.cpuTime(game)
+            await this.cpuTime(game, p)
           }
-          await this.cpuPlay(game)
+          await this.cpuPlay(game, p)
         }
 
         // Get play
@@ -1017,27 +1020,27 @@ export default class Run {
     await animationWaitForCompletion(el, 'collapsed')
   }
 
-  async cpuTime (game) {
-    const toCount = game.players[2].timeouts
+  async cpuTime (game, p) {
+    const toCount = game.players[p].timeouts
     const ono = game.offNum
 
     if (toCount > 0) {
       const qtr = game.qtr
       const ctim = game.currentTime
       const spt = game.spot
-      const p1s = game.players[1].score
-      const p2s = game.players[2].score
+      const notPScore = game.players[game.opp(p)].score
+      const pScore = game.players[p].score
       let endHalf = false
       let lastMin = false
       let ballBack = false
       let kick = false
 
       // End half and losing
-      endHalf = ((ono === 2 && (qtr === 2 || qtr === 4)) && p2s <= p1s && ctim <= 1 && game.down !== 4)
+      endHalf = ((ono === p && (qtr === 2 || qtr === 4)) && pScore <= notPScore && ctim <= 1 && game.down !== 4)
 
       // Last minute with fav||able spot
       if (!endHalf) {
-        lastMin = (((ono === 1 && spt < 50) || (ono === 2 && spt >= 50)) && qtr === 2 && ctim <= 1)
+        lastMin = (((ono === 1 && spt < 50) || (ono === p && spt >= 50)) && qtr === 2 && ctim <= 1)
       }
       // Chance to get the ball back
       if (!endHalf && !lastMin) {
@@ -1045,10 +1048,10 @@ export default class Run {
       }
       // Timeout on kickoff
       if (!endHalf && !lastMin && !ballBack) {
-        kick = (qtr === 4 && ctim <= 0.5 && game.status === -3 && p2s < p1s)
+        kick = (qtr === 4 && ctim <= 0.5 && game.status === -3 && pScore < notPScore)
       }
       if (endHalf || lastMin || ballBack || kick) {
-        await this.timeout(game, 2)
+        await this.timeout(game, p)
         // print_timeout()
       }
     }
@@ -1088,18 +1091,18 @@ export default class Run {
     game.players[p].currentPlay = null
   };
 
-  async cpuPlay (game) {
-    if (game.offNum === 2) {
+  async cpuPlay (game, p) {
+    if (game.offNum === p) {
       const qtr = game.qtr
       const curtim = game.currentTime
-      const toCount = game.players[2].timeouts
+      const toCount = game.players[p].timeouts
       const tchg = game.changeTime
       const qlen = game.qtrLength
       const spt = game.spot
-      const hm = game.players[2].hm
+      const hm = game.players[p].hm
       const dwn = game.down
       const fdn = game.firstDown
-      const diff = game.players[1].score - game.players[2].score
+      const diff = game.players[game.opp(p)].score - game.players[p].score
       let scoreBlock = 0
       let timeBlock = 0
       let dec = null
@@ -1197,12 +1200,12 @@ export default class Run {
 
       // Set the play
       if (!(!dec || dec === 'GO' || game.twoPtConv)) {
-        game.players[2].currentPlay = dec
+        game.players[p].currentPlay = dec
       }
     }
   };
 
-  async cpuPages (game, state = 'reg') {
+  async cpuPages (game, p, state = 'reg') {
     if (state === 'reg') {
       let total = 0
       let playNum = -1
@@ -1218,56 +1221,56 @@ export default class Run {
 
         // Translate to abrv
         playAbrv = 'SRLRSPLPTP'.substring(2 * playNum, 2 * playNum + 2)
-        total = game.players[2].plays[playAbrv].count
+        total = game.players[p].plays[playAbrv].count
       }
 
-      game.players[2].currentPlay = playAbrv
+      game.players[p].currentPlay = playAbrv
     } else if (state === 'pat') {
-      await alertBox(this, game.players[2].team.name + ' selecting PAT type...')
+      await alertBox(this, game.players[p].team.name + ' selecting PAT type...')
       let selection = 'XP'
 
-      const diff = game.players[1].score - game.players[2].score
+      const diff = game.players[1].score - game.players[p].score
 
       if (diff === -5 || diff === -1 || diff === 2 || diff === 5 || diff === 9 || diff === 10 || diff === 13 || diff === 17 || diff === 18) {
         selection = '2P'
       }
 
-      game.players[2].currentPlay = selection
+      game.players[p].currentPlay = selection
     } else if (state === 'kick') {
-      await alertBox(this, game.players[2].team.name + ' selecting kickoff type...')
-      await this.cpuTime(game)
+      await alertBox(this, game.players[p].team.name + ' selecting kickoff type...')
+      await this.cpuTime(game, p)
 
       const qtr = game.qtr
       const ctim = game.currentTime
-      const p2s = game.players[2].score
-      const p1s = game.players[1].score
+      const pScore = game.players[p].score
+      const notPScore = game.players[game.opp(p)].score
       let kckDec = 'RK'
 
-      if ((qtr === 4 && ctim <= 3 && p2s < p1s) || (((qtr === 3 && ctim <= 7) || qtr === 4) && p1s - p2s > 8)) {
+      if ((qtr === 4 && ctim <= 3 && pScore < notPScore) || (((qtr === 3 && ctim <= 7) || qtr === 4) && notPScore - pScore > 8)) {
         kckDec = 'OK'
-      } else if ((qtr === 2 || qtr === 4) && ctim <= 1 && p2s > p1s) {
+      } else if ((qtr === 2 || qtr === 4) && ctim <= 1 && pScore > notPScore) {
         kckDec = 'SK'
       }
 
-      game.players[2].currentPlay = kckDec
+      game.players[p].currentPlay = kckDec
     } else if (state === 'ret') {
-      await alertBox(this, game.players[2].team.name + ' selecting return type...')
-      await this.cpuTime(game)
+      await alertBox(this, game.players[p].team.name + ' selecting return type...')
+      await this.cpuTime(game, p)
 
       const qtr = game.qtr
       const ctim = game.currentTime
-      const p2s = game.players[2].score
-      const p1s = game.players[1].score
+      const pScore = game.players[p].score
+      const notPScore = game.players[game.opp(p)].score
       let retDec = 'RR'
 
       // Very late game and P1 losing -OR- later game and P1 losing badly
-      if ((qtr === 4 && ctim <= 3 && p1s < p2s) || (((qtr === 3 && ctim <= 7) || qtr === 4) && p2s - p1s > 8)) {
+      if ((qtr === 4 && ctim <= 3 && notPScore < pScore) || (((qtr === 3 && ctim <= 7) || qtr === 4) && pScore - notPScore > 8)) {
         retDec = 'OR'
       } else if (Utils.coinFlip()) {
         retDec = 'TB'
       }
 
-      game.players[2].currentPlay = retDec
+      game.players[p].currentPlay = retDec
     } else if (state === 'coin') {
       return await Utils.coinFlip(game, game.me) ? 'H' : 'T'
     } else if (state === 'kickDecOT' || state === 'kickDecReg') {
@@ -1997,18 +2000,22 @@ export default class Run {
   };
 
   async calcDist (game, p1, p2) {
-    if (!game.thisPlay.multiplierCard) {
+    if (!game.thisPlay.multiplierCard && !game.thisPlay.multiplier) {
       game.thisPlay.multiplierCard = await game.decMults(game.me)
-    }
-
-    if (!game.thisPlay.yardCard) {
-      game.thisPlay.yardCard = await game.decYards(game.me)
+    } else if (game.thisPlay.multiplierCard !== '/') {
+      game.thisPlay.multiplierCard = '/'
     }
 
     if (!game.thisPlay.multiplier && game.thisPlay.multiplierCard === '/') {
       game.thisPlay.multiplier = '/'
     } else if (game.thisPlay.multiplierCard !== '/') {
       game.thisPlay.multiplier = this.calcTimes(game, p1, p2, game.thisPlay.multiplierCard.num)
+    }
+
+    if (game.thisPlay.multiplier !== 0 && !game.thisPlay.yardCard) {
+      game.thisPlay.yardCard = await game.decYards(game.me)
+    } else {
+      game.thisPlay.yardCard = 0
     }
 
     if (!game.thisPlay.dist) {
@@ -2046,7 +2053,9 @@ export default class Run {
       match = MATCHUP[game.offNum === 1 ? p1Num : p2Num][game.offNum === 1 ? p2Num : p1Num]
     }
 
-    if (game.thisPlay.quality !== '/') {
+    if (game.status === SAME) {
+      game.thisPlay.quality = 'Same'
+    } else if (game.thisPlay.quality !== '/') {
       game.thisPlay.quality = match
     }
 
@@ -2060,8 +2069,8 @@ export default class Run {
     animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
     animationSimple(this.scoreboardContainerBotRight, 'collapsed')
 
-    document.querySelector('.' + (game.away === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2
-    document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
+    document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = 'FootBored'
+    document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2 + ' | Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
 
     this.gameLog.push('Last play: ' + p1 + ' v ' + p2 + ' | ' + 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss'))
     this.plCard1.querySelector('.back').innerText = game.players[1].currentPlay
@@ -2077,8 +2086,8 @@ export default class Run {
     this.yardCard.querySelector('.back').innerText = game.thisPlay.yardCard
     await animationWaitForCompletion(this.yardCard, 'picked')
 
-    // animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-    // animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
+    animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
+    animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
 
     this.setLastPlay(game)
 
@@ -2124,7 +2133,7 @@ export default class Run {
       if (game.changeTime < 2 || game.changeTime > 3) {
         game.twoPtConv = false
         if (!game.isOT()) {
-          game.status = -3
+          game.status = KICKOFF
         } else {
           game.status = REG
         }
@@ -2141,8 +2150,8 @@ export default class Run {
   };
 
   async scoreChange (game, scrNo, pts) {
-    const nameEl = document.querySelector(scrNo === game.away ? '.away' : '.home' + '.team')
-    const scoreEl = document.querySelector(scrNo === game.away ? '.away' : '.home' + '.score')
+    const nameEl = game.run.scoreboardContainer.querySelector((scrNo === game.away ? '.away' : '.home') + '.team')
+    const scoreEl = game.run.scoreboardContainer.querySelector((scrNo === game.away ? '.away' : '.home') + '.score')
     const temp = nameEl.innerText
     let msg1, msg2
 
@@ -2151,7 +2160,7 @@ export default class Run {
       msg2 = 'extra point was good!'
     } else if (pts === 2 && game.status === 102) {
       msg1 = 'SAFE'
-      msg2 = 'a safety!!'
+      msg2 = 'forced a safety!!'
     } else if (pts === 2 && scrNo === game.defNum) {
       msg1 = 'RET'
       msg2 = 'returned 2-point conversion!!!'
@@ -2163,7 +2172,7 @@ export default class Run {
       msg2 = 'field goal is good!!'
     } else {
       msg1 = 'TD'
-      msg2 = 'a touchdown!!!'
+      msg2 = 'scored a touchdown!!!'
     }
 
     await setBallSpot(this, 100)
@@ -2370,7 +2379,7 @@ export default class Run {
   async tickingClock (oldTime, newTime) {
     const clockTime = document.querySelector('.clock .time')
     let curTime = oldTime
-    if (oldTime !== 'end') {
+    if (oldTime !== 'end' && newTime >= 0) {
       while (curTime > newTime) {
         clockTime.innerText = this.printTime(curTime)
         curTime -= 1 / 60
