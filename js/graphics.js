@@ -27,7 +27,7 @@ export const setBallSpot = async (run, forceSpot = null) => {
   // Can't force spot to be zero, but that's okay
   const newSpot = forceSpot || run.game.spot
   await sleep(100)
-  run.docStyle.setProperty('--ball-spot', (run.field.offsetHeight / 100 * ((100 - newSpot) + 38)) + 'px')
+  run.docStyle.setProperty('--ball-spot', (run.field.offsetHeight / 100 * ((100 - newSpot) + 40)) + 'px')
   await sleep(100)
 }
 
