@@ -23,7 +23,7 @@ export default class ButtonInput extends BaseInput {
       if (game.isMultiplayer()) {
         selection = await game.run.receiveInputFromRemote()
       } else {
-        selection = await game.run.cpuPages(game, type)
+        selection = await game.run.cpuPages(game, p, type)
       }
     }
 
