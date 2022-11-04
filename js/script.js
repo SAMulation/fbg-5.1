@@ -11,7 +11,7 @@ import Utils from './remoteUtils.js'
 const channel = null
 
 // Enable pusher logging - don't include this in production
-Pusher.logToConsole = true
+// Pusher.logToConsole = true
 
 const pusher = new Pusher('41b31f79c4e658e350a5', {
   userAuthentication: {
@@ -49,8 +49,8 @@ const playGame = async (game) => {
 }
 
 // SITE FUNCTIONS
-const setTeamLists = (lists) => {
-  lists.forEach(list => {
+const setTeamLists = async lists => {
+  lists.forEach(async list => {
     list.removeChild(list.firstElementChild)
     for (let t = 0; t < TEAMS.length; t++) {
       const team = new Team(TEAMS[t])
@@ -59,7 +59,8 @@ const setTeamLists = (lists) => {
       el.value = t
       list.appendChild(el)
     }
-    list.selectedIndex = list.id === 'p1Team' ? 24 : 2
+    // list.selectedIndex = list.id === 'p1Team' ? 24 : 2
+    list.selectedIndex = await Utils.randInt(0, 31)
   })
 }
 
@@ -166,6 +167,6 @@ const initGame = (site) => {
 }
 
 // MAIN FUNCTION CALLS
-setTeamLists(document.querySelectorAll('.teamList'))
+await setTeamLists(document.querySelectorAll('.teamList'))
 submitTeams(site, document.querySelector('#gameForm'))
 pressPlayButton(document.querySelector('.playButton'), site)
