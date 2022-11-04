@@ -1,5 +1,5 @@
 import BaseInput from './baseInput.js'
-import { alertBox, animationSimple, animationWaitForCompletion } from './graphics.js'
+import { alertBox, animationSimple, animationWaitForCompletion, sleep } from './graphics.js'
 
 export default class ButtonInput extends BaseInput {
   // Old version
@@ -58,7 +58,8 @@ export default class ButtonInput extends BaseInput {
     await animationWaitForCompletion(game.run.cardsContainer, 'slide-down', false)
     const selection = await game.run.input.getUserInput(game, p, type, msg)
     if (game.isMultiplayer()) {
-      game.run.sendInputToRemote(selection)
+      await game.run.sendInputToRemote(selection)
+      // await sleep(1)
     }
     await animationWaitForCompletion(game.run.cardsContainer, 'slide-down')
 
