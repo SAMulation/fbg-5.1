@@ -1812,12 +1812,12 @@ export default class Run {
     }
 
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
-    await alertBox(this, oName + (game.status === -4 ? ' safety kick' : ' are punting') + '...')
+    await alertBox(this, oName + (game.status === SAFETY_KICK ? ' safety kick' : ' are punting') + '...')
 
     // Check block (not on Safety Kick)
     tmp = await Utils.rollDie(game, game.me)
 
-    if (game.status !== -4 && tmp === 6) {
+    if (game.status !== SAFETY_KICK && tmp === 6) {
       tmp = null
       tmp = await Utils.rollDie(game, game.me)
       if (tmp === 6) { // 1 in 36 chance, must roll TWO sixes in a row
@@ -1859,7 +1859,7 @@ export default class Run {
     // Check muff, but not on safety kick
     tmp = null
     tmp = await Utils.rollDie(game, game.me)
-    if (!touchback && !block && game.status !== -4 && tmp === 6) {
+    if (!touchback && !block && game.status !== SAFETY_KICK && tmp === 6) {
       tmp = null
       tmp = await Utils.rollDie(game, game.me)
       if (tmp === 6) {
@@ -2291,7 +2291,7 @@ export default class Run {
       // addRecap( xp [no] good );
 
       if (!game.isOT()) {
-        game.status = -3 // Get ready for kickoff
+        game.status = KICKOFF // Get ready for kickoff
       } else {
         game.status = REG // Get ready for next OT play
       }
