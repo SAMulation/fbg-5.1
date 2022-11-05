@@ -70,6 +70,11 @@ const connections = (site, type) => {
     site.connections[2] = 'computer'
     site.numberPlayers = 1
     site.me = 1
+  } else if (type === 'double') {
+    site.connections[1] = 'local'
+    site.connections[2] = 'local'
+    site.numberPlayers = 2
+    site.me = 1
   } else if (type === 'host') {
     site.connections[1] = 'host'
     site.connections[2] = 'remote'
