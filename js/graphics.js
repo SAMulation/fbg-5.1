@@ -5,7 +5,7 @@ export const alertBox = async (run, msg) => {
   // This is the preferred route
   if (run.alert === 'bar') {
     run.alertMessage.innerText = msg
-    await sleep(750)
+    await sleep(run.game.animation ? 750 : 100)
   } else if (run.alert === 'alert') {
     alert(msg)
   } else {
