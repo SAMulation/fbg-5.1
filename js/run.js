@@ -689,19 +689,19 @@ export default class Run {
     let okResult = false
 
     await alertBox(this, 'Teams are lining up for the kick...')
-    animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
-    animationSimple(this.scoreboardContainerTopRight, 'collapsed')
-    animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
-    animationSimple(this.scoreboardContainerBotRight, 'collapsed')
-    await animationWaitForCompletion(this.fieldContainer, 'slide-away')
-
-    this.plCard1.querySelector('.back').innerText = game.players[1].currentPlay
-    await animationWaitForCompletion(this.plCard1, 'picked')
-    this.plCard2.querySelector('.back').innerText = game.players[2].currentPlay
-    await animationWaitForCompletion(this.plCard2, 'picked')
-
-    setBallSpot(this)
-    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    if (game.animation) {
+      animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
+      animationSimple(this.scoreboardContainerTopRight, 'collapsed')
+      animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
+      animationSimple(this.scoreboardContainerBotRight, 'collapsed')
+      await animationWaitForCompletion(this.fieldContainer, 'slide-away')
+      this.plCard1.querySelector('.back').innerText = game.players[1].currentPlay
+      await animationWaitForCompletion(this.plCard1, 'picked')
+      this.plCard2.querySelector('.back').innerText = game.players[2].currentPlay
+      await animationWaitForCompletion(this.plCard2, 'picked')
+      setBallSpot(this)
+      await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    }
 
     if (kickType === 'RK') {
       if (retType === 'RR') {
@@ -776,14 +776,17 @@ export default class Run {
     if (!touchback) {
       await this.moveBall(game, 'kick')
       await alertBox(this, Math.abs(kickDist) + '-yard kick')
-      await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
-      this.multCard.querySelector('.back').innerText = multCard?.card || '/'
-      await animationWaitForCompletion(this.multCard, 'picked')
-      this.timesContainer.querySelector('.back').innerText = multiplier + 'X'
-      await animationWaitForCompletion(this.timesContainer, 'picked')
-      this.yardCard.querySelector('.back').innerText = yard
-      await animationWaitForCompletion(this.yardCard, 'picked')
+      if (game.animation) {
+        await animationWaitForCompletion(this.fieldContainer, 'slide-away')
+
+        this.multCard.querySelector('.back').innerText = multCard?.card || '/'
+        await animationWaitForCompletion(this.multCard, 'picked')
+        this.timesContainer.querySelector('.back').innerText = multiplier + 'X'
+        await animationWaitForCompletion(this.timesContainer, 'picked')
+        this.yardCard.querySelector('.back').innerText = yard
+        await animationWaitForCompletion(this.yardCard, 'picked')
+      }
 
       if (retDist === 0) {
         msg += 'No return'
@@ -835,7 +838,9 @@ export default class Run {
 
     if (game.status !== EXIT) {
       await this.lastChanceTO(game)
-      await animationWaitForCompletion(this.fieldContainer, 'slide-away')
+      if (game.animation) {
+        await animationWaitForCompletion(this.fieldContainer, 'slide-away')
+      }
       await this.doPlay(game, game.players[1].currentPlay, game.players[2].currentPlay)
     }
   };
@@ -1740,7 +1745,7 @@ export default class Run {
     let die = null
     die = await Utils.rollDie(game, game.me)
 
-    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    if (game.animation) await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     await alertBox(this, name + ' attempting a ' + fdst + '-yard field goal...')
 
     // Ice kicker
@@ -1813,7 +1818,7 @@ export default class Run {
       // Add Recap for punt, maybe remove first down sticks
     }
 
-    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    if (game.animation) await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     await alertBox(this, oName + (game.status === SAFETY_KICK ? ' safety kick' : ' are punting') + '...')
 
     // Check block (not on Safety Kick)
@@ -1978,7 +1983,11 @@ export default class Run {
     if ((game.status >= REG && game.status <= SAME) || game.status === HAIL) {
       await this.calcDist(game, p1, p2)
 
-      await this.reportPlay(game, p1, p2)
+      if (game.animation) {
+        await this.reportPlay(game, p1, p2)
+      } else {
+        this.gameLog.push('Last play: ' + p1 + ' v ' + p2 + ' | ' + 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss'))
+      }
 
       // if (!game.twoPtConv && game.status < FG || game.status > PUNT) {
       //     saveDist(game.offNum)  // LATER: When we have stats
@@ -2389,7 +2398,7 @@ export default class Run {
   async tickingClock (oldTime, newTime) {
     const clockTime = document.querySelector('.clock .time')
     let curTime = oldTime
-    if (oldTime !== 'end' && newTime >= 0) {
+    if (this.game.animation && oldTime !== 'end' && newTime >= 0) {
       while (curTime > newTime) {
         clockTime.innerText = this.printTime(curTime)
         curTime -= 1 / 60

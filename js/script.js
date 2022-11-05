@@ -85,6 +85,7 @@ const connections = (site, type) => {
     site.connections[2] = 'computer'
     site.numberPlayers = 0
     site.me = 0
+    site.animation = false
   }
 }
 
@@ -163,7 +164,7 @@ const initGame = (site) => {
     }
   }
 
-  return new Game({ me: site.me, connections: site.connections, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, user[1], user[2], window.inputType)
+  return new Game({ me: site.me, connections: site.connections, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, site.animation, user[1], user[2], window.inputType)
 }
 
 // MAIN FUNCTION CALLS
