@@ -381,7 +381,7 @@ input {
 .cards-container {
   overflow: hidden;
   /* background: rgb(129, 0, 17); */
-  background: var(--me-color2);
+  background: var(--away-color2);
   grid-area: cards-top / left-all / bot / right-all;
   max-width: 600px;
 
@@ -455,13 +455,30 @@ input {
 
 .cards-container .cards button.card {
   /* background: #005A9C; */
-  background: var(--me-color1);
+  background: var(--away-color1);
   color: white;
   font-family: 'calc', sans-serif;
   display: flex;
   align-items: flex-end;
   justify-content: center;
 }
+
+.cards-container .cards button.card.home-card {
+  background: var(--home-color1);
+}
+
+.cards-container .cards button.card.away-card {
+  background: var(--away-color1);
+}
+
+.home-card-cont {
+  background: var(--home-color2);
+}
+
+.away-card-cont {
+  background: var(--away-color2);
+}
+
 
 .board-container div.picked {
   /* background: #005A9C; */

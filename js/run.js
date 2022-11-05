@@ -215,32 +215,10 @@ export default class Run {
     let decPick = null
     let recFirst = 'away'
 
-    // Coin toss decision
-    // Real players
-    // if (game.me === game.away) {
-    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-    //   coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
-    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // } else {
-    //   await alertBox(this, 'Coin Toss: ' + awayName + ' choosing...')
-    // }
-
     console.log('Connection type: ' + game.connection.type + ', Connections[me]: ' + game.connection.connections[game.me])
     console.log(game.me + ' coinPick before: ' + coinPick)
     coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
     console.log(game.me + ' coinPick after: ' + coinPick)
-
-    // if (game.connection.type === 'host' || game.connection.type === 'remote') {
-    //   if (game.me === game.away) {
-    //     this.sendInputToRemote(coinPick)
-    //   } else {
-    //     coinPick = await this.receiveInputFromRemote()
-    //   }
-    // }
-
-    // if (game.connection.connections[game.away] === 'computer') {
-    //   coinPick = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
-    // }
 
     // Show result
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
@@ -256,14 +234,6 @@ export default class Run {
     result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
     await alertBox(this, result)
     console.log('checkpoint')
-    // Decide if want to kick or receive
-    // if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
-    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-    //   decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
-    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // } else {
-    //   await alertBox(this, (actFlip === coinPick ? awayName : homeName) + ' choosing whether to kick or receive...')
-    // }
 
     console.log(game.me + ' decPick before: ' + decPick)
     decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
@@ -581,26 +551,6 @@ export default class Run {
 
   async playSelection (game, p, type, msg) {
     const selection = null
-    // this.scoreboardContainerTopLeft.innerText = (p === game.away ? 'Pick your play' : game.lastPlay)
-    // this.scoreboardContainerTopRight.innerText = (p === game.away ? game.lastPlay : 'Pick your play')
-    // animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-    // animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
-
-    // if (game.me === p) {
-    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-    //   selection = await this.input.getInput(game, p, type, msg)
-    //   if (game.isMultiplayer()) {
-    //     this.sendInputToRemote(selection)
-    //   }
-    //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-    // } else {
-    //   await alertBox(this, msg)
-    //   if (game.isMultiplayer()) {
-    //     selection = await this.receiveInputFromRemote()
-    //   } else {
-    //     await this.cpuPages(game, type)
-    //   }
-    // }
 
     // Handle timeouts being called
     if (game.players[p].currentPlay === 'TO') {
@@ -867,15 +817,6 @@ export default class Run {
           console.log('p: ' + p + ' changeTime: ' + game.changeTime)
           alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end! Last chance for the ' + game.players[p].team.name + ' to call a timeout!')
 
-          // // Local players
-          // if (game.isPlayer(p, 'local')) {
-          //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-          //   selection = await this.input.getInput(game, p, 'last', game.players[p].team.name + ' call a timeout?')
-          //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-          // }
-
-          // // Send remote message or receive remote message
-          // selection = await this.remoteCommunication(game, p, selection, game.players[p].team.name + ' call a timeout?')
           selection = await this.input.getInput(game, p, 'last', game.players[p].team.name + ' call a timeout?')
 
           if (selection === 'Y') {
@@ -2272,23 +2213,6 @@ export default class Run {
     let selection = '2P' // Default in 3OT+
 
     if (game.qtr < 7) { // Must go for 2 in 3OT+
-      // PAT decision
-      // Real players
-      // if (game.isPlayer(game.offNum, 'local')) {
-      //   await animationWaitForCompletion(this.cardsContainer, 'slide-down', false)
-      //   selection = await this.input.getInput(game, game.offNum, 'pat', oName + ' pick PAT type...')
-      //   await animationWaitForCompletion(this.cardsContainer, 'slide-down')
-      // }
-
-      // // Send remote message or receive remote message
-      // selection = await this.remoteCommunication(game, game.offNum, selection, oName + ' pick PAT type...')
-
-      // Computer picking (or fallback for failed communication)
-      // if (!selection) {
-      //   await alertBox(this, oName + ' choosing PAT type...')
-      //   await this.cpuPages(game, 'pat')
-      //   selection = game.players[2].currentPlay
-      // }
       selection = await this.input.getInput(game, game.offNum, 'pat', game.players[game.offNum].team.name + ' pick PAT type...')
     }
 

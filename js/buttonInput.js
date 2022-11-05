@@ -16,7 +16,7 @@ export default class ButtonInput extends BaseInput {
   async getInput (game, p, type, msg = null) {
     let selection = null
 
-    if (game.me === p) {
+    if (game.isReal(p)) { // game.me === p
       selection = await this.prepareAndGetUserInput(game, p, type, msg)
     } else {
       await alertBox(game.run, game.players[p].team.name + ' are picking their play...')
@@ -36,6 +36,11 @@ export default class ButtonInput extends BaseInput {
     return selection
   }
 
+  switchCardsContainerColor (game, p) {
+    animationSimple(game.run.cardsContainer, (game.away === p ? 'home' : 'away') + '-card-cont', false)
+    animationWaitForCompletion(game.run.cardsContainer, (game.away === p ? 'away' : 'home') + '-card-cont')
+  }
+
   async prepareAndGetUserInput (game, p, type, msg = null) {
     if (type === 'kick') {
       let downEl = null
@@ -50,12 +55,13 @@ export default class ButtonInput extends BaseInput {
       animationSimple(game.run.scoreboardContainerBotRight, 'collapsed', false)
     }
 
-    game.run.scoreboardContainerTopLeft.innerText = (p === game.away ? 'Pick your play' : game.lastPlay)
-    game.run.scoreboardContainerTopRight.innerText = (p === game.away ? game.lastPlay : 'Pick your play')
+    game.run.scoreboardContainerTopLeft.innerText = (p === game.away ? msg : game.lastPlay) // 'Pick your play'
+    game.run.scoreboardContainerTopRight.innerText = (p === game.away ? game.lastPlay : msg)
     animationSimple(game.run.scoreboardContainerTopLeft, 'collapsed', false)
     animationSimple(game.run.scoreboardContainerTopRight, 'collapsed', false)
+    this.switchCardsContainerColor(game, p)
     await animationWaitForCompletion(game.run.cardsContainer, 'slide-down', false)
-    const selection = await game.run.input.getUserInput(game, p, type, msg)
+    const selection = await this.getUserInput(game, p, type, msg)
     if (game.isMultiplayer()) {
       await game.run.sendInputToRemote(selection)
       // await sleep(1)
@@ -92,6 +98,7 @@ export default class ButtonInput extends BaseInput {
         const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
         btn.appendChild(t)
         btn.classList.add('card')
+        btn.classList.add((game.away === p ? 'away' : 'home') + '-card')
         btn.setAttribute('data-playType', this.legalChoices[i].abrv)
         buttonArea.appendChild(btn)
       } else {
