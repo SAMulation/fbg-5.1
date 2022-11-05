@@ -86,6 +86,18 @@ const connections = (site, type) => {
     site.numberPlayers = 0
     site.me = 0
     site.animation = false
+  } else if (type === 'computer-host') {
+    site.connections[1] = 'host'
+    site.connections[2] = 'remote'
+    site.numberPlayers = 0
+    site.me = 0
+    site.animation = false
+  } else if (type === 'computer-remote') {
+    site.connections[1] = 'host'
+    site.connections[2] = 'remote'
+    site.numberPlayers = 0
+    site.me = 0
+    site.animation = false
   }
 }
 
@@ -96,6 +108,10 @@ const generateCode = async (site) => {
   } else if (site.connectionType === 'remote') {
     site.gamecode = prompt('Enter your game code:')
     // LATER: Make sure to validate this somewhere
+  } else if (site.connectionType === 'computer-host') {
+    site.gamecode = 6969
+  } else if (site.connectionType === 'computer-remote') {
+    site.gamecode = 6969
   }
 }
 
