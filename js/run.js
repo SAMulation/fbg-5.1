@@ -69,8 +69,11 @@ export default class Run {
     await this.moveBall(game, 'show/clear')
     // alert('Waiting for other game')
     if (game.isMultiplayer()) {
-      await this.sendInputToRemote('check-in: ' + (this.transmissions.length + (game.connection.host ? 0 : 1)))
-      await this.receiveInputFromRemote()
+      if (game.connection.host) {
+        await this.receiveInputFromRemote()
+      } else {
+        await this.sendInputToRemote('Initial check-in... LET\'S PLAY!!!')
+      }
     }
     // Set teams' colors
     document.documentElement.style.setProperty('--away-color1', game.players[game.away].team.color1)
