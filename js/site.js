@@ -18,6 +18,6 @@ export default class Site {
   }
 
   get host () {
-    return this.connectionType === 'host' || this.connectionType === 'single'
+    return this.connectionType === 'host' || this.connectionType === 'single' || this.connectionType === 'computer-host'
   }
 }

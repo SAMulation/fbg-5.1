@@ -66,7 +66,7 @@ export default class Game {
   }
 
   isMultiplayer () {
-    return this.connection.type === 'host' || this.connection.type === 'remote'
+    return this.connection.type === 'host' || this.connection.type === 'remote' || this.connection.type === 'computer-host' || this.connection.type === 'computer-remote'
   }
 
   isReal (num) {

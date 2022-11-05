@@ -36,6 +36,7 @@ export default class Run {
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
     this.inbox = new Queue()
+    this.transmissions = []
     this.gameLog = []
   }
 
@@ -66,6 +67,11 @@ export default class Run {
   async prepareHTML (game) {
     setSpot(this, 65) // Place ball
     await this.moveBall(game, 'show/clear')
+    // alert('Waiting for other game')
+    if (game.isMultiplayer()) {
+      await this.sendInputToRemote('check-in: ' + (this.transmissions.length + (game.connection.host ? 0 : 1)))
+      await this.receiveInputFromRemote()
+    }
     // Set teams' colors
     document.documentElement.style.setProperty('--away-color1', game.players[game.away].team.color1)
     document.documentElement.style.setProperty('--away-color2', game.players[game.away].team.color2)
@@ -167,6 +173,7 @@ export default class Run {
   async sendInputToRemote (value) {
     if (value === null || value === undefined) throw new Error('attempted to send empty value')
     this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
+    this.transmissions.push({ msg: value, type: 'sent' })
     this.channel.trigger('client-value', { value })
     await sleep(100)
   }
@@ -174,6 +181,7 @@ export default class Run {
   async receiveInputFromRemote () {
     await sleep(100)
     const value = await this.inbox.dequeue()
+    this.transmissions.push({ msg: value, type: 'recd' })
     this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
     return value
   }
@@ -876,6 +884,10 @@ export default class Run {
   };
 
   async prePlay (game, stat) {
+    if (game.isMultiplayer()) {
+      await this.sendInputToRemote('check-in: ' + (this.transmissions.length + (game.connection.host ? 0 : 1)))
+      await this.receiveInputFromRemote()
+    }
     game.thisPlay.multiplierCard = null
     game.thisPlay.yardCard = null
     game.thisPlay.multiplier = null
@@ -1232,7 +1244,8 @@ export default class Run {
           total = game.players[p].plays[playAbrv].count
         }
 
-        game.players[p].currentPlay = playAbrv
+        // game.players[p].currentPlay = playAbrv
+        return playAbrv
       } else if (state === 'pat') {
         await alertBox(this, game.players[p].team.name + ' selecting PAT type...')
         let selection = 'XP'
@@ -1243,7 +1256,8 @@ export default class Run {
           selection = '2P'
         }
 
-        game.players[p].currentPlay = selection
+        // game.players[p].currentPlay = selection
+        return selection
       } else if (state === 'kick') {
         await alertBox(this, game.players[p].team.name + ' selecting kickoff type...')
         await this.cpuTime(game, p)
@@ -1260,7 +1274,8 @@ export default class Run {
           kckDec = 'SK'
         }
 
-        game.players[p].currentPlay = kckDec
+        // game.players[p].currentPlay = kckDec
+        return kckDec
       } else if (state === 'ret') {
         await alertBox(this, game.players[p].team.name + ' selecting return type...')
         await this.cpuTime(game, p)
@@ -1278,7 +1293,8 @@ export default class Run {
           retDec = 'TB'
         }
 
-        game.players[p].currentPlay = retDec
+        // game.players[p].currentPlay = retDec
+        return retDec
       } else if (state === 'coin') {
         return await Utils.coinFlip(game, game.me) ? 'H' : 'T'
       } else if (state === 'kickDecOT' || state === 'kickDecReg') {
@@ -1289,6 +1305,8 @@ export default class Run {
         } // else: Leave it as 1 or 2 for OT possession picking
         return decPick
       }
+    } else {
+      return game.players[p].currentPlay
     }
   };
 
