@@ -12,7 +12,7 @@ export default class Run {
     this.game = game // Pointer to game object
     this.input = input
     this.alert = 'bar' // or 'alert' or 'console'
-    this.gameSetup = document.querySelector('.game-setup-container')
+    this.startScreen = document.querySelector('.start-screen')
     this.scoreboardContainer = document.querySelector('.scoreboard-container')
     this.scoreboardContainerTopLeft = document.querySelector('.scoreboard-container .away-msg.top-msg')
     this.scoreboardContainerTopRight = document.querySelector('.scoreboard-container .home-msg.top-msg')
@@ -99,7 +99,7 @@ export default class Run {
       this.showBoard(game, this.scoreboardContainer)
     }
     this.actualCards.innerText = '' // Clear out default cards
-    await animationWaitThenHide(this.gameSetup, 'slide-away') // Slide away game setup screen
+    await animationWaitThenHide(this.startScreen, 'slide-away') // Slide away game setup screen
     this.makeBarSlideable(this.cardsContainer)
   }
 

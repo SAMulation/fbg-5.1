@@ -143,6 +143,18 @@
   z-index: 190;
 }
 
+.start-screen-team1 {
+  z-index: 180;
+}
+
+.start-screen-team2 {
+  z-index: 175;
+}
+
+.start-screen-game-options {
+  z-index: 105;
+}
+
 .start-screen h1.title-ball {
   font-size: 25vw;
 }
@@ -164,6 +176,12 @@
     padding: 1rem;
     text-align: center;
     /* border: 2px solid black; */
+}
+
+.start-screen input, .start-screen select {
+  border-radius: 50px;
+  font-family: 'Cabin', sans-serif;
+  padding-left: 5px;
 }
 
 /* Page Elements */

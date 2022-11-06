@@ -498,6 +498,7 @@ input {
 }
 
 .cards-container .cards button.card{
+  max-width: 100px;
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: 25%;
@@ -617,19 +618,36 @@ input {
   }
 
   .score {
-    font-size: 60px
+    font-size: 60px;
   }
 
   .team {
-    font-size: 50px
+    font-size: 50px;
+    text-underline-offset: 7px;
   }
 
   .clock .time {
-    font-size: 40px;
+    font-size: 54px;
+  }
+
+  .clock .logo {
+    font-size: 18px;
+  }
+
+  .clock .qtr {
+    font-size: 24px;
   }
 
   .top-msg, .bot-msg {
     font-size: 12px;
+  }
+
+  .home-msg {
+    padding-left: 60px;
+  }
+
+  .away-msg {
+    padding-right: 60px;
   }
 
   .cards-container .cards button.card {
@@ -656,7 +674,7 @@ input {
   }
 
   .start-screen-header h1.title-ball {
-    font-size: 170px;
+    font-size: 150px;
   }
 
   .start-screen-header h1.title-text {
