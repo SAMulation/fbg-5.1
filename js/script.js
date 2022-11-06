@@ -43,6 +43,9 @@ const startScreen = document.querySelector('.start-screen')
 const setupButtons = document.querySelectorAll('.setup-button')
 const loginPanel = document.querySelector('.start-screen-login')
 const gamePickPanel = document.querySelector('.start-screen-game-pick')
+const team1Panel = document.querySelector('.start-screen-team1')
+const team2Panel = document.querySelector('.start-screen-team2')
+const gameOptions = document.querySelector('.start-screen-game-options')
 window.site = site
 window.inputType = 'button'
 
@@ -69,11 +72,23 @@ const attachNextEvent = async (site, buttons) => {
         site.game = initGame(site)
         playGame(site.game)
       } else if (val === 'single') {
-        // Pull player 1
+        site.connectionType = 'single'
+        await animationWaitThenHide(gamePickPanel, 'fade')
+        await animationWaitForCompletion(team1Panel, 'fade', false)
       } else if (val === 'multi') {
         // Pull up next multiplayer choice
       } else if (val === 'about') {
         // Pull up about
+      } else if (val === 'p1-next') {
+        await animationWaitThenHide(team1Panel, 'fade')
+        await animationWaitForCompletion(team2Panel, 'fade', false)
+      } else if (val === 'p2-next') {
+        await animationWaitThenHide(team2Panel, 'fade')
+        await animationWaitForCompletion(gameOptions, 'fade', false)
+      } else if (val === 'game-setup-next') {
+        await animationWaitThenHide(gameOptions, 'fade')
+        site.game = initGame(site)
+        playGame(site.game)
       }
     })
   })
@@ -183,18 +198,18 @@ const submitTeams = async (site, submit) => {
   })
 }
 
-const pressPlayButton = (button, site) => {
-  button.addEventListener('pointerdown', event => {
-    playGame(site.game)
-    event.target.setAttribute('disabled', '')
-  })
-}
+// const pressPlayButton = (button, site) => {
+//   button.addEventListener('pointerdown', event => {
+//     playGame(site.game)
+//     event.target.setAttribute('disabled', '')
+//   })
+// }
 
-const EnablePlayButton = (button) => {
-  button.innerText = 'Play Again?'
-  button.disabled = false
-  pressPlayButton(button)
-}
+// const EnablePlayButton = (button) => {
+//   button.innerText = 'Play Again?'
+//   button.disabled = false
+//   pressPlayButton(button)
+// }
 
 const initGame = (site) => {
   const user = [null, null, null]

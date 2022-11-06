@@ -28,7 +28,88 @@
             <button class="setup-button multi-button" data-button-value="multi">New Multiplayer</button>
             <button class="setup-button about-button" data-button-value="about">About</button>
           </section>
+          <section class="start-screen-team1 fade">
+            <div class="selection pl1">
+              <form>
+                <label for="p1Team">Select your team</label>
+                <select id="p1Team" class="teamList" name="p1Team">
+                    <option value="">Select your team</option>
+                </select>
+                <br>
+              </form>
+              <br>
+          </div>
+            <button class="setup-button about-button" data-button-value="p1-next">Next</button>
+          </section>
+          <section class="start-screen-team2 fade">
+            <div class="selection pl2">
+              <form>
+                <label for="p2Team">Select computer team</label>
+                <select id="p2Team" class="teamList" name="p2Team">
+                    <option value="">Select computer team</option>
+                </select>
+                <br>
+              </form>
+              <br>
+          </div>
+            <button class="setup-button about-button" data-button-value="p2-next">Next</button>
+          </section>
+          <section class="start-screen-game-options fade">
+            <div class="selection pl2">
+              <form id="gameForm">
+                <label for="quantity">Quarter Length (between 1-15)</label><br>
+                <br>
+                <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
+                <br>
+                <label>
+                  <input id="resume-game" type="radio" name="connection" value="resume" disabled>
+                  Resume
+                </label>
+                <br>
+                <label>
+                  <input type="radio" name="connection" value="single" checked>
+                  Single Player
+                </label>
+                <br>
+                <label>
+                  <input type="radio" name="connection" value="double">
+                  Local Two Player
+                </label>
+                <br>
+                <label>
+                  <input type="radio" name="connection" value="host">
+                  Multiplayer - Host
+                </label>
+                <br>
+                <label>
+                  <input type="radio" name="connection" value="remote">
+                  Multiplayer - Remote
+                </label>
+                <br>
+                <label>
+                  <input type="radio" name="connection" value="computer">
+                  Story Mode
+                </label>
+                <br>
+                <label>
+                  <input type="radio" name="connection" value="computer-host">
+                  Story Mode - Host
+                </label>
+                <br>
+                <label>
+                  <input type="radio" name="connection" value="computer-remote">
+                  Story Mode - Remote
+                </label>
+                <br>
+                <br>
+                <input class="playSubmit" type="submit" value="Submit">
+              </form>
+          </div>
+            <button class="setup-button about-button" data-button-value="game-setup-next">Next</button>
+          </section>
         </section>
+      </section>
+    </section>
 
 
       </section>
@@ -151,7 +232,7 @@
           <div class="home team">CIN</div>
           <div class="home score">6</div>
           <div class="clock">
-            <span class="logo">FBG</span>  
+            <span class="logo">FootBored</span>  
             <span class="time">7:30</span>
             <span class="qtr">1ST</span>
           </div>
