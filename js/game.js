@@ -185,7 +185,10 @@ export default class Game {
   }
 
   isReal (num) {
-    return this.numberPlayers !== 0 && (num === 1 || this.numberPlayers === 2)
+    const notZeroPlayer = this.numberPlayers !== 0
+    const localTwoPlayer = this.connection.type === 'double'
+    const onlineTwoPlayerAndMe = (this.connection.type === 'host' || this.connection.type === 'remote') && num === this.me
+    return notZeroPlayer && (localTwoPlayer || onlineTwoPlayerAndMe)
   }
 
   isOT () {
