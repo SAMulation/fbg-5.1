@@ -12,7 +12,7 @@ export default class Player {
     this.plays = plays
     this.stats = stats
     this.currentPlay = null
-    this.hm = hm // This is hail mary, I'm moving this here
+    this.hm = hm // This is hail mary
 
     // Computer
     if (stats === null) {
@@ -36,6 +36,18 @@ export default class Player {
 
     if (!plays) {
       this.fillPlays('a', this.game.qtr)
+    }
+
+    this.toJSON = () => {
+      return {
+        team: JSON.stringify(this.team),
+        score: this.score,
+        timeouts: this.time,
+        plays: JSON.stringify(this.plays),
+        stats: JSON.stringify(this.stats),
+        currentPlay: this.currentPlay,
+        hm: this.hm
+      }
     }
   }
 

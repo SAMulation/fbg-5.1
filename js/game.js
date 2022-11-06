@@ -55,6 +55,55 @@ export default class Game {
     if (this.gameType === 'otc') {
       this.status = INIT_OTC
     }
+
+    this.connection.toJSON = () => {
+      return {
+        channel: this.channel,
+        connections: JSON.stringify(this.connections),
+        gamecode: this.gamecode,
+        host: this.host,
+        me: this.me,
+        pusher: null,
+        type: this.type
+      }
+    }
+
+    this.toJSON = () => {
+      return {
+        gameType: this.gameType,
+        numberPlayers: this.numberPlayers,
+        home: this.home,
+        away: this.away,
+        down: this.down,
+        firstDown: this.firstDown,
+        lastCallTO: this.lastCallTO,
+        otPoss: this.otPoss,
+        over: this.over,
+        qtr: this.qtr,
+        qtrLength: this.qtrLength,
+        recFirst: this.recFirst,
+        spot: this.spot,
+        status: this.status,
+        changeTime: this.changeTime,
+        turnover: this.turnover,
+        twoMinWarning: this.twoMinWarning,
+        twoPtConv: this.twoPtConv,
+        offNum: this.offNum,
+        defNum: this.defNum,
+        currentTime: this.currentTime,
+        thisPlay: JSON.stringify(this.thisPlay), // null, // this.thisPlay,
+        players: JSON.stringify({ 1: JSON.stringify(this.players[1]), 2: JSON.stringify(this.players[1]) }), // this.players,
+        mults: JSON.stringify(this.mults), // this.mults,
+        yards: JSON.stringify(this.yards), // this.yards,
+        lastSpot: this.lastSpot,
+        recap: JSON.stringify(this.recap), // this.recap,
+        me: this.me,
+        statusOnExit: this.status,
+        lastPlay: this.lastPlay,
+        animation: this.animation,
+        connection: JSON.stringify(this.connection) // this.connection
+      }
+    }
   }
 
   async runIt (channel) {
