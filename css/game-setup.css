@@ -44,7 +44,7 @@
   z-index: 0;
 }
 
-.setup-button:hover {
+.setup-button:hover, .setup-button:active, .setup-button:focus {
   background: #F6F9FE;
   color: #174ea6;
 }
@@ -56,7 +56,7 @@
 
 .setup-button:focus {
   outline: none;
-  border: 2px solid #4285f4;
+  /* border: 2px solid #4285f4; */
 }
 
 .setup-button:not(:disabled) {
@@ -78,16 +78,20 @@
 .setup-button:disabled {
   box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
 }
+
 .start-screen {
   z-index: 100;
   background-color: dodgerblue;
   color: white;
   grid-area: top / left-all / bot / right-all;
   display: grid;
+  grid-template: [top] 50% [mid] 50% [bot] /
+                 [left] 100% [right];
 
 }
 
 .start-screen .start-screen-header {
+  grid-area: top / left / mid / right;
   background: black;
   display: flex;
   flex-direction: column;
@@ -97,11 +101,28 @@
   box-shadow: 0 5px 10px rgb(34 34 34 / 50%);
 }
 
-.start-screen .start-screen-login {
+.start-screen .start-screen-content {
+  grid-area: mid / left / bot / right;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.start-screen .start-screen-content > section {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-screen .start-screen-content .login {
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; */
 }
 
 .start-screen h1.title-ball {
