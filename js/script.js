@@ -46,6 +46,8 @@ const gamePickPanel = document.querySelector('.start-screen-game-pick')
 const team1Panel = document.querySelector('.start-screen-team1')
 const team2Panel = document.querySelector('.start-screen-team2')
 const gameOptions = document.querySelector('.start-screen-game-options')
+const pickHome = document.getElementById('pick-home')
+const pickQtrLen = document.getElementById('pick-qtrlen')
 window.site = site
 window.inputType = 'button'
 
@@ -86,9 +88,10 @@ const attachNextEvent = async (site, buttons) => {
         await animationWaitThenHide(team2Panel, 'fade')
         await animationWaitForCompletion(gameOptions, 'fade', false)
       } else if (val === 'game-setup-next') {
+        site.home = parseInt(pickHome.value)
+        site.qtrLength = parseInt(pickQtrLen.value)
         await animationWaitThenHide(gameOptions, 'fade')
-        site.game = initGame(site)
-        playGame(site.game)
+        submitGame(site, site.connectionType)
       }
     })
   })
@@ -198,6 +201,35 @@ const submitTeams = async (site, submit) => {
   })
 }
 
+const submitGame = async (site, type) => {
+  let el
+  const value = [-1, -1]
+  let valid = true
+  site.connectionType = type
+  connections(site, site.connectionType)
+
+  await generateCode(site)
+
+  for (let t = 0; t < 2 && valid; t++) {
+    el = document.getElementById('p' + (t + 1) + 'Team')
+    value[t] = el.selectedIndex
+
+    if (value[t] === -1) {
+      valid = false
+    }
+  }
+
+  if (valid && value[0] !== -1 && value[1] !== -1) {
+    site.team1 = value[0]
+    site.team2 = value[1]
+    site.game = initGame(site)
+    window.game = site.game
+    // document.querySelector('.playButton').disabled = false
+    document.querySelector('.playSubmit').disabled = true
+    playGame(site.game)
+  }
+}
+
 // const pressPlayButton = (button, site) => {
 //   button.addEventListener('pointerdown', event => {
 //     playGame(site.game)
@@ -245,6 +277,6 @@ if (window.localStorage.getItem('savedGame')) {
   resumeSelection.disabled = false
 }
 await setTeamLists(document.querySelectorAll('.teamList'))
-submitTeams(site, document.querySelector('#gameForm'))
+// submitTeams(site, document.querySelector('#gameForm'))
 // pressPlayButton(document.querySelector('.playButton'), site)
 attachNextEvent(site, setupButtons)

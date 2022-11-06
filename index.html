@@ -55,56 +55,13 @@
             <button class="setup-button about-button" data-button-value="p2-next">Next</button>
           </section>
           <section class="start-screen-game-options fade">
-            <div class="selection pl2">
-              <form id="gameForm">
-                <label for="quantity">Quarter Length (between 1-15)</label><br>
-                <br>
-                <input type="number" id="qtrlen" name="quantity" value="7" min="1" max="15"><br>
-                <br>
-                <label>
-                  <input id="resume-game" type="radio" name="connection" value="resume" disabled>
-                  Resume
-                </label>
-                <br>
-                <label>
-                  <input type="radio" name="connection" value="single" checked>
-                  Single Player
-                </label>
-                <br>
-                <label>
-                  <input type="radio" name="connection" value="double">
-                  Local Two Player
-                </label>
-                <br>
-                <label>
-                  <input type="radio" name="connection" value="host">
-                  Multiplayer - Host
-                </label>
-                <br>
-                <label>
-                  <input type="radio" name="connection" value="remote">
-                  Multiplayer - Remote
-                </label>
-                <br>
-                <label>
-                  <input type="radio" name="connection" value="computer">
-                  Story Mode
-                </label>
-                <br>
-                <label>
-                  <input type="radio" name="connection" value="computer-host">
-                  Story Mode - Host
-                </label>
-                <br>
-                <label>
-                  <input type="radio" name="connection" value="computer-remote">
-                  Story Mode - Remote
-                </label>
-                <br>
-                <br>
-                <input class="playSubmit" type="submit" value="Submit">
-              </form>
-          </div>
+            <!-- Game type here -->
+            <label for="quantity">Whose home?</label>
+            <input type="number" id="pick-home" name="home" value="1" min="1" max="2">
+            
+            <label for="quantity">Quarter Length (between 1-15)</label>
+            <input type="number" id="pick-qtrlen" name="quantity" value="7" min="1" max="15">
+            
             <button class="setup-button about-button" data-button-value="game-setup-next">Next</button>
           </section>
         </section>
