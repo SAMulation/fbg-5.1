@@ -99,7 +99,7 @@ export default class Run {
       this.showBoard(game, this.scoreboardContainer)
     }
     this.actualCards.innerText = '' // Clear out default cards
-    await animationWaitThenHide(this.startScreen, 'slide-away') // Slide away game setup screen
+    await animationWaitThenHide(this.startScreen, 'fade') // Slide away game setup screen
     this.makeBarSlideable(this.cardsContainer)
   }
 
