@@ -32,7 +32,7 @@
   }
 
   .scoreboard-container * {
-    font-family: sans-serif;
+    font-family: "Oswald", sans-serif;
     color: white;
   }
 
@@ -44,7 +44,7 @@
   .away, .home {
     grid-row: hm / to;
     color: white;
-    font: bold 6vw sans-serif;
+    font: bold 6vw;
   }
   
   .bg {
@@ -239,11 +239,11 @@
 
   .time {
     grid-row: 2;
-    font: bold 7vw sans-serif;
+    font: bold 7vw;
   }
 
   .logo, .qtr {
-    font: bold 2.5vw sans-serif;
+    font: bold 2.5vw;
   }
 
   .qtr {
@@ -272,7 +272,6 @@
     border: 3px solid black;
     border-radius: 25%;
     font-size: 90%;
-    font-family: 'calc', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;

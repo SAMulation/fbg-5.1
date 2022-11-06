@@ -10,6 +10,110 @@
   transition: opacity .5s;
 }
 
+/* CSS */
+.setup-button {
+  align-items: center;
+  appearance: none;
+  background-color: #fff;
+  border-radius: 50px;
+  border-style: none;
+  box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+  box-sizing: border-box;
+  color: #3c4043;
+  display: inline-flex;
+  fill: currentcolor;
+  font-family: 'Cabin', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  height: 12%;
+  justify-content: center;
+  letter-spacing: .25px;
+  line-height: normal;
+  max-width: 100%;
+  overflow: visible;
+  padding: 2px 24px;
+  position: relative;
+  text-align: center;
+  text-transform: none;
+  transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezier(0, 0, .2, 1) 0ms;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: min-content;
+  will-change: transform,opacity;
+  z-index: 0;
+}
+
+.setup-button:hover {
+  background: #F6F9FE;
+  color: #174ea6;
+}
+
+.setup-button:active {
+  box-shadow: 0 4px 4px 0 rgb(60 64 67 / 30%), 0 8px 12px 6px rgb(60 64 67 / 15%);
+  outline: none;
+}
+
+.setup-button:focus {
+  outline: none;
+  border: 2px solid #4285f4;
+}
+
+.setup-button:not(:disabled) {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+.setup-button:not(:disabled):hover {
+  box-shadow: rgba(60, 64, 67, .3) 0 2px 3px 0, rgba(60, 64, 67, .15) 0 6px 10px 4px;
+}
+
+.setup-button:not(:disabled):focus {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+
+.setup-button:not(:disabled):active {
+  box-shadow: rgba(60, 64, 67, .3) 0 4px 4px 0, rgba(60, 64, 67, .15) 0 8px 12px 6px;
+}
+
+.setup-button:disabled {
+  box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
+}
+.start-screen {
+  z-index: 100;
+  background-color: dodgerblue;
+  color: white;
+  grid-area: top / left-all / bot / right-all;
+  display: grid;
+
+}
+
+.start-screen .start-screen-header {
+  background: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 10%;
+  box-shadow: 0 5px 10px rgb(34 34 34 / 50%);
+}
+
+.start-screen .start-screen-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-screen h1.title-ball {
+  font-size: 25vw;
+}
+
+.start-screen h1.title-text {
+  font-family: 'Cabin', sans-serif;
+  font-weight: bolder;
+  font-size: 10vw;
+}
+
 .game-setup-container.slide-away {
   /* transform: translateX(100%); */
   opacity: 0;
@@ -25,7 +129,7 @@
 
 /* Page Elements */
 h1, input, p, button, label, .to-butt1 *, .to-butt2 * {
-  font-family: 'calc', sans-serif;
+  /* font-family: 'calc', sans-serif; */
   font-size: 1rem;
   line-height: 1.25rem;
   padding: 1vw;
