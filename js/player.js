@@ -15,9 +15,8 @@ export default class Player {
       this.stats = JSON.parse(tempPlayer.stats)
       this.currentPlay = null
       this.hm = tempPlayer.hm // This is hail mary
-      this.stats = tempPlayer.stats
+      this.stats = JSON.parse(tempPlayer.stats)
     } else {
-      this.game = game
       this.team = new Team(team)
       this.score = score
       this.timeouts = time
@@ -40,7 +39,7 @@ export default class Player {
 
     this.game = game
 
-    if (init) {
+    if (!this.game.resume) {
       this.score = 0
       if (this.game.qtr < 5) {
         this.timeouts = 3
@@ -60,7 +59,7 @@ export default class Player {
         timeouts: this.timeouts,
         plays: JSON.stringify(this.plays),
         stats: JSON.stringify(this.stats),
-        currentPlay: this.currentPlay,
+        currentPlay: null,
         hm: this.hm
       }
     }

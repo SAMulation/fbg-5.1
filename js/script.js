@@ -46,7 +46,7 @@ const playGame = async (game) => {
   await game.runIt(channel)
 
   // LATER: Get ready for next game
-  EnablePlayButton(document.querySelector('.playButton'))
+  // EnablePlayButton(document.querySelector('.playButton'))
 }
 
 // SITE FUNCTIONS
@@ -146,8 +146,9 @@ const submitTeams = async (site, submit) => {
       site.team2 = value[1]
       site.game = initGame(site)
       window.game = site.game
-      document.querySelector('.playButton').disabled = false
+      // document.querySelector('.playButton').disabled = false
       document.querySelector('.playSubmit').disabled = true
+      playGame(site.game)
     }
   })
 }
@@ -188,7 +189,7 @@ const initGame = (site) => {
   }
 
   if (site.connectionType === 'resume') {
-    return new Game(window.localStorage.getItem('savedGame'))
+    return new Game(window.localStorage.getItem('savedGame'), { gamecode: site.gamecode, pusher })
   } else {
     return new Game(null, { me: site.me, connections: site.connections, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, site.animation, user[1], user[2], window.inputType)
   }
@@ -200,4 +201,4 @@ if (window.localStorage.getItem('savedGame')) {
 }
 await setTeamLists(document.querySelectorAll('.teamList'))
 submitTeams(site, document.querySelector('#gameForm'))
-pressPlayButton(document.querySelector('.playButton'), site)
+// pressPlayButton(document.querySelector('.playButton'), site)

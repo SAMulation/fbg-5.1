@@ -73,8 +73,8 @@ export default class Run {
   // }
 
   async prepareHTML (game) {
-    setSpot(this, 65) // Place ball
-    await this.moveBall(game, 'show/clear')
+    setSpot(this, game.resume ? null : 65) // Place ball
+    await this.moveBall(game, game.resume ? 'show' : 'show/clear')
     // alert('Waiting for other game')
     if (game.isMultiplayer()) {
       if (game.connection.host) {
@@ -93,7 +93,11 @@ export default class Run {
       document.documentElement.style.setProperty('--me-color2', game.players[game.me].team.color2)
     }
     animationSimple(this.cardsContainer, 'slide-down') // Slide cards container down
-    await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
+    if (!game.resume) {
+      await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
+    } else {
+      this.showBoard(game, this.scoreboardContainer)
+    }
     this.actualCards.innerText = '' // Clear out default cards
     await animationWaitThenHide(this.gameSetup, 'slide-away') // Slide away game setup screen
     this.makeBarSlideable(this.cardsContainer)
@@ -107,7 +111,7 @@ export default class Run {
     })
 
     await this.prepareHTML(this.game) // Set up game board and field
-    await this.gameLoop(this.game, INIT) // Start the game loop
+    await this.gameLoop(this.game, this.game.status) // Start the game loop
   };
 
   async gameLoop (game, test = REG) {
@@ -123,7 +127,7 @@ export default class Run {
 
     // This is the game loop
     while (game.status < LEAVE) {
-      if (game.status < LEAVE) {
+      if (game.status < LEAVE && !game.resume) {
         await this.gameControl(game)
       }
       while (game.currentTime >= 0 && game.status !== EXIT) {
@@ -606,9 +610,10 @@ export default class Run {
       // Handle timeouts being called
       if (game.players[game.offNum].currentPlay === 'TO') {
         await this.timeout(game, game.offNum)
+        selection = 'TO'
       }
 
-      if (selection) {
+      if (selection && selection !== 'TO') {
         game.players[game.offNum].currentPlay = selection
       }
     }
@@ -634,9 +639,10 @@ export default class Run {
       // Handle timeouts being called
       if (game.players[game.defNum].currentPlay === 'TO') {
         await this.timeout(game, game.defNum)
+        selection = 'TO'
       }
 
-      if (selection) {
+      if (selection && selection !== 'TO') {
         game.players[game.defNum].currentPlay = selection
       }
     }
@@ -842,6 +848,7 @@ export default class Run {
     }
 
     // Autosave
+    if (game.resume) game.resume = false
     window.localStorage.setItem('autosaveGame', JSON.stringify(game))
 
     game.thisPlay.multiplierCard = null
@@ -920,9 +927,10 @@ export default class Run {
         // Handle timeouts being called
         if (selection === 'TO' || game.players[p].currentPlay === 'TO') {
           await this.timeout(game, p)
+          selection = 'TO'
         }
 
-        if (selection) {
+        if (selection && selection !== 'TO') {
           game.players[p].currentPlay = selection
         }
       }
