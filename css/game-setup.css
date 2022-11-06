@@ -109,6 +109,11 @@
   box-shadow: 0 5px 10px rgb(34 34 34 / 50%);
 }
 
+.start-screen-header h1 a {
+  text-decoration: none;
+}
+
+
 .start-screen .start-screen-content {
   grid-area: mid / left / bot / right;
   display: grid;
@@ -157,6 +162,15 @@
 
 .start-screen h1.title-ball {
   font-size: 25vw;
+  transform: rotate(0deg);
+}
+
+.start-screen h1.title-ball.spin {
+  animation: rotate 2s linear infinite; 
+}
+
+@keyframes rotate{
+  to{ transform: rotate(360deg); }
 }
 
 .start-screen h1.title-text {

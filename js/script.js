@@ -40,6 +40,7 @@ pusher.signin()
 const site = new Site(document.querySelector('.main-container'))
 const resumeSelection = document.getElementById('resume-game')
 const startScreen = document.querySelector('.start-screen')
+const titleBall = document.querySelector('.title-ball')
 const setupButtons = document.querySelectorAll('.setup-button')
 const loginPanel = document.querySelector('.start-screen-login')
 const gamePickPanel = document.querySelector('.start-screen-game-pick')
@@ -67,6 +68,7 @@ const attachNextEvent = async (site, buttons) => {
 
       if (val === 'login') {
         await animationWaitThenHide(loginPanel, 'fade')
+        titleBall.classList.toggle('spin', false)
         await animationWaitForCompletion(gamePickPanel, 'fade', false)
       } else if (val === 'resume') {
         await animationWaitThenHide(startScreen, 'fade')
