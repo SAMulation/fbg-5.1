@@ -37,6 +37,15 @@ export default class Run {
     this.inbox = new Queue()
     this.transmissions = []
     this.gameLog = []
+
+    this.toJSON = () => {
+      return {
+        input: this.input.type,
+        alert: this.alert,
+        transmissions: JSON.stringify(this.transmissions),
+        gameLog: JSON.stringify(this.gameLog)
+      }
+    }
   }
 
   makeBarSlideable (el) {
@@ -831,6 +840,10 @@ export default class Run {
       await this.sendInputToRemote('check-in: ' + (this.transmissions.length + (game.connection.host ? 0 : 1)))
       await this.receiveInputFromRemote()
     }
+
+    // Autosave
+    window.localStorage.setItem('autosaveGame', JSON.stringify(game))
+
     game.thisPlay.multiplierCard = null
     game.thisPlay.yardCard = null
     game.thisPlay.multiplier = null

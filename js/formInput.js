@@ -2,6 +2,7 @@ import TextInput from './textInput.js'
 
 export default class FormInput extends TextInput {
   async getInput (game, p, type, newText = null) {
+    this.type = 'form'
     // Get legal choices
     this.makeChoices(game, type, p)
 

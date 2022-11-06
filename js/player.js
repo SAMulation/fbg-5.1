@@ -4,26 +4,41 @@ import Team from './team.js'
 export default class Player {
   // need to access quarter from parent Game class
   // minimum req: Player(game, team)
-  constructor (game, team, stats, init = true, score = 0, time = 3, plays = null, hm = 3) {
-    this.game = game
-    this.team = new Team(team)
-    this.score = score
-    this.timeouts = time
-    this.plays = plays
-    this.stats = stats
-    this.currentPlay = null
-    this.hm = hm // This is hail mary
+  constructor (resume = null, game, team, stats, init = true, score = 0, time = 3, plays = null, hm = 3) {
+    if (resume) {
+      const tempPlayer = JSON.parse(resume)
 
-    // Computer
-    if (stats === null) {
-      this.stats = new Stat('Computer')
-      // New user
-    } else if (typeof stats === 'string') {
-      this.stats = new Stat(stats)
+      this.team = JSON.parse(tempPlayer.team)
+      this.score = tempPlayer.score
+      this.timeouts = tempPlayer.timeouts
+      this.plays = JSON.parse(tempPlayer.plays)
+      this.stats = JSON.parse(tempPlayer.stats)
+      this.currentPlay = null
+      this.hm = tempPlayer.hm // This is hail mary
+      this.stats = tempPlayer.stats
     } else {
-      // Existing user
+      this.game = game
+      this.team = new Team(team)
+      this.score = score
+      this.timeouts = time
+      this.plays = plays
       this.stats = stats
+      this.currentPlay = null
+      this.hm = hm // This is hail mary
+
+      // Computer
+      if (stats === null) {
+        this.stats = new Stat('Computer')
+        // New user
+      } else if (typeof stats === 'string') {
+        this.stats = new Stat(stats)
+      } else {
+        // Existing user
+        this.stats = stats
+      }
     }
+
+    this.game = game
 
     if (init) {
       this.score = 0
@@ -42,7 +57,7 @@ export default class Player {
       return {
         team: JSON.stringify(this.team),
         score: this.score,
-        timeouts: this.time,
+        timeouts: this.timeouts,
         plays: JSON.stringify(this.plays),
         stats: JSON.stringify(this.stats),
         currentPlay: this.currentPlay,
