@@ -93,6 +93,8 @@
   grid-template: [top] 50% [mid] 50% [bot] /
                  [left] 100% [right];
 
+  transition: all 0.5s;
+
 }
 
 .start-screen .start-screen-header {
