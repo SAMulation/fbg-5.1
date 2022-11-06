@@ -66,6 +66,16 @@ export const animationWaitThenHide = async (el, cls, on = true) => {
   }
 }
 
+export const animationWaitThenHideParent = async (el, cls, on = true) => {
+  if (!on) {
+    el.parentElement.style.display = ''
+  }
+  await animationWaitForCompletion(el.parentElement, cls, on)
+  if (on) {
+    el.parentElement.style.display = 'none'
+  }
+}
+
 export const animationPrePick = async (run, game, p) => {
   // if (game.isReal(p)) {
   await animationWaitForCompletion(run.cardsContainer, 'slide-down', false)

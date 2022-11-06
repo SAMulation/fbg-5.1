@@ -39,7 +39,7 @@
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  width: min-content;
+  width: auto;
   will-change: transform,opacity;
   z-index: 0;
 }
@@ -79,6 +79,11 @@
   box-shadow: rgba(60, 64, 67, .3) 0 1px 3px 0, rgba(60, 64, 67, .15) 0 4px 8px 3px;
 }
 
+.fade {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
 .start-screen {
   z-index: 100;
   background-color: dodgerblue;
@@ -91,6 +96,7 @@
 }
 
 .start-screen .start-screen-header {
+  z-index: 300;
   grid-area: top / left / mid / right;
   background: black;
   display: flex;
@@ -103,19 +109,21 @@
 
 .start-screen .start-screen-content {
   grid-area: mid / left / bot / right;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template: [top] 1fr [bot] / [left] 1fr [right];
+
+  transition: opacity 0.5s;
 }
 
 .start-screen .start-screen-content > section {
-  width: 100%;
-  height: 100%;
+  grid-area: top / left / bot / right;
+  background: dodgerblue;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
+
+  transition: all 0.5s;
 }
 
 .start-screen .start-screen-content .login {
@@ -125,13 +133,21 @@
   justify-content: center; */
 }
 
+.start-screen-login {
+  z-index: 200;
+}
+
+.start-screen-game-pick {
+  z-index: 190;
+}
+
 .start-screen h1.title-ball {
   font-size: 25vw;
 }
 
 .start-screen h1.title-text {
-  font-family: 'Cabin', sans-serif;
-  font-weight: bolder;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 1000;
   font-size: 10vw;
 }
 
