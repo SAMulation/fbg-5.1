@@ -37,6 +37,7 @@ pusher.signin()
 
 // FIX: REMOVE LATER - Set to window for easy access
 const site = new Site(document.querySelector('.main-container'))
+const resumeSelection = document.getElementById('resume-game')
 window.site = site
 window.inputType = 'button'
 
@@ -166,6 +167,7 @@ const EnablePlayButton = (button) => {
 
 const initGame = (site) => {
   const user = [null, null, null]
+
   if (window.inputType === 'prompt') {
     window.inputType = new PromptInput()
   } else if (window.inputType === 'form') {
@@ -185,10 +187,17 @@ const initGame = (site) => {
     }
   }
 
-  return new Game({ me: site.me, connections: site.connections, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, site.animation, user[1], user[2], window.inputType)
+  if (site.connectionType === 'resume') {
+    return new Game(window.localStorage.getItem('savedGame'))
+  } else {
+    return new Game(null, { me: site.me, connections: site.connections, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, site.animation, user[1], user[2], window.inputType)
+  }
 }
 
 // MAIN FUNCTION CALLS
+if (window.localStorage.getItem('savedGame')) {
+  resumeSelection.disabled = false
+}
 await setTeamLists(document.querySelectorAll('.teamList'))
 submitTeams(site, document.querySelector('#gameForm'))
 pressPlayButton(document.querySelector('.playButton'), site)

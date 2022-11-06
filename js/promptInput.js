@@ -3,6 +3,7 @@ import { EXIT } from './defaults.js'
 
 export default class PromptInput extends TextInput {
   async getInput (game, p, type, newText = null) {
+    this.type = 'prompt'
     // Get legal choices
     this.makeChoices(game, type, p)
 

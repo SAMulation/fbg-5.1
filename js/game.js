@@ -4,45 +4,107 @@ import Run from './run.js'
 import ButtonInput from './buttonInput.js'
 import Utils from './remoteUtils.js'
 import { CHANGE, INIT, INIT_OTC } from './defaults.js'
+import PromptInput from './promptInput.js'
+import FormInput from './formInput.js'
 
 export default class Game {
-  constructor (connection, team1, team2, numberPlayers, gameType, home, qtrLength, animation, stats1, stats2, input = new ButtonInput(), mults = null, yards = null) {
-    this.gameType = gameType
-    this.numberPlayers = numberPlayers
-    this.home = home
-    this.away = this.opp(this.home)
-    this.down = 0
-    this.firstDown = null
-    this.lastCallTO = 0
-    this.otPoss = -1
-    this.over = false
-    this.qtr = 0
-    this.qtrLength = qtrLength
-    this.recFirst = null // Set in coin toss
-    this.spot = 65
-    this.status = INIT // Defined in defaults.js, diff nums for diff plays
-    this.changeTime = CHANGE // Defined in defaults.js, diff nums for diff states of time change
-    this.turnover = false
-    this.twoMinWarning = false
-    this.twoPtConv = false
-    this.offNum = this.opp(this.recFirst)
-    this.defNum = this.recFirst
-    this.currentTime = this.qtrLength
-    this.thisPlay = new Play()
-    this.players = { 1: new Player(this, team1, stats1), 2: new Player(this, team2, stats2) }
-    this.mults = mults
-    this.yards = yards
-    this.lastSpot = this.spot
-    this.recap = []
-    this.me = connection.me
-    this.statusOnExit = INIT
-    this.lastPlay = 'Start of game'
-    this.animation = animation
+  constructor (resume = null, connection = null, team1 = null, team2 = null, numberPlayers = 1, gameType = 'reg', home = 1, qtrLength = 7, animation = true, stats1 = null, stats2 = null, input = new ButtonInput(), mults = null, yards = null) {
+    if (resume) {
+      const tempGame = JSON.parse(resume)
 
-    this.connection = connection
+      this.gameType = tempGame.gameType
+      this.numberPlayers = tempGame.numberPlayers
+      this.home = tempGame.home
+      this.away = this.opp(this.home)
+      this.down = tempGame.down
+      this.firstDown = tempGame.firstDown
+      this.lastCallTO = tempGame.lastCallTO
+      this.otPoss = tempGame.otPoss
+      this.over = tempGame.over
+      this.qtr = tempGame.qtr
+      this.qtrLength = tempGame.qtrLength
+      this.recFirst = tempGame.recFirst
+      this.spot = tempGame.spot
+      this.status = tempGame.status
+      this.changeTime = tempGame.changeTime
+      this.turnover = tempGame.turnover
+      this.twoMinWarning = tempGame.twoMinWarning
+      this.twoPtConv = tempGame.twoPtConv
+      this.offNum = tempGame.offNum
+      this.defNum = tempGame.defNum
+      this.currentTime = tempGame.currentTime
+      this.thisPlay = new Play()
+      this.players = { 1: new Player(JSON.parse(tempGame.players)[1], this, team1, stats1), 2: new Player(JSON.parse(tempGame.players)[2], this, team2, stats2) }
+      this.mults = JSON.parse(tempGame.mults)
+      this.yards = JSON.parse(tempGame.yards)
+      this.lastSpot = tempGame.lastSpot
+      this.recap = JSON.parse(tempGame.recap)
+      this.statusOnExit = tempGame.statusOnExit
+      this.lastPlay = tempGame.lastPlay
+      this.animation = tempGame.animation
+      this.connection = JSON.parse(tempGame.connection)
+      if (this.connection.connections) {
+        this.connection.connections = JSON.parse(this.connection.connections)
+      }
+      this.me = this.connection.me
+      this.run = JSON.parse(tempGame.run)
+    } else {
+      this.gameType = gameType
+      this.numberPlayers = numberPlayers
+      this.home = home
+      this.away = this.opp(this.home)
+      this.down = 0
+      this.firstDown = null
+      this.lastCallTO = 0
+      this.otPoss = -1
+      this.over = false
+      this.qtr = 0
+      this.qtrLength = qtrLength
+      this.recFirst = null // Set in coin toss
+      this.spot = 65
+      this.status = INIT // Defined in defaults.js, diff nums for diff plays
+      this.changeTime = CHANGE // Defined in defaults.js, diff nums for diff states of time change
+      this.turnover = false
+      this.twoMinWarning = false
+      this.twoPtConv = false
+      this.offNum = this.opp(this.recFirst)
+      this.defNum = this.recFirst
+      this.currentTime = this.qtrLength
+      this.thisPlay = new Play()
+      this.players = { 1: new Player(null, this, team1, stats1), 2: new Player(null, this, team2, stats2) }
+      this.mults = mults
+      this.yards = yards
+      this.lastSpot = this.spot
+      this.recap = []
+      this.me = connection.me
+      this.statusOnExit = INIT
+      this.lastPlay = 'Start of game'
+      this.animation = animation
+      this.connection = connection
+    }
 
     // Pass input class to game constructor
-    this.run = new Run(this, input)
+    if (resume) {
+      const tempRun = this.run
+      let inputType = null
+
+      // Get last input type used
+      if (this.run.input === 'prompt') {
+        inputType = new PromptInput()
+      } else if (this.run.input === 'form') {
+        inputType = new FormInput()
+      } else {
+        inputType = new ButtonInput()
+      }
+      this.run = new Run(this, inputType)
+
+      // Reset the following values
+      this.run.alert = tempRun.alert
+      this.run.transmissions = JSON.parse(tempRun.transmissions)
+      this.run.gameLog = JSON.parse(tempRun.gameLog)
+    } else {
+      this.run = new Run(this, input)
+    }
 
     if (!this.mults) {
       this.fillMults()
@@ -73,7 +135,6 @@ export default class Game {
         gameType: this.gameType,
         numberPlayers: this.numberPlayers,
         home: this.home,
-        away: this.away,
         down: this.down,
         firstDown: this.firstDown,
         lastCallTO: this.lastCallTO,
@@ -101,7 +162,8 @@ export default class Game {
         statusOnExit: this.status,
         lastPlay: this.lastPlay,
         animation: this.animation,
-        connection: JSON.stringify(this.connection) // this.connection
+        connection: JSON.stringify(this.connection), // this.connection
+        run: JSON.stringify(this.run)
       }
     }
   }

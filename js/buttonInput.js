@@ -15,6 +15,7 @@ export default class ButtonInput extends BaseInput {
 
   async getInput (game, p, type, msg = null) {
     let selection = null
+    this.type = 'button'
 
     if (game.isReal(p)) { // game.me === p
       selection = await this.prepareAndGetUserInput(game, p, type, msg)
