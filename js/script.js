@@ -8,7 +8,7 @@ import PromptInput from './promptInput.js'
 import FormInput from './formInput.js'
 import { TEAMS } from './teams.js'
 import Utils from './remoteUtils.js'
-import { animationWaitThenHide } from './graphics.js'
+import { animationWaitForCompletion, animationWaitThenHide } from './graphics.js'
 const channel = null
 
 // Enable pusher logging - don't include this in production
@@ -39,8 +39,10 @@ pusher.signin()
 // FIX: REMOVE LATER - Set to window for easy access
 const site = new Site(document.querySelector('.main-container'))
 const resumeSelection = document.getElementById('resume-game')
+const startScreen = document.querySelector('.start-screen')
 const setupButtons = document.querySelectorAll('.setup-button')
-const loginButton = document.querySelector('.login-button')
+const loginPanel = document.querySelector('.start-screen-login')
+const gamePickPanel = document.querySelector('.start-screen-game-pick')
 window.site = site
 window.inputType = 'button'
 
@@ -58,9 +60,14 @@ const attachNextEvent = async (site, buttons) => {
     button.addEventListener('click', async event => {
       const val = event.target.getAttribute('data-button-value')
 
-      if (val === 'resume') {
+      if (val === 'login') {
+        await animationWaitThenHide(loginPanel, 'fade')
+        await animationWaitForCompletion(gamePickPanel, 'fade', false)
+      } else if (val === 'resume') {
+        await animationWaitThenHide(startScreen, 'fade')
         site.connectionType = 'resume'
-        initGame(site)
+        site.game = initGame(site)
+        playGame(site.game)
       } else if (val === 'single') {
         // Pull player 1
       } else if (val === 'multi') {
@@ -68,8 +75,6 @@ const attachNextEvent = async (site, buttons) => {
       } else if (val === 'about') {
         // Pull up about
       }
-
-      await animationWaitThenHide(button.parentElement, 'fade')
     })
   })
 }
