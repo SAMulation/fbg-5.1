@@ -12,6 +12,7 @@ export default class Game {
     if (resume) {
       const tempGame = JSON.parse(resume)
 
+      this.resume = true
       this.gameType = tempGame.gameType
       this.numberPlayers = tempGame.numberPlayers
       this.home = tempGame.home
@@ -43,12 +44,15 @@ export default class Game {
       this.lastPlay = tempGame.lastPlay
       this.animation = tempGame.animation
       this.connection = JSON.parse(tempGame.connection)
+      this.connection.pusher = connection.pusher
+      this.connection.gamecode = connection.gamecode
       if (this.connection.connections) {
         this.connection.connections = JSON.parse(this.connection.connections)
       }
       this.me = this.connection.me
       this.run = JSON.parse(tempGame.run)
     } else {
+      this.resume = false
       this.gameType = gameType
       this.numberPlayers = numberPlayers
       this.home = home
@@ -120,13 +124,13 @@ export default class Game {
 
     this.connection.toJSON = () => {
       return {
-        channel: this.channel,
-        connections: JSON.stringify(this.connections),
-        gamecode: this.gamecode,
-        host: this.host,
-        me: this.me,
+        channel: this.connection.channel,
+        connections: JSON.stringify(this.connection.connections),
+        gamecode: null,
+        host: this.connection.host,
+        me: this.connection.me,
         pusher: null,
-        type: this.type
+        type: this.connection.type
       }
     }
 
@@ -153,7 +157,7 @@ export default class Game {
         defNum: this.defNum,
         currentTime: this.currentTime,
         thisPlay: JSON.stringify(this.thisPlay), // null, // this.thisPlay,
-        players: JSON.stringify({ 1: JSON.stringify(this.players[1]), 2: JSON.stringify(this.players[1]) }), // this.players,
+        players: JSON.stringify({ 1: JSON.stringify(this.players[1]), 2: JSON.stringify(this.players[2]) }), // this.players,
         mults: JSON.stringify(this.mults), // this.mults,
         yards: JSON.stringify(this.yards), // this.yards,
         lastSpot: this.lastSpot,
