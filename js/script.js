@@ -8,6 +8,7 @@ import PromptInput from './promptInput.js'
 import FormInput from './formInput.js'
 import { TEAMS } from './teams.js'
 import Utils from './remoteUtils.js'
+import { animationWaitThenHide } from './graphics.js'
 const channel = null
 
 // Enable pusher logging - don't include this in production
@@ -38,6 +39,8 @@ pusher.signin()
 // FIX: REMOVE LATER - Set to window for easy access
 const site = new Site(document.querySelector('.main-container'))
 const resumeSelection = document.getElementById('resume-game')
+const setupButtons = document.querySelectorAll('.setup-button')
+const loginButton = document.querySelector('.login-button')
 window.site = site
 window.inputType = 'button'
 
@@ -47,6 +50,15 @@ const playGame = async (game) => {
 
   // LATER: Get ready for next game
   // EnablePlayButton(document.querySelector('.playButton'))
+}
+
+// Attach 'next' event listeners to setup buttons
+const attachNextEvent = async buttons => {
+  buttons.forEach(async button => {
+    button.addEventListener('click', async event => {
+      await animationWaitThenHide(button.parentElement, 'fade')
+    })
+  })
 }
 
 // SITE FUNCTIONS
@@ -202,3 +214,4 @@ if (window.localStorage.getItem('savedGame')) {
 await setTeamLists(document.querySelectorAll('.teamList'))
 submitTeams(site, document.querySelector('#gameForm'))
 // pressPlayButton(document.querySelector('.playButton'), site)
+attachNextEvent(setupButtons)
