@@ -53,9 +53,22 @@ const playGame = async (game) => {
 }
 
 // Attach 'next' event listeners to setup buttons
-const attachNextEvent = async buttons => {
+const attachNextEvent = async (site, buttons) => {
   buttons.forEach(async button => {
     button.addEventListener('click', async event => {
+      const val = event.target.getAttribute('data-button-value')
+
+      if (val === 'resume') {
+        site.connectionType = 'resume'
+        initGame(site)
+      } else if (val === 'single') {
+        // Pull player 1
+      } else if (val === 'multi') {
+        // Pull up next multiplayer choice
+      } else if (val === 'about') {
+        // Pull up about
+      }
+
       await animationWaitThenHide(button.parentElement, 'fade')
     })
   })
@@ -214,4 +227,4 @@ if (window.localStorage.getItem('savedGame')) {
 await setTeamLists(document.querySelectorAll('.teamList'))
 submitTeams(site, document.querySelector('#gameForm'))
 // pressPlayButton(document.querySelector('.playButton'), site)
-attachNextEvent(setupButtons)
+attachNextEvent(site, setupButtons)
