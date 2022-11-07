@@ -1,5 +1,5 @@
 import BaseInput from './baseInput.js'
-import { alertBox, animationSimple, animationWaitForCompletion, sleep } from './graphics.js'
+import { alertBox, animationSimple, animationWaitForCompletion } from './graphics.js'
 
 export default class ButtonInput extends BaseInput {
   // Old version
