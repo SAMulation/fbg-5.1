@@ -28,10 +28,32 @@
             <button class="setup-button multi-button" data-button-value="multi">New Multiplayer</button>
             <button class="setup-button about-button" data-button-value="about">About</button>
           </section>
+          <section class="start-screen-multi-pick fade">
+            <button class="setup-button resume-button" data-button-value="local-multi">Local Multiplayer (😁 + 😁 + 📱)</button>
+            <button class="setup-button single-button" data-button-value="online-multi">Online Multiplayer (😁 + 📱 vs. 😁 + 📱)</button>
+            <button class="setup-button multi-button" data-button-value="story">SAMulation (Pit the computer against itself 😉)</button>
+            <button class="setup-button multi-button" data-button-value="story-online">Online SAMulation (Sorry, this is only for testing 😭)</button>
+          </section>
+          <section class="start-screen-online-pick fade">
+            <button class="setup-button resume-button" data-button-value="host">Make me the host</button>
+            <button class="setup-button single-button" data-button-value="remote">I have a game code</button>
+          </section>
+          <section class="start-screen-host-code fade">
+            <p class="game-code">Here is your game code: <span>0000</span></p>
+            <button class="setup-button resume-button" data-button-value="sms">Tap to text friend</button>
+            <button class="setup-button single-button" data-button-value="copy">Tap to copy code</button>
+            <button class="setup-button resume-button" data-button-value="host-next">Tap after inviting...</button>
+          </section>
+          <section class="start-screen-remote-code fade">
+            <label>Enter your gamecode below:</label>
+            <input class="game-code-input" type="text">
+            <button class="setup-button resume-button" data-button-value="paste">Tap to paste copied code</button>
+            <button class="setup-button resume-button" data-button-value="remote-next">Tap after entering code...</button>
+          </section>
           <section class="start-screen-team1 fade">
             <div class="selection pl1">
               <form>
-                <label for="p1Team">Select your team</label>
+                <label id="p1-selection-label" for="p1Team">Select your team</label>
                 <select id="p1Team" class="teamList" name="p1Team">
                     <option value="">Select your team</option>
                 </select>
@@ -44,9 +66,9 @@
           <section class="start-screen-team2 fade">
             <div class="selection pl2">
               <form>
-                <label for="p2Team">Select computer team</label>
+                <label id="p2-selection-label" for="p2Team">Select computer team</label>
                 <select id="p2Team" class="teamList" name="p2Team">
-                    <option value="">Select computer team</option>
+                    <option value="">Select computer's team</option>
                 </select>
                 <br>
               </form>
@@ -56,13 +78,13 @@
           </section>
           <section class="start-screen-game-options fade">
             <!-- Game type here -->
-            <label for="quantity">Whose home?</label>
+            <label for="quantity">Who's the home team?</label>
             <input type="number" id="pick-home" name="home" value="1" min="1" max="2">
             
-            <label for="quantity">Quarter Length (between 1-15)</label>
+            <label for="quantity">Quarter length (between 1-15)</label>
             <input type="number" id="pick-qtrlen" name="quantity" value="7" min="1" max="15">
             
-            <button class="setup-button about-button" data-button-value="game-setup-next">Next</button>
+            <button class="setup-button about-button" data-button-value="game-options-next">Next</button>
           </section>
         </section>
       </section>

@@ -107,7 +107,7 @@ body {
 
 .cards-container button, .board-container button .to-butt1 *, .to-butt2 * {
   /* font-family: 'calc', sans-serif; */
-  font-size: 0.5rem;
+  font-size: 0.75rem;
   line-height: 1rem;
   padding: 1%;
 }
@@ -653,8 +653,8 @@ input {
   .cards-container .cards button.card {
     flex-basis: 110px;
     border: 4px solid white;
-    /* font-size: .75rem; */
-    line-height: 1.1rem;
+    font-size: .75rem;
+    line-height: 1rem;
   }
 
   .front-top {
