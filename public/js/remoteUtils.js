@@ -1,4 +1,3 @@
-import { sleep } from './graphics.js'
 export default {
 
   async randInt (min, max, game = null, p = null) {

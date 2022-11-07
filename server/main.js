@@ -34,6 +34,8 @@ router.post('/pusher/auth', (req, res) => {
   res.send(authReponse)
 })
 
-app.use('/.netlify/functions/main', router);  // path must route to lambda
+app.use('/.netlify/functions/main', router) // path must route to lambda
+app.use(express.static('public'))
 
+module.exports = app
 module.exports.handler = serverless(app)
