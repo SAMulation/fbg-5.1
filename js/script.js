@@ -16,9 +16,9 @@ Pusher.logToConsole = true
 
 const pusher = new Pusher('41b31f79c4e658e350a5', {
   userAuthentication: {
-    endpoint: '/pusher/user-auth'
+    endpoint: '/.netlify/functions/main/pusher/user-auth'
   },
-  channelAuthorization: { endpoint: '/pusher/auth' },
+  channelAuthorization: { endpoint: '/.netlify/functions/main/pusher/auth' },
   cluster: 'us3'
 })
 

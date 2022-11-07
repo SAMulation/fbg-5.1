@@ -4,7 +4,8 @@
   "description": "A football game for bored people.",
   "main": "script2.test.js",
   "scripts": {
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "build": "netlify-lambda build server"
   },
   "repository": {
     "type": "git",
@@ -19,10 +20,12 @@
   "devDependencies": {
     "@babel/preset-env": "^7.19.1",
     "jest": "^29.0.3",
+    "netlify-lambda": "^2.0.15",
     "standard": "^17.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "encoding": "^0.1.13",
     "express": "^4.18.2",
     "pusher": "^5.1.1-beta",
     "random": "^3.0.6",
