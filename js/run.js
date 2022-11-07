@@ -74,6 +74,12 @@ export default class Run {
   // }
 
   async prepareHTML (game) {
+    // Initial field height
+    this.docStyle.setProperty('--ball-spot', (this.field.offsetHeight / 100 * (100 - game.spot) + 42) + 'px')
+    window.addEventListener('resize', event => {
+      this.docStyle.setProperty('--ball-spot', (this.field.offsetHeight / 100 * (100 - game.spot) + 42) + 'px')
+    })
+
     setSpot(this, game.resume ? null : 65) // Place ball
     await this.moveBall(game, game.resume ? 'show' : 'show/clear')
     // alert('Waiting for other game')
