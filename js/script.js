@@ -1,5 +1,5 @@
 /* global Pusher */
-/* global alert, prompt */
+/* global prompt */
 import Team from './team.js'
 import Game from './game.js'
 import Site from './site.js'
@@ -258,37 +258,37 @@ const generateCode = async (site) => {
   }
 }
 
-const submitTeams = async (site, submit) => {
-  submit.addEventListener('submit', async event => {
-    event.preventDefault()
-    let el
-    const value = [-1, -1]
-    let valid = true
-    site.connectionType = submit.elements.connection.value
-    connections(site, site.connectionType)
+// const submitTeams = async (site, submit) => {
+//   submit.addEventListener('submit', async event => {
+//     event.preventDefault()
+//     let el
+//     const value = [-1, -1]
+//     let valid = true
+//     site.connectionType = submit.elements.connection.value
+//     connections(site, site.connectionType)
 
-    await generateCode(site)
+//     await generateCode(site)
 
-    for (let t = 0; t < 2 && valid; t++) {
-      el = document.getElementById('p' + (t + 1) + 'Team')
-      value[t] = el.selectedIndex
+//     for (let t = 0; t < 2 && valid; t++) {
+//       el = document.getElementById('p' + (t + 1) + 'Team')
+//       value[t] = el.selectedIndex
 
-      if (value[t] === -1) {
-        valid = false
-      }
-    }
+//       if (value[t] === -1) {
+//         valid = false
+//       }
+//     }
 
-    if (valid && value[0] !== -1 && value[1] !== -1) {
-      site.team1 = value[0]
-      site.team2 = value[1]
-      site.game = initGame(site)
-      window.game = site.game
-      // document.querySelector('.playButton').disabled = false
-      document.querySelector('.playSubmit').disabled = true
-      playGame(site.game)
-    }
-  })
-}
+//     if (valid && value[0] !== -1 && value[1] !== -1) {
+//       site.team1 = value[0]
+//       site.team2 = value[1]
+//       site.game = initGame(site)
+//       window.game = site.game
+//       // document.querySelector('.playButton').disabled = false
+//       document.querySelector('.playSubmit').disabled = true
+//       playGame(site.game)
+//     }
+//   })
+// }
 
 const submitGame = async (site, type) => {
   let el
@@ -353,18 +353,18 @@ const initGame = (site) => {
   }
 
   // Remote passes team, host waits for it
-  if (site.connectionType === 'host') {
+  // if (site.connectionType === 'host' || site.connectionType === 'computer-host') {
 
-  } else if (site.connectionType === 'remote') {
+  // } else if (site.connectionType === 'remote') {
 
-  }
+  // }
 
-  // Host passes site, remote waits for it
-  if (site.connectionType === 'host') {
+  // // Host passes site, remote waits for it
+  // if (site.connectionType === 'host') {
 
-  } else if (site.connectionType === 'remote') {
+  // } else if (site.connectionType === 'remote' || site.connectionType === 'computer-remote') {
 
-  }
+  // }
 
   if (site.connectionType === 'resume') {
     return new Game(window.localStorage.getItem('savedGame'), { gamecode: site.gamecode, pusher })
