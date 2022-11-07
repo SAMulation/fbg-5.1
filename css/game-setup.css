@@ -148,12 +148,28 @@
   z-index: 190;
 }
 
-.start-screen-team1 {
+.start-screen-multi-pick {
   z-index: 180;
 }
 
+.start-screen-online-pick {
+  z-index: 170;
+}
+
+.start-screen-host-code {
+  z-index: 160;
+}
+
+.start-screen-remote-code {
+  z-index: 150;
+}
+
+.start-screen-team1 {
+  z-index: 130;
+}
+
 .start-screen-team2 {
-  z-index: 175;
+  z-index: 120;
 }
 
 .start-screen-game-options {

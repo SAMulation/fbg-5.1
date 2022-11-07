@@ -44,9 +44,17 @@ const titleBall = document.querySelector('.title-ball')
 const setupButtons = document.querySelectorAll('.setup-button')
 const loginPanel = document.querySelector('.start-screen-login')
 const gamePickPanel = document.querySelector('.start-screen-game-pick')
+const multiPickPanel = document.querySelector('.start-screen-multi-pick')
+const onlinePickPanel = document.querySelector('.start-screen-online-pick')
+const hostCodePanel = document.querySelector('.start-screen-host-code')
+const gamecodeSpan = hostCodePanel.querySelector('span')
+const remoteCodePanel = document.querySelector('.start-screen-remote-code')
+const gamecodeInput = remoteCodePanel.querySelector('.game-code-input')
 const team1Panel = document.querySelector('.start-screen-team1')
+const team1SelectionLabel = document.getElementById('p1-selection-label')
 const team2Panel = document.querySelector('.start-screen-team2')
-const gameOptions = document.querySelector('.start-screen-game-options')
+const team2SelectionLabel = document.getElementById('p2-selection-label')
+const gameOptionsPanel = document.querySelector('.start-screen-game-options')
 const pickHome = document.getElementById('pick-home')
 const pickQtrLen = document.getElementById('pick-qtrlen')
 window.site = site
@@ -58,6 +66,10 @@ const playGame = async (game) => {
 
   // LATER: Get ready for next game
   // EnablePlayButton(document.querySelector('.playButton'))
+}
+
+const hideElement = el => {
+  el.style.display = 'none'
 }
 
 // Attach 'next' event listeners to setup buttons
@@ -76,23 +88,98 @@ const attachNextEvent = async (site, buttons) => {
         site.game = initGame(site)
         playGame(site.game)
       } else if (val === 'single') {
+        hideElement(multiPickPanel)
+        hideElement(onlinePickPanel)
+        hideElement(hostCodePanel)
+        hideElement(remoteCodePanel)
         site.connectionType = 'single'
         await animationWaitThenHide(gamePickPanel, 'fade')
         await animationWaitForCompletion(team1Panel, 'fade', false)
       } else if (val === 'multi') {
-        // Pull up next multiplayer choice
+        await animationWaitThenHide(gamePickPanel, 'fade')
+        await animationWaitForCompletion(multiPickPanel, 'fade', false)
       } else if (val === 'about') {
         // Pull up about
+      } else if (val === 'local-multi') {
+        hideElement(onlinePickPanel)
+        hideElement(hostCodePanel)
+        hideElement(remoteCodePanel)
+        site.connectionType = 'double'
+        await animationWaitThenHide(multiPickPanel, 'fade')
+        team2SelectionLabel.innerText = 'Select player 2\'s team'
+        await animationWaitForCompletion(team1Panel, 'fade', false)
+      } else if (val === 'online-multi') {
+        hideElement(team2Panel)
+        await animationWaitThenHide(multiPickPanel, 'fade')
+        await animationWaitForCompletion(onlinePickPanel, 'fade', false)
+      } else if (val === 'story') {
+        hideElement(onlinePickPanel)
+        hideElement(hostCodePanel)
+        hideElement(remoteCodePanel)
+        site.connectionType = 'computer'
+        await animationWaitThenHide(multiPickPanel, 'fade')
+        team1SelectionLabel.innerText = 'Select player 1\'s team'
+        team2SelectionLabel.innerText = 'Select player 2\'s team'
+        await animationWaitForCompletion(team1Panel, 'fade', false)
+      } else if (val === 'story-online') {
+        let storyType = null
+        hideElement(onlinePickPanel)
+        hideElement(hostCodePanel)
+        hideElement(remoteCodePanel)
+        while (storyType !== 'host' && storyType !== 'remote') {
+          storyType = prompt('Is this the [host] or the [remote]?')
+        }
+        site.connectionType = 'computer-' + (storyType === 'host' ? 'host' : 'remote')
+        await generateCode(site)
+        await animationWaitThenHide(multiPickPanel, 'fade')
+        team1SelectionLabel.innerText = 'Select player 1\'s team'
+        team2SelectionLabel.innerText = 'Select player 2\'s team'
+        await animationWaitForCompletion(team1Panel, 'fade', false)
+      } else if (val === 'host') {
+        site.connectionType = 'host'
+        hideElement(remoteCodePanel)
+        await generateCode(site)
+        gamecodeSpan.innerText = site.gamecode
+
+        await animationWaitThenHide(onlinePickPanel, 'fade')
+        await animationWaitForCompletion(hostCodePanel, 'fade', false)
+      } else if (val === 'remote') {
+        site.connectionType = 'remote'
+        hideElement(hostCodePanel)
+
+        await animationWaitThenHide(onlinePickPanel, 'fade')
+        await animationWaitForCompletion(remoteCodePanel, 'fade', false)
+      } else if (val === 'sms') {
+        // window.location.href = 'sms://&body=It%27s%20football%20season!%20Let%27s%20play%20some%20FootBored.%20Head%20to%20footbored.com%20and%20use%20the%20code:%20' + site.gamecode
+        window.location.href = 'sms:?&body=It%27s%20football%20season!%20Let%27s%20play%20some%20FootBored.%20Head%20to%20footbored.com%20and%20use%20the%20code:%20' + site.gamecode
+      } else if (val === 'copy') {
+        navigator.clipboard.writeText(site.gamecode)
+      } else if (val === 'host-next') {
+        await animationWaitThenHide(hostCodePanel, 'fade')
+        await animationWaitForCompletion(team1Panel, 'fade', false)
+      } else if (val === 'paste') {
+        gamecodeInput.value = await navigator.clipboard.readText()
+      } else if (val === 'remote-next') {
+        site.gamecode = gamecodeInput.value
+        await animationWaitThenHide(remoteCodePanel, 'fade')
+        await animationWaitForCompletion(team1Panel, 'fade', false)
       } else if (val === 'p1-next') {
         await animationWaitThenHide(team1Panel, 'fade')
-        await animationWaitForCompletion(team2Panel, 'fade', false)
+        if (site.connectionType === 'host') {
+          await animationWaitForCompletion(gameOptionsPanel, 'fade', false)
+        } else if (site.connectionType === 'remote') {
+          hideElement(gameOptionsPanel)
+          submitGame(site, site.connectionType)
+        } else {
+          await animationWaitForCompletion(team2Panel, 'fade', false)
+        }
       } else if (val === 'p2-next') {
         await animationWaitThenHide(team2Panel, 'fade')
-        await animationWaitForCompletion(gameOptions, 'fade', false)
-      } else if (val === 'game-setup-next') {
+        await animationWaitForCompletion(gameOptionsPanel, 'fade', false)
+      } else if (val === 'game-options-next') {
         site.home = parseInt(pickHome.value)
         site.qtrLength = parseInt(pickQtrLen.value)
-        await animationWaitThenHide(gameOptions, 'fade')
+        await animationWaitThenHide(gameOptionsPanel, 'fade')
         submitGame(site, site.connectionType)
       }
     })
@@ -160,9 +247,9 @@ const connections = (site, type) => {
 const generateCode = async (site) => {
   if (site.connectionType === 'host') {
     site.gamecode = await Utils.randInt(1000, 9999)
-    alert("Here's your game code: " + site.gamecode)
+    //  alert("Here's your game code: " + site.gamecode)
   } else if (site.connectionType === 'remote') {
-    site.gamecode = prompt('Enter your game code:')
+    // site.gamecode = prompt('Enter your game code:')
     // LATER: Make sure to validate this somewhere
   } else if (site.connectionType === 'computer-host') {
     site.gamecode = 6969
@@ -209,8 +296,6 @@ const submitGame = async (site, type) => {
   let valid = true
   site.connectionType = type
   connections(site, site.connectionType)
-
-  await generateCode(site)
 
   for (let t = 0; t < 2 && valid; t++) {
     el = document.getElementById('p' + (t + 1) + 'Team')
@@ -265,6 +350,20 @@ const initGame = (site) => {
     } else {
       user[p] = window.localStorage.getItem('user' + p)
     }
+  }
+
+  // Remote passes team, host waits for it
+  if (site.connectionType === 'host') {
+
+  } else if (site.connectionType === 'remote') {
+
+  }
+
+  // Host passes site, remote waits for it
+  if (site.connectionType === 'host') {
+
+  } else if (site.connectionType === 'remote') {
+
   }
 
   if (site.connectionType === 'resume') {
