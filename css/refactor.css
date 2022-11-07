@@ -39,6 +39,10 @@ body {
     env(safe-area-inset-left, 0);
 }
 
+a {
+  text-decoration: none;
+}
+
 .main-container {
   /* background: white; */
   /* width: calc(var(--width));
@@ -63,6 +67,14 @@ body {
   grid-template-rows: min-content minmax(0, 2fr) minmax(0, 1fr); */
   
   row-gap: 0%;
+}
+
+.landscape {
+  z-index: 1000;
+  background-color: black;
+  color: white;
+  grid-area: top / left-all / bot / right-all;
+  display: none;
 }
 
 /* Responsive
@@ -508,15 +520,18 @@ input {
 
 
 
-/* @media screen and (orientation:portrait) { 
-  .scoreboard-container {
+@media screen and (orientation:landscape) and (max-width: 900px) { 
+  /* .scoreboard-container {
     display: grid;
     grid-template:
       [top] 15% [hm] 3% [content-top] 2fr [mid] 2fr [content-bot] 3% [to] 15% [bot]
       /
       [left] var(--rad) [away] 2% [away-to] 3fr [away-score] 2.5fr [clockl] 2fr [mid] 2fr [clockr] 2.5fr [home-score] 3fr [home-to] 2% [home] var(--rad) [right];
+  } */
+  .landscape {
+    display: block;
   }
- } */
+}
 
 .flip-card {
   /* position: relative; */
