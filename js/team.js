@@ -6,9 +6,9 @@ export default class Team {
     if (typeof (name) === 'object') {
       abrv = name.abrv
       city = name.city
-      name = name.name
       color1 = name.color1
       color2 = name.color2
+      name = name.name
     } else {
       const index = name
       city = TEAMS[index].city

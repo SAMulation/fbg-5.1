@@ -4,7 +4,7 @@ import Team from './team.js'
 export default class Player {
   // need to access quarter from parent Game class
   // minimum req: Player(game, team)
-  constructor (resume = null, game, team, stats, init = true, score = 0, time = 3, plays = null, hm = 3) {
+  constructor (resume = null, game, team, stats = null, init = true, score = 0, time = 3, plays = null, hm = 3) {
     if (resume) {
       const tempPlayer = JSON.parse(resume)
 

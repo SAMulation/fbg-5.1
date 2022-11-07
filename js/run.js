@@ -1,6 +1,7 @@
 /* global Pusher */
 /* global alert, debugger */
 
+import Player from './player.js'
 import Stat from './stat.js'
 import Utils from './remoteUtils.js'
 import { Queue } from './queue.js'
@@ -76,6 +77,37 @@ export default class Run {
     setSpot(this, game.resume ? null : 65) // Place ball
     await this.moveBall(game, game.resume ? 'show' : 'show/clear')
     // alert('Waiting for other game')
+    if (game.isMultiplayer()) {
+      // Initial message
+      if (game.connection.host) {
+        await this.receiveInputFromRemote()
+      } else {
+        await this.sendInputToRemote('Initial check-in... we must trade data')
+      }
+
+      // Host gets player 2's team
+      if (game.connection.host) {
+        const team2 = await this.receiveInputFromRemote()
+        game.players[2] = new Player(null, game, JSON.parse(team2))
+      } else {
+        await this.sendInputToRemote(JSON.stringify(game.players[1].team))
+      }
+
+      // Remote gets player 1's team and other game info
+      if (game.connection.host) {
+        await this.sendInputToRemote(JSON.stringify({ team: game.players[1].team, qtrlen: game.qtrLength, home: game.home }))
+      } else {
+        let tempData = await this.receiveInputFromRemote()
+        tempData = JSON.parse(tempData)
+        // Copy player '1' to actual player 2
+        game.players[2] = new Player(null, game, game.players[1].team)
+        game.players[1] = new Player(null, game, tempData.team)
+        game.qtrLength = parseInt(tempData.qtrlen)
+        game.home = parseInt(tempData.home)
+        game.away = game.opp(game.home)
+        game.me = 2
+      }
+    }
 
     // Set teams' colors
     document.documentElement.style.setProperty('--away-color1', game.players[game.away].team.color1)
@@ -103,20 +135,6 @@ export default class Run {
       if (data.value === null || data.value === undefined) throw new Error('got empty value from remote')
       this.inbox.enqueue(data.value)
     })
-
-    if (this.game.isMultiplayer()) {
-      // Initial message
-      if (this.game.connection.host) {
-        await this.receiveInputFromRemote()
-      } else {
-        await this.sendInputToRemote('Initial check-in... we must trade data')
-      }
-
-      // Host gets player 2's team
-      if (this.game.connection.host) {
-        // this.game.players[2]
-      }
-    }
 
     await this.prepareHTML(this.game) // Set up game board and field
     await this.gameLoop(this.game, this.game.status) // Start the game loop
