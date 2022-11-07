@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const serverless = require('serverless-http')
 const Pusher = require('pusher')
 const pusher = new Pusher({
   appId: '1496101',
@@ -30,5 +31,5 @@ app.post('/pusher/auth', (req, res) => {
   const authReponse = pusher.authorizeChannel(socketId, channel)
   res.send(authReponse)
 })
-const port = process.env.PORT || 5001
-app.listen(port)
+
+module.exports.handler = serverless(app)
