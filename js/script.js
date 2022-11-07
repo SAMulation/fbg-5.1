@@ -126,6 +126,7 @@ const attachNextEvent = async (site, buttons) => {
         hideElement(onlinePickPanel)
         hideElement(hostCodePanel)
         hideElement(remoteCodePanel)
+        hideElement(team2Panel)
         while (storyType !== 'host' && storyType !== 'remote') {
           storyType = prompt('Is this the [host] or the [remote]?')
         }

@@ -282,7 +282,7 @@ export default class Run {
     console.log('checkpoint')
 
     console.log(game.me + ' decPick before: ' + decPick)
-    decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'))
+    decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'), (actFlip === coinPick ? game.away : game.home) + ' decide whether to kick or receive...')
 
     // if (game.connection.type === 'host' || game.connection.type === 'remote') {
     //   if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
