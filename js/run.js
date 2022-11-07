@@ -76,13 +76,7 @@ export default class Run {
     setSpot(this, game.resume ? null : 65) // Place ball
     await this.moveBall(game, game.resume ? 'show' : 'show/clear')
     // alert('Waiting for other game')
-    if (game.isMultiplayer()) {
-      if (game.connection.host) {
-        await this.receiveInputFromRemote()
-      } else {
-        await this.sendInputToRemote('Initial check-in... LET\'S PLAY!!!')
-      }
-    }
+
     // Set teams' colors
     document.documentElement.style.setProperty('--away-color1', game.players[game.away].team.color1)
     document.documentElement.style.setProperty('--away-color2', game.players[game.away].team.color2)
@@ -109,6 +103,20 @@ export default class Run {
       if (data.value === null || data.value === undefined) throw new Error('got empty value from remote')
       this.inbox.enqueue(data.value)
     })
+
+    if (this.game.isMultiplayer()) {
+      // Initial message
+      if (this.game.connection.host) {
+        await this.receiveInputFromRemote()
+      } else {
+        await this.sendInputToRemote('Initial check-in... we must trade data')
+      }
+
+      // Host gets player 2's team
+      if (this.game.connection.host) {
+        // this.game.players[2]
+      }
+    }
 
     await this.prepareHTML(this.game) // Set up game board and field
     await this.gameLoop(this.game, this.game.status) // Start the game loop
