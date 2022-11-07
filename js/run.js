@@ -105,7 +105,9 @@ export default class Run {
         game.qtrLength = parseInt(tempData.qtrlen)
         game.home = parseInt(tempData.home)
         game.away = game.opp(game.home)
-        game.me = 2
+        if (game.numberPlayers) {
+          game.me = 2
+        }
       }
     }
 
@@ -2090,6 +2092,8 @@ export default class Run {
 
     animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
     animationSimple(this.scoreboardContainerBotRight, 'collapsed')
+    animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
+    animationSimple(this.scoreboardContainerTopRight, 'collapsed')
 
     document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = 'FootBored'
     document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2 + ' | Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')

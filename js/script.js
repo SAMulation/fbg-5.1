@@ -40,7 +40,7 @@ pusher.signin()
 const site = new Site(document.querySelector('.main-container'))
 const resumeSelection = document.getElementById('resume-game')
 const startScreen = document.querySelector('.start-screen')
-const titleBall = document.querySelector('.title-ball')
+const titleBall = startScreen.querySelector('.title-ball')
 const setupButtons = document.querySelectorAll('.setup-button')
 const loginPanel = document.querySelector('.start-screen-login')
 const gamePickPanel = document.querySelector('.start-screen-game-pick')
@@ -132,8 +132,6 @@ const attachNextEvent = async (site, buttons) => {
         site.connectionType = 'computer-' + (storyType === 'host' ? 'host' : 'remote')
         await generateCode(site)
         await animationWaitThenHide(multiPickPanel, 'fade')
-        team1SelectionLabel.innerText = 'Select player 1\'s team'
-        team2SelectionLabel.innerText = 'Select player 2\'s team'
         await animationWaitForCompletion(team1Panel, 'fade', false)
       } else if (val === 'host') {
         site.connectionType = 'host'
@@ -165,9 +163,9 @@ const attachNextEvent = async (site, buttons) => {
         await animationWaitForCompletion(team1Panel, 'fade', false)
       } else if (val === 'p1-next') {
         await animationWaitThenHide(team1Panel, 'fade')
-        if (site.connectionType === 'host') {
+        if (site.connectionType === 'host' || site.connectionType === 'computer-host') {
           await animationWaitForCompletion(gameOptionsPanel, 'fade', false)
-        } else if (site.connectionType === 'remote') {
+        } else if (site.connectionType === 'remote' || site.connectionType === 'computer-remote') {
           hideElement(gameOptionsPanel)
           submitGame(site, site.connectionType)
         } else {
