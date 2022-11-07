@@ -16,9 +16,9 @@ Pusher.logToConsole = true
 
 const pusher = new Pusher('41b31f79c4e658e350a5', {
   userAuthentication: {
-    endpoint: 'http://localhost:5001/pusher/user-auth'
+    endpoint: '/pusher/user-auth'
   },
-  channelAuthorization: { endpoint: 'http://localhost:5001/pusher/auth' },
+  channelAuthorization: { endpoint: '/pusher/auth' },
   cluster: 'us3'
 })
 
