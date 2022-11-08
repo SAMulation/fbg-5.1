@@ -38,6 +38,12 @@ body {
     env(safe-area-inset-bottom, 0)
     env(safe-area-inset-left, 0);
 }
+/* .chat {
+  position: absolute;
+  z-index: 2000;
+  top: 50%;
+  right: 0;
+} */
 
 a {
   text-decoration: none;
@@ -287,11 +293,27 @@ input {
 
 .field-container .ball{
   position: absolute;
-  top: calc(var(--ball-spot) + 10px);
-  transform: rotate(312deg);
+  /* top: calc(var(--ball-spot) + 10px); */
+  /* transform: rotate(312deg); */
   font-size: 1rem;
   margin: 0 auto;
+  transform: translateY(calc(var(--ball-spot) - 10px));
   transition: all .25s;
+}
+
+.field .first-down-line {
+  height: 100%;
+  width: 100;
+  transform: translateY(calc(var(--first-down) - 5px));
+}
+
+.field .first-down-line hr {
+  width: 100%;
+  height: 1%;
+  border: 1px solid yellow;
+  margin: 0 auto;
+  display: block;
+  background: yellow;
 }
 
 .board-container {
@@ -694,6 +716,10 @@ input {
 
   .start-screen-header h1.title-text {
     font-size: 64px;
+  }
+
+  .field-container .ball {
+    transform: translateY(calc(var(--ball-spot) - 14px));
   }
 
 }

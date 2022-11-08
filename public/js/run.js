@@ -6,7 +6,7 @@ import Stat from './stat.js'
 import Utils from './remoteUtils.js'
 import { Queue } from './queue.js'
 import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT } from './defaults.js'
-import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer } from './graphics.js'
+import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer, firstDownLine } from './graphics.js'
 
 export default class Run {
   constructor (game, input) {
@@ -141,7 +141,8 @@ export default class Run {
     this.channel = this.game.connection.pusher.subscribe('private-game-' + this.game.connection.gamecode)
     this.channel.bind('client-value', (data) => {
       if (data.value === null || data.value === undefined) throw new Error('got empty value from remote')
-      this.inbox.enqueue(data.value)
+      // this.inbox.enqueue(data.value)
+      this.inbox.enqueue(data)
     })
 
     await this.prepareHTML(this.game) // Set up game board and field
@@ -221,20 +222,55 @@ export default class Run {
 
   // Sending message away
   async sendInputToRemote (value) {
+    const expectedLogIndex = this.gameLog.length
+    let returnedMessage = null
     if (value === null || value === undefined) throw new Error('attempted to send empty value')
-    this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
-    this.transmissions.push({ msg: value, type: 'sent' })
-    this.channel.trigger('client-value', { value })
+    // this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
+    // this.transmissions.push({ msg: value, type: 'sent' })
+    // this.channel.trigger('client-value', { value })
+    // await sleep(100)
+    do {
+      await this.justSend(value, expectedLogIndex)
+      returnedMessage = await this.justReceive()
+      if (returnedMessage.value !== 'confirm') {
+        console.log('Did not receive confirm message from recipient')
+        debugger
+      }
+    } while (returnedMessage.value !== 'confirm')
+    this.gameLog.push({ value })
+    console.log(this.gameLog)
+  }
+
+  async justSend (value, expectedLogIndex = -1) {
+    this.channel.trigger('client-value', { value, expectedLogIndex })
     await sleep(100)
+  }
+
+  async justReceive () {
+    await sleep(100)
+    const value = await this.inbox.dequeue()
+    return value
   }
 
   // Receiving message
   async receiveInputFromRemote () {
-    await sleep(100)
-    const value = await this.inbox.dequeue()
-    this.transmissions.push({ msg: value, type: 'recd' })
-    this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
-    return value
+    // await sleep(100)
+    // const value = await this.inbox.dequeue()
+    const message = await this.justReceive()
+
+    // As expected
+    if (message.expectedLogIndex === this.gameLog.length) {
+      this.gameLog.push({ value: message.value })
+      console.log(this.gameLog)
+      await this.justSend('confirm')
+    }
+
+    // Ok to send to game
+    return message.value
+
+    // this.transmissions.push({ msg: value, type: 'recd' })
+    // this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
+    // return value
   }
 
   async remoteCommunication (game, p, value = null, msg = null) {
@@ -879,8 +915,13 @@ export default class Run {
 
   async prePlay (game, stat) {
     if (game.isMultiplayer()) {
-      await this.sendInputToRemote('check-in: ' + (this.transmissions.length + (game.connection.host ? 0 : 1)))
-      await this.receiveInputFromRemote()
+      if (game.connection.host) {
+        await this.receiveInputFromRemote()
+      } else {
+        await this.sendInputToRemote('Pre-play check-in. Last play: ' + game.lastPlay)
+      }
+      // await this.sendInputToRemote('check-in: ' + (this.transmissions.length + (game.connection.host ? 0 : 1)))
+      // await this.receiveInputFromRemote()
     }
 
     // Autosave
@@ -2003,8 +2044,8 @@ export default class Run {
 
       if (game.animation) {
         await this.reportPlay(game, p1, p2)
-      } else {
-        this.gameLog.push('Last play: ' + p1 + ' v ' + p2 + ' | ' + 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss'))
+      // } else {
+      //   this.gameLog.push('Last play: ' + p1 + ' v ' + p2 + ' | ' + 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss'))
       }
 
       // if (!game.twoPtConv && game.status < FG || game.status > PUNT) {
@@ -2341,7 +2382,7 @@ export default class Run {
     if (game.spot > game.firstDown || coin) {
       if (game.down !== 0) {
         await alertBox(this, 'First down!')
-        // print_down(game);
+        firstDownLine(this)
       }
       game.down = 1
 
