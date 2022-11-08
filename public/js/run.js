@@ -219,6 +219,7 @@ export default class Run {
     return value
   }
 
+  // Sending message away
   async sendInputToRemote (value) {
     if (value === null || value === undefined) throw new Error('attempted to send empty value')
     this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
@@ -227,6 +228,7 @@ export default class Run {
     await sleep(100)
   }
 
+  // Receiving message
   async receiveInputFromRemote () {
     await sleep(100)
     const value = await this.inbox.dequeue()
