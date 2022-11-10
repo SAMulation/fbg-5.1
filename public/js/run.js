@@ -75,13 +75,16 @@ export default class Run {
 
   async prepareHTML (game) {
     // Initial field height
-    this.docStyle.setProperty('--ball-spot', (this.field.offsetHeight / 100 * (100 - game.spot) + 42) + 'px')
+    this.docStyle.setProperty('--ball-spot', (100 - game.spot) + '%')
+    this.docStyle.setProperty('--first-down', (100 - game.firstDown) + '%')
     window.addEventListener('resize', event => {
-      this.docStyle.setProperty('--ball-spot', (this.field.offsetHeight / 100 * (100 - game.spot) + 42) + 'px')
+      this.docStyle.setProperty('--ball-spot', (100 - game.spot) + '%')
+      this.docStyle.setProperty('--first-down', (100 - game.firstDown) + '%')
     })
 
     setSpot(this, game.resume ? null : 65) // Place ball
     await this.moveBall(game, game.resume ? 'show' : 'show/clear')
+    // await this.updateDown(game)
     // alert('Waiting for other game')
     if (game.isMultiplayer()) {
       // Initial message
@@ -936,6 +939,8 @@ export default class Run {
     game.thisPlay.bonus = 0
     game.players[1].currentPlay = null
     game.players[2].currentPlay = null
+
+    firstDownLine(this)
 
     if (game.status > KICK) {
       animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
@@ -2091,7 +2096,7 @@ export default class Run {
       game.thisPlay.yardCard = 0
     }
 
-    if (!game.thisPlay.dist) {
+    if (game.thisPlay.dist === null) {
       game.thisPlay.dist = Math.round(game.thisPlay.yardCard * game.thisPlay.multiplier) + game.thisPlay.bonus
     }
 
