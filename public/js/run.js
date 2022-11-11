@@ -107,6 +107,7 @@ export default class Run {
         await this.sendInputToRemote(JSON.stringify({ team: game.players[1].team, qtrlen: game.qtrLength, home: game.home }))
       } else {
         let tempData = await this.receiveInputFromRemote()
+        console.log(tempData)
         tempData = JSON.parse(tempData)
         // Copy player '1' to actual player 2
         game.players[2] = new Player(null, game, game.players[1].team)
@@ -145,7 +146,7 @@ export default class Run {
     this.channel.bind('client-value', (data) => {
       if (data.value === null || data.value === undefined) throw new Error('got empty value from remote')
       // this.inbox.enqueue(data.value)
-      this.inbox.enqueue(data)
+      this.inbox.enqueue(data.value)
     })
     await new Promise((resolve, reject) => {
       this.channel.bind('pusher:subscription_succeeded', resolve)
@@ -230,23 +231,11 @@ export default class Run {
 
   // Sending message away
   async sendInputToRemote (value) {
-    const expectedLogIndex = this.gameLog.length
-    let returnedMessage = null
     if (value === null || value === undefined) throw new Error('attempted to send empty value')
-    // this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
-    // this.transmissions.push({ msg: value, type: 'sent' })
-    // this.channel.trigger('client-value', { value })
-    // await sleep(100)
-    do {
-      await this.justSend(value, expectedLogIndex)
-      returnedMessage = await this.justReceive()
-      if (returnedMessage.value !== 'confirm') {
-        console.log('Did not receive confirm message from recipient')
-        debugger
-      }
-    } while (returnedMessage.value !== 'confirm')
-    this.gameLog.push({ value })
-    console.log(this.gameLog)
+    this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
+    this.transmissions.push({ msg: value, type: 'sent' })
+    this.channel.trigger('client-value', { value })
+    await sleep(100)
   }
 
   async justSend (value, expectedLogIndex = -1) {
@@ -262,23 +251,11 @@ export default class Run {
 
   // Receiving message
   async receiveInputFromRemote () {
-    // await sleep(100)
-    // const value = await this.inbox.dequeue()
-    const message = await this.justReceive()
-
-    // As expected
-    if (message.expectedLogIndex === this.gameLog.length) {
-      this.gameLog.push({ value: message.value })
-      console.log(this.gameLog)
-      await this.justSend('confirm')
-    }
-
-    // Ok to send to game
-    return message.value
-
-    // this.transmissions.push({ msg: value, type: 'recd' })
-    // this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
-    // return value
+    await sleep(100)
+    const value = await this.inbox.dequeue()
+    this.transmissions.push({ msg: value, type: 'recd' })
+    this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
+    return value
   }
 
   async remoteCommunication (game, p, value = null, msg = null) {
