@@ -574,6 +574,11 @@ input {
   transition: transform 0.5s;
 } */
 
+.flip-card.picked .card-content {
+  transform: rotateY( 180deg ) ;
+  transition: transform 0.5s;
+}
+
 .front,
 .back {
   position: absolute;
