@@ -977,7 +977,7 @@ export default class Run {
     game.players[1].currentPlay = null
     game.players[2].currentPlay = null
 
-    firstDownLine(this)
+    await firstDownLine(this)
 
     if (game.status > KICK) {
       animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
@@ -986,7 +986,7 @@ export default class Run {
 
     resetBoardContainer(this)
 
-    if (!game.twoPtConv || game.changeTime !== 4) {
+    if (!game.twoPtConv && game.changeTime !== 4) {
       game.changeTime = 0
     }
 
@@ -1138,9 +1138,9 @@ export default class Run {
       let kick = false
 
       // End half and losing
-      endHalf = ((ono === p && (qtr === 2 || qtr === 4)) && pScore <= notPScore && ctim <= 1 && game.down !== 4)
+      endHalf = ((qtr === 2 || qtr === 4) && pScore <= notPScore && ctim <= 1 && game.down !== 4)
 
-      // Last minute with fav||able spot
+      // Last minute with favorable spot
       if (!endHalf) {
         lastMin = (((ono === 1 && spt < 50) || (ono === p && spt >= 50)) && qtr === 2 && ctim <= 1)
       }
@@ -1333,7 +1333,7 @@ export default class Run {
         await alertBox(this, game.players[p].team.name + ' selecting PAT type...')
         let selection = 'XP'
 
-        const diff = game.players[1].score - game.players[p].score
+        const diff = game.players[game.opp(p)].score - game.players[p].score
 
         if (diff === -5 || diff === -1 || diff === 2 || diff === 5 || diff === 9 || diff === 10 || diff === 13 || diff === 17 || diff === 18) {
           selection = '2P'
@@ -2330,6 +2330,7 @@ export default class Run {
 
   async touchdown (game) {
     await this.scoreChange(game, game.offNum, 6)
+    game.players[game.offNum].currentPlay = null
 
     // addRecap ( touchdown )
     if (this.patNec(game)) {
@@ -2424,7 +2425,7 @@ export default class Run {
     if (game.spot > game.firstDown || coin) {
       if (game.down !== 0) {
         await alertBox(this, 'First down!')
-        firstDownLine(this)
+        await firstDownLine(this)
       }
       game.down = 1
 
