@@ -57,6 +57,8 @@ const team2SelectionLabel = document.getElementById('p2-selection-label')
 const gameOptionsPanel = document.querySelector('.start-screen-game-options')
 const pickHome = document.getElementById('pick-home')
 const pickQtrLen = document.getElementById('pick-qtrlen')
+const loadingPanel = document.querySelector('.start-screen-loading')
+const loadingPanelText = loadingPanel.querySelector('h1')
 window.site = site
 window.inputType = 'button'
 
@@ -168,8 +170,10 @@ const attachNextEvent = async (site, buttons) => {
           await animationWaitForCompletion(gameOptionsPanel, 'fade', false)
         } else if (site.connectionType === 'remote' || site.connectionType === 'computer-remote') {
           hideElement(gameOptionsPanel)
+          await animationWaitForCompletion(loadingPanel, 'fade', false)
           submitGame(site, site.connectionType)
         } else {
+          loadingPanelText.innerText = 'Loading game...'
           await animationWaitForCompletion(team2Panel, 'fade', false)
         }
       } else if (val === 'p2-next') {
@@ -179,6 +183,7 @@ const attachNextEvent = async (site, buttons) => {
         site.home = parseInt(pickHome.value)
         site.qtrLength = parseInt(pickQtrLen.value)
         await animationWaitThenHide(gameOptionsPanel, 'fade')
+        await animationWaitForCompletion(loadingPanel, 'fade', false)
         submitGame(site, site.connectionType)
       }
     })
@@ -294,6 +299,9 @@ const submitGame = async (site, type) => {
   const value = [-1, -1]
   let valid = true
   site.connectionType = type
+
+  titleBall.classList.toggle('spin', true)
+
   connections(site, site.connectionType)
 
   for (let t = 0; t < 2 && valid; t++) {
@@ -338,17 +346,6 @@ const initGame = (site) => {
     window.inputType = new FormInput()
   } else {
     window.inputType = new ButtonInput()
-  }
-
-  for (let p = 1; p <= site.numberPlayers; p++) {
-    if (!window.localStorage.getItem('user' + p)) {
-      while (!user[p]) {
-        user[p] = prompt('What should I call player ' + p + '?', 'Player')
-        window.localStorage.setItem('user' + p, user[p])
-      }
-    } else {
-      user[p] = window.localStorage.getItem('user' + p)
-    }
   }
 
   // Remote passes team, host waits for it

@@ -133,6 +133,7 @@ a {
 p.tiny {
   font-size: .5rem;
   line-height: .75rem;
+  justify-self: center;
 }
 
 details p {
@@ -568,10 +569,10 @@ input {
   transform-style: preserve-3d;
 }
 
-.flip-card:hover .card-content, .flip-card.picked .card-content {
+/* .flip-card:hover .card-content, .flip-card.picked .card-content {
   transform: rotateY( 180deg ) ;
   transition: transform 0.5s;
-}
+} */
 
 .front,
 .back {
