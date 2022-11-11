@@ -33,6 +33,7 @@ export default class Run {
     this.timeoutButton = this.cardsContainer.querySelector('.to-butt')
     this.alertMessage = this.cardsContainer.querySelector('.bar-msg')
     this.ball = document.querySelector('.field-container .ball')
+    this.loadingPanelText = document.querySelector('.start-screen-loading h1')
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
     this.inbox = new Queue()
@@ -141,6 +142,10 @@ export default class Run {
     this.makeBarSlideable(this.cardsContainer)
   }
 
+  async multiplayerSetup () {
+
+  }
+
   async playGame () {
     this.channel = this.game.connection.pusher.subscribe('private-game-' + this.game.connection.gamecode)
     this.channel.bind('client-value', (data) => {
@@ -148,13 +153,49 @@ export default class Run {
       // this.inbox.enqueue(data.value)
       this.inbox.enqueue(data.value)
     })
+
     await new Promise((resolve, reject) => {
       this.channel.bind('pusher:subscription_succeeded', resolve)
       this.channel.bind('pusher:subscription_error', reject)
     })
-    console.log('subscription succeeded')
 
+    // Performing Initial Handshake
+    if (this.game.isMultiplayer()) {
+      console.log('subscription succeeded')
+      this.loadingPanelText.innerText = 'Successfully connected to channel!'
+      await sleep(500)
+
+      this.loadingPanelText.innerText = 'Waiting for other player...'
+      await sleep(500)
+
+      if (this.game.connection.host) {
+        let response = null
+        do {
+          this.sendInputToRemote('ping')
+          console.log('Host sent handshake')
+          const result = await Promise.race([sleep(5000), this.receiveInputFromRemote()])
+          console.log('Race result: ')
+          console.log(result)
+          if (result) {
+            response = result
+          }
+        } while (!response)
+      } else {
+        const handshake = await this.receiveInputFromRemote()
+        console.log('Remote received handshake:')
+        console.log(handshake)
+        this.sendInputToRemote('pong')
+        console.log('Remote sent confirmation')
+      }
+      this.loadingPanelText.innerText = 'Successfully connected to other player!'
+      await sleep(500)
+      this.loadingPanelText.innerText = 'Loading game...'
+    }
+
+    // Set up environment
     await this.prepareHTML(this.game) // Set up game board and field
+
+    // Load game up
     await this.gameLoop(this.game, this.game.status) // Start the game loop
   };
 
@@ -305,7 +346,7 @@ export default class Run {
     console.log('checkpoint')
 
     console.log(game.me + ' decPick before: ' + decPick)
-    decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'), (actFlip === coinPick ? game.away : game.home) + ' decide whether to kick or receive...')
+    decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'), (actFlip === coinPick ? awayName : homeName) + ' decide whether to kick or receive...')
 
     // if (game.connection.type === 'host' || game.connection.type === 'remote') {
     //   if ((actFlip === coinPick && game.away === game.me) || (actFlip !== coinPick && game.home === game.me)) {
