@@ -1,12 +1,12 @@
 /* global Pusher */
 /* global alert, debugger */
 
+import { DEF_TP, EXIT, FG, HAIL, INIT, INIT_OTC, KICK, KICKOFF, LEAVE, MATCHUP, MULTI, OFF_TP, PUNT, REG, SAFETY_KICK, SAME, TB, TD, TIMEOUT, TWOPT } from './defaults.js'
+import { alertBox, animationPostPick, animationPrePick, animationSimple, animationWaitForCompletion, animationWaitThenHide, firstDownLine, resetBoardContainer, setBallSpot, setSpot, sleep } from './graphics.js'
 import Player from './player.js'
-import Stat from './stat.js'
-import Utils from './remoteUtils.js'
 import { Queue } from './queue.js'
-import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT } from './defaults.js'
-import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer, firstDownLine } from './graphics.js'
+import Utils from './remoteUtils.js'
+import Stat from './stat.js'
 
 export default class Run {
   constructor (game, input) {
@@ -143,6 +143,10 @@ export default class Run {
       if (data.value === null || data.value === undefined) throw new Error('got empty value from remote')
       // this.inbox.enqueue(data.value)
       this.inbox.enqueue(data)
+    })
+    await new Promise((resolve, reject) => {
+      this.channel.bind('pusher:subscription_succeeded', resolve)
+      this.channel.bind('pusher:subscription_error', reject)
     })
 
     await this.prepareHTML(this.game) // Set up game board and field
