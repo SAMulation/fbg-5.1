@@ -147,6 +147,11 @@ export default class Run {
       // this.inbox.enqueue(data.value)
       this.inbox.enqueue(data)
     })
+    await new Promise((resolve, reject) => {
+      this.channel.bind('pusher:subscription_succeeded', resolve)
+      this.channel.bind('pusher:subscription_error', reject)
+    })
+    console.log('subscription succeeded')
 
     await this.prepareHTML(this.game) // Set up game board and field
     await this.gameLoop(this.game, this.game.status) // Start the game loop
