@@ -768,7 +768,7 @@ export default class Run {
       kickDist = -10 - tmp
       retDist = tmp + await Utils.rollDie(game, game.me)
 
-      // Squib Kick
+      // Squib Kickk
     } else {
       tmp = await Utils.rollDie(game, game.me)
       kickDist = -15 - 5 * tmp
