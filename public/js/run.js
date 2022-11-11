@@ -39,6 +39,7 @@ export default class Run {
     this.inbox = new Queue()
     this.transmissions = []
     this.gameLog = []
+    this.p2Team = ''
 
     this.toJSON = () => {
       return {
@@ -89,16 +90,23 @@ export default class Run {
     // alert('Waiting for other game')
     if (game.isMultiplayer()) {
       // Initial message
-      if (game.connection.host) {
-        await this.receiveInputFromRemote()
-      } else {
-        await this.sendInputToRemote('Initial check-in... we must trade data')
-      }
+      // if (game.connection.host) {
+      //   await this.receiveInputFromRemote()
+      //   await this.sendInputToRemote('We good...')
+      // } else {
+      //   await this.sendInputToRemote('Initial check-in... we must trade data')
+      //   await this.receiveInputFromRemote()
+      // }
 
       // Host gets player 2's team
-      if (game.connection.host) {
+      if (game.connection.host && this.p2Team !== 'pong') {
+        game.players[2] = new Player(null, game, JSON.parse(this.p2Team))
+      } else if (game.connection.host) {
         const team2 = await this.receiveInputFromRemote()
+        console.log(team2)
+        console.log(team2.value)
         game.players[2] = new Player(null, game, JSON.parse(team2))
+      // Remote
       } else {
         await this.sendInputToRemote(JSON.stringify(game.players[1].team))
       }
@@ -170,21 +178,25 @@ export default class Run {
 
       if (this.game.connection.host) {
         let response = null
+        let result = []
         do {
-          this.sendInputToRemote('ping')
+          await this.sendInputToRemote('ping')
           console.log('Host sent handshake')
-          const result = await Promise.race([sleep(5000), this.receiveInputFromRemote()])
-          console.log('Race result: ')
-          console.log(result)
+          await Promise.race([sleep(5000), this.receiveInputFromRemote()]).then(value => {
+            result = value
+            console.log('Race result: ')
+            console.log(result)
+          })
           if (result) {
             response = result
           }
         } while (!response)
+        this.p2Team = response
       } else {
         const handshake = await this.receiveInputFromRemote()
         console.log('Remote received handshake:')
         console.log(handshake)
-        this.sendInputToRemote('pong')
+        await this.sendInputToRemote('pong')
         console.log('Remote sent confirmation')
       }
       this.loadingPanelText.innerText = 'Successfully connected to other player!'
@@ -293,6 +305,8 @@ export default class Run {
   // Receiving message
   async receiveInputFromRemote () {
     await sleep(100)
+    console.log('inbox:')
+    console.log(this.inbox.buffer)
     const value = await this.inbox.dequeue()
     this.transmissions.push({ msg: value, type: 'recd' })
     this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
