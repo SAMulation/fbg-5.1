@@ -1499,15 +1499,25 @@ export default class Run {
   }
 
   printPoss (game, scoreboard) {
-    const awayTeam = scoreboard.querySelector('.away.team')
-    const homeTeam = scoreboard.querySelector('.home.team')
+    // const awayTeam = scoreboard.querySelector('.away.team')
+    // const homeTeam = scoreboard.querySelector('.home.team')
+
+    // if (game.away === game.offNum) {
+    //   homeTeam.classList.toggle('poss', false)
+    //   awayTeam.classList.toggle('poss', true)
+    // } else {
+    //   awayTeam.classList.toggle('poss', false)
+    //   homeTeam.classList.toggle('poss', true)
+    // }
+    const clockPoss = scoreboard.querySelector('.clock-poss')
+
+    // Turn off fade
+    clockPoss.classList.toggle('fade', false)
 
     if (game.away === game.offNum) {
-      homeTeam.classList.toggle('poss', false)
-      awayTeam.classList.toggle('poss', true)
+      clockPoss.classList.toggle('poss-home', false)
     } else {
-      awayTeam.classList.toggle('poss', false)
-      homeTeam.classList.toggle('poss', true)
+      clockPoss.classList.toggle('poss-home', true)
     }
   }
 
@@ -2303,7 +2313,7 @@ export default class Run {
     }
 
     await animationWaitForCompletion(nameEl, 'just-scored')
-    nameEl.classList.toggle('poss')
+    // nameEl.classList.toggle('poss')
     await animationWaitForCompletion(scoreEl, 'just-scored')
     nameEl.innerText = msg1
     await animationWaitForCompletion(nameEl, 'just-scored', false)
@@ -2315,7 +2325,7 @@ export default class Run {
     await animationWaitForCompletion(scoreEl, 'just-scored', false)
     await animationWaitForCompletion(nameEl, 'just-scored')
     nameEl.innerText = temp
-    nameEl.classList.toggle('poss')
+    // nameEl.classList.toggle('poss')
     animationSimple(nameEl, 'just-scored', false)
 
     // Also add to the stats at this point
