@@ -232,26 +232,56 @@
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
     aspect-ratio: 1 / 1;
     display: grid;
-    grid-template: 25% 50% 25% / 1fr;
+    /* grid-template: 25% 50% 25% / 1fr; */
+    grid-template: [top] 2% [poss-top] 3% [logo-top] 25% [time-top] 40% [time-bot] 25% [qtr-bot] 3% [poss-bot] 2% [bot] / minmax(0, 1fr);
     justify-items: center;
     align-items: center;
-    border: .75vw solid white;
+    /* border: .75vw solid white; */
+  }
+
+  .clock-face {
+    grid-area: logo-top / 1 / qtr-bot / 2;
+    background: rgb(60, 60, 60);
+    z-index: 25;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+  }
+
+  .clock-poss {
+    grid-area: poss-top/ 1 / poss-bot / 2;
+    background: white;
+    z-index: 20;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    clip-path: inset(0 50% 0 0);
+    transition: transform 1s;
+    transition-timing-function: cubic-bezier(0.1, -0.3, 0.8, 0);
+  }
+
+  .clock-poss.poss-home {
+    transform: rotate(180deg);
+  }
+
+  .time, .qtr, .logo {
+    z-index: 30;
   }
 
   .time {
-    grid-row: 2;
+    grid-area: time-top/ 1 / time-bot / 2;
     font-size: 9vw;
   }
 
   .qtr {
-    font-size: 4vw;
-    grid-row: 3;
+    font-size: 3.75vw;
+    grid-area: time-bot/ 1 / qtr-bot / 2;
     margin-bottom: 7%;
   }
 
   .logo {
     font-size: 3vw;
-    grid-row: 1;
+    grid-area: logo-top/ 1 / time-top / 2;
     margin-top: 7%;
   }
 
