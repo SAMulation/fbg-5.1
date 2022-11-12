@@ -192,6 +192,12 @@ export default class Game {
     return notZeroPlayer && (localTwoPlayer || onlineTwoPlayerAndMe || localSinglePlayerAndMe)
   }
 
+  isComputer (num) {
+    const ZeroPlayer = this.numberPlayers === 0
+    const localSinglePlayerAndNotMe = this.connection.type === 'single' && num !== this.me
+    return ZeroPlayer || localSinglePlayerAndNotMe
+  }
+
   isOT () {
     return this.qtr > 4
   }

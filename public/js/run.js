@@ -59,7 +59,7 @@ export default class Run {
       if (this.cardsContainer.classList.contains('slide-down')) {
         this.timeoutButton.disabled = true
       } else {
-        if (this.timeoutButton.timeouts && this.game.changeTime === 0) {
+        if (this.timeoutButton.timeouts && this.game.changeTime === CHANGE) {
           this.timeoutButton.disabled = false
         }
       }
@@ -709,8 +709,8 @@ export default class Run {
     // Handle computer timeouts, special plays
     while (game.status !== EXIT && !game.players[game.offNum].currentPlay) {
       let selection = null
-      if (!game.isReal(game.offNum)) {
-        if (game.changeTime === 0) {
+      if (game.isComputer(game.offNum)) {
+        if (game.changeTime === CHANGE) {
           await this.cpuTime(game, game.offNum)
         }
         await this.cpuPlay(game, game.offNum)
@@ -738,8 +738,8 @@ export default class Run {
 
     while (game.status !== EXIT && !game.players[game.defNum].currentPlay) {
       let selection = null
-      if (!game.isReal(game.defNum)) {
-        if (game.changeTime === 0) {
+      if (game.isComputer(game.defNum)) {
+        if (game.changeTime === CHANGE) {
           await this.cpuTime(game, game.defNum)
         }
         await this.cpuPlay(game, game.defNum)
@@ -905,7 +905,7 @@ export default class Run {
       game.spot = 25
       await this.moveBall('show')
       // Return Timeout
-      if (game.changeTime === 4) {
+      if (game.changeTime === TIMEOUT) {
         await this.returnTime(game)
       }
       if (game.twoMinWarning) {
@@ -939,14 +939,18 @@ export default class Run {
     if (game.status < 900 && ((game.qtr === 2 || game.qtr === 4) && game.currentTime === 0) && !game.changeTime) {
       for (let p = 1; p <= 2; p++) {
         // Real and have a timeout, one's not been called
-        if (game.isReal(p) && game.players[p].timeouts && !game.changeTime) {
+        if (!game.isComputer(p) && game.players[p].timeouts && !game.changeTime) {
           console.log('p: ' + p + ' changeTime: ' + game.changeTime)
-          alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end! Last chance for the ' + game.players[p].team.name + ' to call a timeout!')
+          if (game.me === p) {
+            alert('The ' + (game.qtr === 2 ? 'half' : 'game') + ' is about to end! Last chance for the ' + game.players[p].team.name + ' to call a timeout!')
+          }
 
           selection = await this.input.getInput(game, p, 'last', game.players[p].team.name + ' call a timeout?')
 
           if (selection === 'Y') {
+            const storePlay = game.players[p].currentPlay
             await this.timeout(game, p)
+            game.players[p].currentPlay = storePlay
           }
         }
       }
@@ -986,8 +990,8 @@ export default class Run {
 
     resetBoardContainer(this)
 
-    if (!game.twoPtConv && game.changeTime !== 4) {
-      game.changeTime = 0
+    if (!game.twoPtConv) { // } && game.changeTime === TIMEOUT) {
+      game.changeTime = CHANGE
     }
 
     if (game.turnover && game.down !== 1) {
@@ -1033,8 +1037,8 @@ export default class Run {
 
       // Handle computer timeouts, special plays
       while (game.status !== EXIT && !game.players[p].currentPlay) {
-        if (!game.isReal(p)) {
-          if (game.changeTime === 0) {
+        if (game.isComputer(p)) {
+          if (game.changeTime === CHANGE) {
             await this.cpuTime(game, p)
           }
           await this.cpuPlay(game, p)
@@ -1055,7 +1059,7 @@ export default class Run {
       }
 
       // Computer Stuff
-      // if (game.status !== EXIT && p === 2 && !game.isReal(2)) {
+      // if (game.status !== EXIT && p === 2 && !game.isComputer(2)) {
       //   // This is where the computer can call timeout or pick special play
       //   await alertBox(this, game.players[2].team.name + ' are picking their play...')
       //   document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = game.players[2].team.name + ' are picking their play...'
@@ -1175,7 +1179,7 @@ export default class Run {
       if (toCount > 0) {
         const to = game.callTime(p)
         game.lastCallTO = p
-        game.changeTime = 4
+        game.changeTime = TIMEOUT
         msg = 'Timeout called by ' + game.players[p].team.name
         document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + to).classList.add('called')
         // Disable button mid-play
@@ -1752,11 +1756,11 @@ export default class Run {
     } else {
       if (die >= 1 && die <= 3) {
         // If timeout called, return
-        if (game.changeTime === 4) {
+        if (game.changeTime === TIMEOUT) {
           await this.returnTime(game)
         }
 
-        game.changeTime = 2
+        game.changeTime = PEN_DOWN
 
         if (game.spot - 10 < 1) {
           game.thisPlay.dist = -Math.trunc(game.spot / 2) // Half the distance to the goal
@@ -1793,10 +1797,10 @@ export default class Run {
 
     if (die === 2) {
       // If timeout called, return
-      if (game.changeTime === 4) {
+      if (game.changeTime === TIMEOUT) {
         await this.returnTime(game)
       }
-      game.changeTime = 2
+      game.changeTime = PEN_DOWN
 
       // Offense Trick Play
       if (game.status === 12) {
@@ -1850,7 +1854,7 @@ export default class Run {
     await alertBox(this, name + ' attempting a ' + fdst + '-yard field goal...')
 
     // Ice kicker
-    if (game.changeTime === 4 && game.lastCallTO !== game.offNum) {
+    if (game.changeTime === TIMEOUT && game.lastCallTO !== game.offNum) {
       die++
       await alertBox(this, 'Kicker iced!')
     }
@@ -2235,19 +2239,19 @@ export default class Run {
         if (good) {
           await this.scoreChange(game, ono, 2)
         } else {
-          if (game.changeTime < 2 || game.changeTime > 3) {
+          if (game.changeTime < PEN_DOWN || game.changeTime > PEN_NO_DOWN) {
             await alertBox(this, oname + ' 2-point conversion no good!')
           }
         }
       } else if ((game.spot + dst <= 0 || game.spot + dst >= 100) && game.turnover) {
         await this.scoreChange(game, dno, 2)
       } else {
-        if (game.changeTime < 2 || game.changeTime > 3) {
+        if (game.changeTime < PEN_DOWN || game.changeTime > PEN_NO_DOWN) {
           await alertBox(this, oname + ' 2-point conversion no good!')
         }
       }
 
-      if (game.changeTime < 2 || game.changeTime > 3) {
+      if (game.changeTime < PEN_DOWN || game.changeTime > PEN_NO_DOWN) {
         game.twoPtConv = false
         if (!game.isOT()) {
           game.status = KICKOFF
@@ -2343,7 +2347,7 @@ export default class Run {
   };
 
   patNec (game) {
-    const endGameNoTO = game.qtr === 4 && game.currentTime === 0 && game.changeTime !== 4
+    const endGameNoTO = game.qtr === 4 && game.currentTime === 0 && game.changeTime !== TIMEOUT
     const endOT = game.isOT() && (game.otPoss === 1 || (game.otPoss === 2 && game.turnover))
     const scoreDiff = game.players[game.offNum].score > game.players[game.defNum].score || game.players[game.defNum].score - game.players[game.offNum].score > 2
 
@@ -2444,7 +2448,7 @@ export default class Run {
       coin = 1
     }
 
-    if (!coin && game.changeTime !== 2) {
+    if (!coin && game.changeTime !== PEN_DOWN) {
       game.down += 1
     }
 
@@ -2461,7 +2465,7 @@ export default class Run {
 
   async timeChanger (game) {
     console.log('timeChanger')
-    if (game.qtr <= 4 && game.changeTime === 0) {
+    if (game.qtr <= 4 && game.changeTime === CHANGE) {
       await this.tickingClock(game.currentTime, game.currentTime - 0.5)
       game.currentTime -= 0.5
       // Inc TOP for offense
