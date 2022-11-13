@@ -21,6 +21,7 @@ export default class Run {
     this.scoreboardContainerBotRight = document.querySelector('.scoreboard-container .home-msg.bot-msg')
     this.fieldContainer = document.querySelector('.field-container')
     this.field = this.fieldContainer.querySelector('.field')
+    this.coinImage = this.field.querySelector('.coin')
     this.boardContainer = document.querySelector('.board-container')
     this.plCard1 = document.querySelector('.board-container .pl-card1')
     this.plCard2 = document.querySelector('.board-container .pl-card2')
@@ -345,9 +346,12 @@ export default class Run {
     console.log(game.me + ' coinPick after: ' + coinPick)
 
     // Show result
-    result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '! '
-    result += ' ... '
-    // Some sort of graphic
+    result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '... The toss!'
+    await alertBox(this, result)
+    // await animationWaitForCompletion(this.coinImage, 'fade', true)
+    this.coinImage.classList.toggle('flip')
+    // await animationWaitForCompletion(this.coinImage, 'fade', false)
+    await sleep(2000)
     console.log(game.me + ' actFlip before: ' + actFlip)
 
     actFlip = await Utils.coinFlip(game, game.me) ? 'H' : 'T'
@@ -355,8 +359,15 @@ export default class Run {
 
     // Maybe away
 
-    result += 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
+    result = 'It was ' + (actFlip === 'H' ? 'heads' : 'tails') + '!'
+    this.coinImage.classList.toggle('flip')
+    if (actFlip === 'T') {
+      this.coinImage.classList.toggle('tails')
+    }
+    // await animationWaitForCompletion(this.coinImage, 'fade', false)
     await alertBox(this, result)
+    await sleep(2000)
+    await animationWaitThenHide(this.coinImage, 'fade')
     console.log('checkpoint')
 
     console.log(game.me + ' decPick before: ' + decPick)

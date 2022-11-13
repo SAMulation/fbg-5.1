@@ -14,12 +14,12 @@
 .setup-button {
   align-items: center;
   appearance: none;
-  background-color: #fff;
+  background-color: #efdcf9;
   border-radius: 50px;
   border-style: none;
   box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
   box-sizing: border-box;
-  color: #3c4043;
+  color: #323e42;
   display: inline-flex;
   fill: currentcolor;
   font-family: 'Cabin', sans-serif;
@@ -46,7 +46,7 @@
 
 .setup-button:hover, .setup-button:active, .setup-button:focus {
   background: #F6F9FE;
-  color: #174ea6;
+  color: #7954a1;
 }
 
 .setup-button:active {
@@ -86,7 +86,7 @@
 
 .start-screen {
   z-index: 100;
-  background-color: dodgerblue;
+  background-color: #7954a1;
   color: white;
   grid-area: top / left-all / bot / right-all;
   display: grid;
@@ -100,12 +100,13 @@
 .start-screen .start-screen-header {
   z-index: 300;
   grid-area: top / left / mid / right;
-  background: black;
+  background: #323e42;
   display: grid;
   /* flex-direction: column; */
   grid-template-rows: 8fr 4fr 1fr;
   align-items: center;
   box-shadow: 0 5px 10px rgb(34 34 34 / 50%);
+  color: white;
 }
 
 .start-screen-header h1 a {
@@ -123,7 +124,7 @@
 
 .start-screen .start-screen-content > section {
   grid-area: top / left / bot / right;
-  background: dodgerblue;
+  background: #7954a1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -179,13 +180,15 @@
   z-index: 105;
 }
 
-.start-screen h1.title-ball {
-  font-size: 25vw;
+.start-screen .title-ball img {
+  height: 50%;
+  width: 50%;
   transform: rotate(0deg);
 }
 
-.start-screen h1.title-ball.spin {
-  animation: rotate 2s linear infinite; 
+.start-screen .title-ball.spin img {
+  animation: rotate 2s linear infinite;
+  content:url(../img/football.png) 
 }
 
 @keyframes rotate{
