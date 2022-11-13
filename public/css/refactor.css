@@ -304,6 +304,20 @@ input {
   z-index: 300;
 }
 
+.field-container img.coin {
+  height: 50%;
+  margin-top: 10%;
+}
+
+.field-container img.coin.flip {
+  content: url(../img/flip.gif);
+}
+
+.field-container img.coin.tails {
+  content: url(../img/coin-tails.png);
+}
+
+
 .field .first-down-line {
   position: absolute;
   top: calc(var(--first-down) - 5px);
