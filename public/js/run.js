@@ -366,8 +366,9 @@ export default class Run {
     }
     // await animationWaitForCompletion(this.coinImage, 'fade', false)
     await alertBox(this, result)
-    await sleep(2000)
+    await sleep(1000)
     await animationWaitThenHide(this.coinImage, 'fade')
+    await animationWaitForCompletion(this.ball, 'fade', false)
     console.log('checkpoint')
 
     console.log(game.me + ' decPick before: ' + decPick)
