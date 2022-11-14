@@ -115,14 +115,53 @@ export const resetBoardContainer = (run) => {
   run.plCard2.querySelector('.back').innerText = ''
   run.multCard.querySelector('.back').innerText = ''
   run.yardCard.querySelector('.back').innerText = ''
-  run.qualityContainer.querySelector('.back').innerText = ''
-  run.timesContainer.querySelector('.back').innerText = ''
+  // run.qualityContainer.querySelector('.back').innerText = ''
+  // run.timesContainer.querySelector('.back').innerText = ''
 
   // Remove classes
   run.plCard1.classList.remove('picked')
+  run.plCard1.classList.remove('back-home')
   run.plCard2.classList.remove('picked')
+  run.plCard2.classList.remove('back-home')
   run.multCard.classList.remove('picked')
   run.yardCard.classList.remove('picked')
-  run.qualityContainer.classList.remove('picked')
-  run.timesContainer.classList.remove('picked')
+  run.plCard1.querySelector('.back').classList.remove('back-home')
+  run.plCard2.querySelector('.back').classList.remove('back-home')
+  // run.qualityContainer.classList.remove('picked')
+  // run.timesContainer.classList.remove('picked')
+
+  // Reset offensive squares
+  run.qualityOffPlays.forEach(square => {
+    // Turn off home
+    square.classList.toggle('home-play', false)
+    square.classList.remove('active')
+
+    if (run.game.offNum === run.game.home) {
+      square.classList.add('home-play')
+    }
+  })
+
+  // Reset defensive squares
+  run.qualityDefPlays.forEach(square => {
+    // Turn off home
+    square.classList.toggle('home-play', false)
+    square.classList.remove('active')
+
+    if (run.game.defNum === run.game.home) {
+      square.classList.add('home-play')
+    }
+  })
+
+  run.qualityContainer.querySelectorAll('div').forEach(square => {
+    square.classList.remove('active')
+  })
+
+  run.timesContainer.querySelectorAll('div').forEach(square => {
+    square.classList.remove('active')
+  })
+
+  run.timesHeader.classList = ''
+  run.timesHeader.classList.add('times-header')
+
+  run.qualityContainer.classList.toggle('fade', false)
 }

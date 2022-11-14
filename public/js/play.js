@@ -7,7 +7,7 @@ export default class Play {
   yardCard = null
   multiplier = null
   quality = null
-  quality_array = ['Best', 'Good', 'Okay', 'Decent', 'Worst']
+  quality_array = ['Best', 'Good', 'Decent', 'Okay', 'Worst']
 
   // get(attr) {
   //     return this[attr];

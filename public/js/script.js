@@ -232,19 +232,19 @@ const connections = (site, type) => {
     site.connections[2] = 'computer'
     site.numberPlayers = 0
     site.me = 0
-    site.animation = false
+    site.animation = true // false
   } else if (type === 'computer-host') {
     site.connections[1] = 'host'
     site.connections[2] = 'remote'
     site.numberPlayers = 0
     site.me = 0
-    site.animation = false
+    site.animation = true // false
   } else if (type === 'computer-remote') {
     site.connections[1] = 'host'
     site.connections[2] = 'remote'
     site.numberPlayers = 0
     site.me = 0
-    site.animation = false
+    site.animation = true // false
   }
 }
 

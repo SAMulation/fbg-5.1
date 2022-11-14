@@ -295,10 +295,11 @@ input {
 
 .field-container .ball{
   position: absolute;
-  top: calc(var(--ball-spot) - 10px);
-  transform: rotate(312deg);
+  top: calc(var(--ball-spot) - 0px);
+  transform: rotate(270deg);
   font-size: 1rem;
   margin: 0 auto;
+  width: 15%;
   /* transform: translateY(calc(var(--ball-spot) - 10px)); */
   transition: all .25s;
   z-index: 300;
@@ -338,8 +339,8 @@ input {
   max-width: 600px;
 
   display: grid;
-  grid-template-rows: 1fr 6fr 6fr 1fr;
-  grid-template-columns: 1fr 4fr 4fr 4fr 1fr;
+  grid-template-rows: 1fr 4fr 4fr 1fr;
+  grid-template-columns: 1fr 6fr 6fr 6fr 6fr 1fr;
   justify-items: center;
   gap: 2vw;
 
@@ -376,9 +377,9 @@ input {
 .board-container .quality-header {
   grid-area: 1 / 4 / 2 / 5;
 }
-.board-container .times-header {
+/* .board-container .times-header {
   grid-area: 4 / 4 / 5 / 5;
-}
+} */
 
 .board-container .pl-card1,
 .board-container .pl-card2,
@@ -404,7 +405,7 @@ input {
 }
 
 .board-container .mult-card {
-  grid-area: 2 / 3 / 3 / 4;
+  grid-area: 3 / 3 / 4 / 4;
 }
 
 .board-container .quality-container {
@@ -417,12 +418,145 @@ input {
 }
 
 .board-container .yard-card {
-  grid-area: 3 / 3 / 4 / 4;
+  grid-area: 3 / 5 / 4 / 6;
 }
 
 .board-container .times-container {
   grid-area: 3 / 4 / 4 / 5;
   height: 66%;
+}
+
+.board-container .call-quality-container {
+  height: 100%;
+  width: 100%;
+  background: white;
+  z-index: 1;
+  grid-area: 2 / 3 / 4 / 6;
+
+  display: grid;
+  grid-template-rows: 15% 1fr 10fr 1fr 2fr;
+
+  transition: opacity 0.5s;
+}
+
+.qual-header {
+  background: #323e42;
+  color: white;
+  grid-row: 1 / 2;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qual-table {
+  grid-row: 3 / 4;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.qual-table > div, .qual-footer > div, .times-footer > div {
+  background: dodgerblue;
+  color: white;
+  border: 1px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+div.def-play {
+  background: var(--away-color1);
+}
+
+div.def-play.home-play {
+  background: var(--home-color1);
+}
+
+div.off-play {
+  background: var(--away-color1);
+}
+
+div.off-play.home-play {
+  background: var(--home-color1);
+}
+
+div.qual-corner {
+  background: #323e42;
+}
+
+div.qual-worst {
+  background: purple;
+}
+
+div.qual-okay {
+  background: dodgerblue;
+}
+
+div.qual-decent {
+  background: rgb(22, 132, 0);
+}
+
+div.qual-good {
+  background: orange;
+}
+
+div.qual-best {
+  background: red;
+}
+
+div.times-10 {
+  background: rgb(49, 0, 41);
+}
+
+div.times-jack {
+  background: rgb(111, 0, 94);
+}
+
+div.times-queen {
+  background: rgb(182, 0, 155);
+}
+
+div.times-king {
+  background: rgb(234, 0, 199);
+}
+
+.qual-table div.active, .qual-footer div.active, .times-footer div.active {
+  border: 3px solid gold;
+}
+
+.qual-footer {
+  grid-row: 5 / 6;
+  color: white;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.board-container .times-reporter {
+  height: 100%;
+  width: 100%;
+  background: white;
+  grid-area: 2 / 3 / 3 / 6;
+
+  display: grid;
+  grid-template-rows: 30% 1fr 2fr;
+}
+
+.times-header {
+  background: #323e42;
+  color: white;
+  grid-row: 1 / 2;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.times-footer {
+  grid-row: 3 / 4;
+  color: white;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
 .cards-container {
@@ -631,13 +765,21 @@ input {
 }
 
 .back {
-  background: #005A9C;
+  background: var(--away-color1);
   color: white;
   transform: rotateY(180deg);
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 2rem;
+}
+
+.back-home {
+  background: var(--home-color1);
+}
+
+.front img {
+  width: 100%;
 }
 
 /* Responsive */
@@ -737,7 +879,7 @@ input {
   }
 
   .field-container .ball {
-    transform: translateY(calc(var(--ball-spot) - 14px));
+    top: calc(var(--ball-spot) - 5px);
   }
 
 }

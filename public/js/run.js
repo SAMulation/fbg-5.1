@@ -27,12 +27,21 @@ export default class Run {
     this.plCard2 = document.querySelector('.board-container .pl-card2')
     this.multCard = document.querySelector('.board-container .mult-card')
     this.yardCard = document.querySelector('.board-container .yard-card')
-    this.qualityContainer = document.querySelector('.board-container .quality-container')
-    this.timesContainer = document.querySelector('.board-container .times-container')
+    // this.qualityContainer = document.querySelector('.board-container .quality-container')
+    // this.timesContainer = document.querySelector('.board-container .times-container')
     this.cardsContainer = document.querySelector('.cards-container')
     this.actualCards = this.cardsContainer.querySelector('.cards')
     this.timeoutButton = this.cardsContainer.querySelector('.to-butt')
     this.alertMessage = this.cardsContainer.querySelector('.bar-msg')
+    this.qualityContainer = document.querySelector('.call-quality-container')
+    this.qualityHeader = this.qualityContainer.querySelector('.qual-header')
+    this.qualityFooter = this.qualityContainer.querySelector('.qual-footer')
+    this.qualityTable = this.qualityContainer.querySelector('.qual-table')
+    this.qualityOffPlays = this.qualityTable.querySelectorAll('.off-play')
+    this.qualityDefPlays = this.qualityTable.querySelectorAll('.def-play')
+    this.timesContainer = document.querySelector('.times-reporter')
+    this.timesHeader = this.timesContainer.querySelector('.times-header')
+    this.timesFooter = this.timesContainer.querySelector('.times-footer')
     this.ball = document.querySelector('.field-container .ball')
     this.loadingPanelText = document.querySelector('.start-screen-loading h1')
     this.docStyle = document.documentElement.style
@@ -789,15 +798,25 @@ export default class Run {
 
     await alertBox(this, 'Teams are lining up for the kick...')
     if (game.animation) {
+      animationSimple(this.qualityContainer, 'fade')
       animationSimple(this.scoreboardContainerTopLeft, 'collapsed')
       animationSimple(this.scoreboardContainerTopRight, 'collapsed')
       animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
       animationSimple(this.scoreboardContainerBotRight, 'collapsed')
       await animationWaitForCompletion(this.fieldContainer, 'slide-away')
-      this.plCard1.querySelector('.back').innerText = game.players[1].currentPlay
+
+      this.plCard1.querySelector('.back').innerText = game.players[game.offNum].currentPlay
+      if (game.offNum === game.home) {
+        this.plCard1.querySelector('.back').classList.add('back-home')
+      }
       await animationWaitForCompletion(this.plCard1, 'picked')
-      this.plCard2.querySelector('.back').innerText = game.players[2].currentPlay
+
+      this.plCard2.querySelector('.back').innerText = game.players[game.defNum].currentPlay
+      if (game.defNum === game.home) {
+        this.plCard2.querySelector('.back').classList.add('back-home')
+      }
       await animationWaitForCompletion(this.plCard2, 'picked')
+
       setBallSpot(this)
       await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     }
@@ -877,13 +896,37 @@ export default class Run {
       await alertBox(this, Math.abs(kickDist) + '-yard kick')
 
       if (game.animation) {
+        const qualityArray = [10, 5, 1, 0] // Kickoff
+
+        this.timesFooter.querySelector('.times-king').innerText = qualityArray[0] + 'X'
+        this.timesFooter.querySelector('.times-queen').innerText = qualityArray[1] + 'X'
+        this.timesFooter.querySelector('.times-jack').innerText = qualityArray[2] + 'X'
+        this.timesFooter.querySelector('.times-10').innerText = qualityArray[3] + 'X'
+
         await animationWaitForCompletion(this.fieldContainer, 'slide-away')
 
+        // this.multCard.querySelector('.back').innerText = multCard?.card || '/'
+        // await animationWaitForComp + 'X'etion(this.multCard, 'picked')
+        // // this.timesContainer.querySelector('.back').innerText = multiplier + 'X'
+        // // await animationWaitForCompletion(this.timesContainer, 'picked')
+        // this.yardCard.querySelector('.back').innerText = yard
+        // await animationWaitForCompletion(this.yardCard, 'picked')
+
         this.multCard.querySelector('.back').innerText = multCard?.card || '/'
+        this.multCard.querySelector('.back').classList.add('times-' + multCard.card.toLowerCase())
         await animationWaitForCompletion(this.multCard, 'picked')
-        this.timesContainer.querySelector('.back').innerText = multiplier + 'X'
-        await animationWaitForCompletion(this.timesContainer, 'picked')
-        this.yardCard.querySelector('.back').innerText = yard
+        if (multCard !== '/') {
+          this.timesFooter.querySelector('.times-' + multCard.card.toLowerCase()).classList.add('active')
+          await sleep(500)
+        }
+
+        // this.timesContainer.querySelector('.back').innerText = (times || game.thisPlay.multiplier) + 'X'
+        // await animationWaitForCompletion(this.timesContainer, 'picked')
+
+        this.yardCard.querySelector('.back').innerText = game.thisPlay.yardCard
+        if (game.offNum === game.home) {
+          this.plCard1.querySelector('.back').classList.add('back-home')
+        }
         await animationWaitForCompletion(this.yardCard, 'picked')
       }
 
@@ -2206,6 +2249,8 @@ export default class Run {
   async reportPlay (game, p1, p2) {
     const times = !game.thisPlay.multiplier ? '/' : null
     const mCard = game.thisPlay.multiplierCard === '/' ? '/' : game.thisPlay.multiplierCard.card
+    let thisOffPlay = null
+    let thisDefPlay = null
 
     animationSimple(this.scoreboardContainerBotLeft, 'collapsed')
     animationSimple(this.scoreboardContainerBotRight, 'collapsed')
@@ -2216,17 +2261,93 @@ export default class Run {
     document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2 + ' | Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
 
     this.gameLog.push('Last play: ' + p1 + ' v ' + p2 + ' | ' + 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss'))
-    this.plCard1.querySelector('.back').innerText = game.players[1].currentPlay
+    this.plCard1.querySelector('.back').innerText = game.players[game.offNum].currentPlay
+    if (game.offNum === game.home) {
+      this.plCard1.querySelector('.back').classList.add('back-home')
+    }
     await animationWaitForCompletion(this.plCard1, 'picked')
-    this.plCard2.querySelector('.back').innerText = game.players[2].currentPlay
+
+    // Figure out if plays exist (for TP, etc)
+    this.qualityOffPlays.forEach(play => {
+      if (play.innerText === game.players[game.offNum].currentPlay) {
+        thisOffPlay = play
+      }
+    })
+    this.qualityDefPlays.forEach(play => {
+      if (play.innerText === game.players[game.defNum].currentPlay) {
+        thisDefPlay = play
+      }
+    })
+
+    if (thisOffPlay && thisDefPlay) {
+      thisOffPlay.classList.add('active')
+      await sleep(500)
+    }
+
+    this.plCard2.querySelector('.back').innerText = game.players[game.defNum].currentPlay
+    if (game.defNum === game.home) {
+      this.plCard2.querySelector('.back').classList.add('back-home')
+    }
     await animationWaitForCompletion(this.plCard2, 'picked')
-    this.qualityContainer.querySelector('.back').innerText = game.thisPlay.getQuality()
-    await animationWaitForCompletion(this.qualityContainer, 'picked')
+
+    if (thisOffPlay && thisDefPlay) {
+      thisDefPlay.classList.add('active')
+      await sleep(500)
+      this.qualityContainer.querySelector(('.' + game.players[game.offNum].currentPlay + '-v-' + game.players[game.defNum].currentPlay).toLowerCase()).classList.add('active')
+      await sleep(500)
+    }
+
+    const quality = game.thisPlay.getQuality().toLowerCase()
+    console.log(quality)
+
+    if (quality !== 'same') {
+      this.qualityFooter.querySelector('.qual-' + quality).classList.add('active')
+      await sleep(500)
+
+      this.timesHeader.classList.add('qual-' + quality)
+      this.timesHeader.innerText = 'Call Quality: ' + quality.charAt(0).toUpperCase() + quality.slice(1)
+
+      let qualityArray = [4, 3, 2, 0] // Best
+      if (quality === 'good') {
+        qualityArray = [3, 2, 1, 0]
+      } else if (quality === 'decent') {
+        qualityArray = [2, 1, 0.5, 0]
+      } else if (quality === 'okay') {
+        qualityArray = [1.5, 1, 0, -1]
+      } else if (quality === 'worst') {
+        qualityArray = [1, 0.5, 0, -1]
+      }
+
+      this.timesFooter.querySelector('.times-king').innerText = qualityArray[0] + 'X'
+      this.timesFooter.querySelector('.times-queen').innerText = qualityArray[1] + 'X'
+      this.timesFooter.querySelector('.times-jack').innerText = qualityArray[2] + 'X'
+      this.timesFooter.querySelector('.times-10').innerText = qualityArray[3] + 'X'
+    } else {
+      this.timesHeader.innerText = 'Same play!!!'
+    }
+
+    await animationWaitForCompletion(this.qualityContainer, 'fade')
+
+    // this.qualityContainer.querySelector('.back').innerText = game.thisPlay.getQuality()
+    // await animationWaitForCompletion(this.qualityContainer, 'picked')
+
     this.multCard.querySelector('.back').innerText = mCard
+    if (mCard !== '/') {
+      this.multCard.querySelector('.back').classList.add('times-' + mCard.toLowerCase())
+    }
     await animationWaitForCompletion(this.multCard, 'picked')
-    this.timesContainer.querySelector('.back').innerText = (times || game.thisPlay.multiplier) + 'X'
-    await animationWaitForCompletion(this.timesContainer, 'picked')
+    if (mCard !== '/') {
+      this.timesFooter.querySelector('.times-' + mCard.toLowerCase()).classList.add('active')
+      await sleep(500)
+    }
+
+    // this.timesContainer.querySelector('.back').innerText = (times || game.thisPlay.multiplier) + 'X'
+    // await animationWaitForCompletion(this.timesContainer, 'picked')
+
     this.yardCard.querySelector('.back').innerText = game.thisPlay.yardCard
+    if (game.offNum === game.home) {
+      this.plCard1.querySelector('.back').classList.add('back-home')
+    }
     await animationWaitForCompletion(this.yardCard, 'picked')
 
     animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)

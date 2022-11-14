@@ -28,7 +28,7 @@
         <section class="start-screen-header">
           <div class="title-ball spin"><a href="/index.html"><img src="./img/logo.png" alt="🏈"></a></div>
           <h1 class="title-text">FootBored</h1>
-          <p class="tiny">v 0.9.4 - New possession indicator in clock ring | Random timeout bug fixed</p>
+          <p class="tiny">v 0.9.5 - New play reporting system | New possession indicator in clock ring | Random timeout bug fixed</p>
         </section>
         <section class="start-screen-content login">
           <section class="start-screen-login">
@@ -246,7 +246,7 @@
           <div class="field">
             <div class="first-down-line fade">
             </div>
-            <p class="ball fade">🏈</p>
+            <img class="ball fade" src="./img/football.png" alt="🏈">
             <img class="coin" src="./img/coin-heads.png" alt="🪙">
           </div>
           <div class="bot-endzone"></div>
@@ -257,82 +257,130 @@
 
       <section class="board-container">
         <div class="pl-card1-header">
-          Player 1 Play Card
+          
         </div>
         <div class="pl-card1 flip-card">
           <div class="card-content">
             <div class="front">
-              <div class="front-top">🏈</div>
+              <div class="front-top"><img src="./img/logo.png" alt="🏈"></div>
               <div class="front-bot">FootBored</div>
             </div>
             <div class="back">BACK</div>
           </div>
         </div>
         <div class="pl-card2-header">
-          Player 2 Play Card
+          
         </div>
         <div class="pl-card2 flip-card">
           <div class="card-content">
             <div class="front">
-              <div class="front-top">🏈</div>
+              <div class="front-top"><img src="./img/logo.png" alt="🏈"></div>
               <div class="front-bot">FootBored</div>
             </div>
             <div class="back">BACK</div>
           </div>
         </div>
         <div class="mult-card-header">
-          Multiplier Card
+          
         </div>
         <div class="mult-card flip-card">
           <div class="card-content">
             <div class="front">
-              <div class="front-top">🏈</div>
+              <div class="front-top"><img src="./img/logo.png" alt="🏈"></div>
               <div class="front-bot">FootBored</div>
             </div>
             <div class="back">BACK</div>
           </div>
         </div>
         <div class="yard-card-header">
-          Yard Card
+          
         </div>
         <div class="yard-card flip-card">
           <div class="card-content">
             <div class="front">
-              <div class="front-top">🏈</div>
+              <div class="front-top"><img src="./img/logo.png" alt="🏈"></div>
               <div class="front-bot">FootBored</div>
             </div>
             <div class="back">BACK</div>
           </div>
         </div>
-        <div class="quality-header">
-          Call Quality
+        <!-- <div class="quality-header">
+          
         </div>
         <div class="quality-container flip-card">
           <div class="card-content">
             <div class="front">
-              <div class="front-top">🏈</div>
+              <div class="front-top"><img src="./img/logo.png" alt="🏈"></div>
               <div class="front-bot">FootBored</div>
             </div>
             <div class="back">BACK</div>
           </div>
         </div>
         <div class="times-header">
-          Times
+          
         </div>
         <div class="times-container flip-card">
           <div class="card-content">
             <div class="front">
-              <div class="front-top">🏈</div>
+              <div class="front-top"><img src="./img/logo.png" alt="🏈"></div>
               <div class="front-bot">FootBored</div>
             </div>
             <div class="back">BACK</div>
           </div>
+        </div> -->
+        <div class="call-quality-container">
+          <div class="qual-header">Play Call Quality</div>
+          <div class="qual-table">
+            <div class="qual-corner"></div>
+            <div class="def-play sr">SR</div>
+            <div class="def-play lr">LR</div>
+            <div class="def-play sp">SP</div>
+            <div class="def-play lp">LP</div>
+            <div class="off-play sr">SR</div>
+            <div class="qual-wors sr-v-sr">W</div>
+            <div class="qual-decent sr-v-lr">D</div>
+            <div class="qual-decent sr-v-sp">D</div>
+            <div class="qual-good sr-v-lp">G</div>
+            <div class="off-play lr">LR</div>
+            <div class="qual-good lr-v-sr">G</div>
+            <div class="qual-okay lr-v-lr">O</div>
+            <div class="qual-best lr-v-sp">B</div>
+            <div class="qual-good lr-v-lp">G</div>
+            <div class="off-play sp">SP</div>
+            <div class="qual-decent sp-v-sr">W</div>
+            <div class="qual-good sp-v-lr">G</div>
+            <div class="qual-worst sp-v-sp">W</div>
+            <div class="qual-decent sp-v-lp">D</div>
+            <div class="off-play lp">LP</div>
+            <div class="qual-best lp-v-sr">B</div>
+            <div class="qual-good lp-v-lr">G</div>
+            <div class="qual-good lp-v-sp">G</div>
+            <div class="qual-okay lp-v-lp">O</div>
+          </div>
+          <div class="qual-footer">
+            <div class="qual-worst">Worst</div>
+            <div class="qual-okay">Okay</div>
+            <div class="qual-decent">Decent</div>
+            <div class="qual-good">Good</div>
+            <div class="qual-best">Best</div>
+          </div>
+        </div>
+
+        <div class="times-reporter">
+          <div class="times-header">Call Quality: Good</div>
+          <div class="times-footer">
+            <div class="times-10">0</div>
+            <div class="times-jack">1</div>
+            <div class="times-queen">5</div>
+            <div class="times-king">10</div>
+          </div>
+
         </div>
       </section>
 
       <!-- <section class="bot-holder">🏈 FootBored 🏈</section> -->
 
-      <section class="cards-container">
+      <section class="cards-container slide-down">
         <div class="bar">
           <button class="to-butt card" data-playType="TO" disabled>
           </button>
