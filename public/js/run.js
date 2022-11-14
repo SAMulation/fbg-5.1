@@ -913,7 +913,9 @@ export default class Run {
         // await animationWaitForCompletion(this.yardCard, 'picked')
 
         this.multCard.querySelector('.back').innerText = multCard?.card || '/'
-        this.multCard.querySelector('.back').classList.add('times-' + multCard.card.toLowerCase())
+        if (multCard !== '/') {
+          this.multCard.querySelector('.back').classList.add('times-' + multCard.card.toLowerCase())
+        }
         await animationWaitForCompletion(this.multCard, 'picked')
         if (multCard !== '/') {
           this.timesFooter.querySelector('.times-' + multCard.card.toLowerCase()).classList.add('active')
