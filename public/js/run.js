@@ -2352,13 +2352,13 @@ export default class Run {
     }
     await animationWaitForCompletion(this.yardCard, 'picked')
 
-    animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
-    animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
-
     this.setLastPlay(game)
 
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     setBallSpot(this)
+
+    animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
+    animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
   };
 
   async checkScore (game, bon, dst) {
