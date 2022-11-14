@@ -20,7 +20,7 @@ export default class ButtonInput extends BaseInput {
     if (game.isReal(p)) { // game.me === p
       selection = await this.prepareAndGetUserInput(game, p, type, msg)
     } else {
-      await alertBox(game.run, game.players[p].team.name + ' are picking their play...')
+      await alertBox(game.run, msg || game.players[p].team.name + ' are picking their play...')
       if (game.isMultiplayer() && game.me) { // && game.me
         selection = await game.run.receiveInputFromRemote()
       } else {

@@ -295,7 +295,7 @@ input {
 
 .field-container .ball{
   position: absolute;
-  top: calc(var(--ball-spot) - 0px);
+  top: calc(var(--ball-spot) - 5px);
   transform: rotate(270deg);
   font-size: 1rem;
   margin: 0 auto;
