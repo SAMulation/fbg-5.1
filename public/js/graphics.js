@@ -125,8 +125,12 @@ export const resetBoardContainer = (run) => {
   run.plCard2.classList.remove('back-home')
   run.multCard.classList.remove('picked')
   run.yardCard.classList.remove('picked')
-  run.plCard1.querySelector('.back').classList.remove('back-home')
-  run.plCard2.querySelector('.back').classList.remove('back-home')
+  // run.plCard1.querySelector('.back').classList.remove('back-home')
+  // run.plCard2.querySelector('.back').classList.remove('back-home')
+  // run.multCard.querySelector('.back').className = 'back'
+  run.boardContainer.querySelectorAll('.back').forEach(el => {
+    el.className = 'back'
+  })
   // run.qualityContainer.classList.remove('picked')
   // run.timesContainer.classList.remove('picked')
 
@@ -160,8 +164,7 @@ export const resetBoardContainer = (run) => {
     square.classList.remove('active')
   })
 
-  run.timesHeader.classList = ''
-  run.timesHeader.classList.add('times-header')
+  run.timesHeader.className = 'times-header'
 
   run.qualityContainer.classList.toggle('fade', false)
 }

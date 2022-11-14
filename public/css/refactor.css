@@ -522,7 +522,9 @@ div.times-king {
 }
 
 .qual-table div.active, .qual-footer div.active, .times-footer div.active {
-  border: 3px solid gold;
+  border: 7px solid gold;
+  box-shadow: inset #ffffff63 0 0 10px 71px;
+  color: black;
 }
 
 .qual-footer {
