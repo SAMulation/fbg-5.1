@@ -854,7 +854,7 @@ export default class Run {
       kickDist = -10 - tmp
       retDist = tmp + await Utils.rollDie(game, game.me)
 
-      // Squib Kickk
+      // Squib Kick
     } else {
       tmp = await Utils.rollDie(game, game.me)
       kickDist = -15 - 5 * tmp
@@ -876,15 +876,15 @@ export default class Run {
       game.spot += kickDist
     }
 
-    if (kickType === 'OK') {
-      if (okResult) {
-        await alertBox(this, oName + ' recover!')
-        possession = false
-        retDist = -retDist
-      } else {
-        await alertBox(this, dName + ' recover!')
-      }
-    }
+    // if (kickType === 'OK') {
+    //   if (okResult) {
+    //     await alertBox(this, oName + ' recover!')
+    //     possession = false
+    //     retDist = -retDist
+    //   } else {
+    //     await alertBox(this, dName + ' recover!')
+    //   }
+    // }
 
     if (possession) {
       await this.changePoss(game, 'k')
@@ -894,6 +894,16 @@ export default class Run {
     if (!touchback) {
       await this.moveBall(game, 'kick')
       await alertBox(this, Math.abs(kickDist) + '-yard kick')
+
+      if (kickType === 'OK') {
+        if (okResult) {
+          await alertBox(this, oName + ' recover!')
+          possession = false
+          retDist = -retDist
+        } else {
+          await alertBox(this, dName + ' recover!')
+        }
+      }
 
       if (game.animation) {
         const qualityArray = [10, 5, 1, 0] // Kickoff
@@ -913,11 +923,11 @@ export default class Run {
         // await animationWaitForCompletion(this.yardCard, 'picked')
 
         this.multCard.querySelector('.back').innerText = multCard?.card || '/'
-        if (multCard !== '/') {
+        if (multCard && multCard !== '/') {
           this.multCard.querySelector('.back').classList.add('times-' + multCard.card.toLowerCase())
         }
         await animationWaitForCompletion(this.multCard, 'picked')
-        if (multCard !== '/') {
+        if (multCard && multCard !== '/') {
           this.timesFooter.querySelector('.times-' + multCard.card.toLowerCase()).classList.add('active')
           await sleep(500)
         }
@@ -925,7 +935,7 @@ export default class Run {
         // this.timesContainer.querySelector('.back').innerText = (times || game.thisPlay.multiplier) + 'X'
         // await animationWaitForCompletion(this.timesContainer, 'picked')
 
-        this.yardCard.querySelector('.back').innerText = game.thisPlay.yardCard
+        this.yardCard.querySelector('.back').innerText = yard || retDist
         if (game.offNum === game.home) {
           this.plCard1.querySelector('.back').classList.add('back-home')
         }
