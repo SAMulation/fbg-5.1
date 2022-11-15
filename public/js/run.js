@@ -43,6 +43,9 @@ export default class Run {
     this.timesHeader = this.timesContainer.querySelector('.times-header')
     this.timesFooter = this.timesContainer.querySelector('.times-footer')
     this.ball = document.querySelector('.field-container .ball')
+    this.playerContainer = this.fieldContainer.querySelector('.player-container')
+    this.defHelms = this.playerContainer.querySelectorAll('.def-helms > div')
+    this.offHelms = this.playerContainer.querySelectorAll('.off-helms > div')
     this.homeCity = document.querySelector('.home-city')
     this.awayCity = document.querySelector('.away-city')
     this.loadingPanelText = document.querySelector('.start-screen-loading h1')
@@ -610,6 +613,7 @@ export default class Run {
     // Regular old kickoff
     } else {
       // Reset board
+      this.playerContainer.classList.toggle('fade', true)
       game.spot = 65
       await this.moveBall(game, 'show')
 
@@ -1000,6 +1004,8 @@ export default class Run {
     await this.pickPlay(game)
 
     if (game.status !== EXIT) {
+      await this.lineUp(game)
+      await sleep(750)
       await this.lastChanceTO(game)
       if (game.animation) {
         await animationWaitForCompletion(this.fieldContainer, 'slide-away')
@@ -1062,6 +1068,12 @@ export default class Run {
     if (game.status > KICK) {
       animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
       animationSimple(this.scoreboardContainerBotRight, 'collapsed', false)
+
+      await this.setHuddle(game)
+      // RIGHT HERE
+      // ASSIGN PLAYERS THEIR COLORS
+      // REVEAL (ONLY FOR NON KICKS)
+      // LATER, SHOULD BE HUDDLE RIGHT NOW
     }
 
     resetBoardContainer(this)
@@ -1081,6 +1093,54 @@ export default class Run {
     if ((game.qtr === 2 || game.qtr === 4) && game.currentTime === 2) {
       await this.twoMinCheck(game)
     }
+  };
+
+  async setHuddle (game) {
+    this.playerContainer.classList.toggle('fade', true)
+
+    this.defHelms.forEach(helmet => {
+      helmet.classList.remove('home-helm')
+      helmet.classList.remove('away-helm')
+      helmet.classList.add('huddle')
+
+      if (game.defNum === game.home) {
+        helmet.classList.add('home-helm')
+      } else {
+        helmet.classList.add('away-helm')
+      }
+    })
+
+    this.offHelms.forEach(helmet => {
+      helmet.classList.remove('home-helm')
+      helmet.classList.remove('away-helm')
+      helmet.classList.add('huddle')
+
+      if (game.offNum === game.home) {
+        helmet.classList.add('home-helm')
+      } else {
+        helmet.classList.add('away-helm')
+      }
+    })
+
+    await animationWaitForCompletion(this.playerContainer, 'fade', false)
+  };
+
+  async lineUp (game) {
+    if (!this.playerContainer.classList.contains('fade')) {
+      await animationWaitForCompletion(this.playerContainer, 'fade', true)
+    }
+
+    // this.playerContainer.classList.toggle('fade', true)
+
+    this.defHelms.forEach(helmet => {
+      helmet.classList.remove('huddle')
+    })
+
+    this.offHelms.forEach(helmet => {
+      helmet.classList.remove('huddle')
+    })
+
+    this.playerContainer.classList.toggle('fade', false)
   };
 
   async twoMinCheck (game) {
@@ -1938,6 +1998,7 @@ export default class Run {
 
     if (game.animation) await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     await alertBox(this, name + ' attempting a ' + fdst + '-yard field goal...')
+    this.playerContainer.classList.toggle('fade', true)
 
     // Ice kicker
     if (game.changeTime === TIMEOUT && game.lastCallTO !== game.offNum) {
@@ -2011,7 +2072,7 @@ export default class Run {
 
     if (game.animation) await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     await alertBox(this, oName + (game.status === SAFETY_KICK ? ' safety kick' : ' are punting') + '...')
-
+    this.playerContainer.classList.toggle('fade', true)
     // Check block (not on Safety Kick)
     tmp = await Utils.rollDie(game, game.me)
 
@@ -2367,13 +2428,14 @@ export default class Run {
 
     this.yardCard.querySelector('.back').innerText = game.thisPlay.yardCard
     if (game.offNum === game.home) {
-      this.plCard1.querySelector('.back').classList.add('back-home')
+      this.yardCard.querySelector('.back').classList.add('back-home')
     }
     await animationWaitForCompletion(this.yardCard, 'picked')
 
     this.setLastPlay(game)
 
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    this.playerContainer.classList.toggle('fade', true)
     setBallSpot(this)
 
     animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
