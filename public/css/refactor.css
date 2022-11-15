@@ -245,11 +245,13 @@ input {
 
 .field-container .top-endzone {
   grid-area: top-endzone / left / top-field / right;
+  position: relative;
 
   border: 5px solid white;
   border-bottom: none;
   background: linear-gradient(to top left, var(--away-color1) 20%, var(--away-color2));
 }
+
 
 .field-container .modal-message {
   grid-area: top-endzone / left / top-field / right;
@@ -287,10 +289,18 @@ input {
 
 .field-container .bot-endzone {
   grid-row: bot-endzone / bot-msg;
+  position: relative;
 
   border: 5px solid white;
   border-top: none;
   background: linear-gradient(to bottom left, var(--home-color1) 20%, var(--home-color2));
+}
+
+.field-container .top-endzone, .field-container .bot-endzone {
+  display: grid;
+  grid-template-columns: [left] 1fr [helmet-l] 2fr [city-start] 6fr [city-end] 2fr [helmet-r] 1fr [right];
+  align-content: center;
+  justify-items: center;
 }
 
 .field-container .ball{
@@ -303,6 +313,48 @@ input {
   /* transform: translateY(calc(var(--ball-spot) - 10px)); */
   transition: all .25s;
   z-index: 300;
+}
+
+.helmet, .helmet-bg, .helmet2, .helmet-bg2 {
+  height: 100%;
+  position: absolute;
+  z-index: 500;
+  transform: scaleX(-1);
+}
+
+.helmet-bg, .helmet-bg2 {
+  filter: brightness(0);
+}
+
+.helmet, .helmet-bg {
+  grid-column: helmet-l / city-start;
+}
+
+.helmet2, .helmet-bg2 {
+  grid-column: city-end / helmet-r;
+}
+
+.top-endzone path.helmet-top {
+  fill: var(--away-color2);
+}
+
+.top-endzone path.helmet-bot {
+  fill: var(--away-color1);
+}
+
+.bot-endzone path.helmet-top {
+  fill: var(--home-color2);
+}
+
+.bot-endzone path.helmet-bot {
+  fill: var(--home-color1);
+}
+
+.home-city, .away-city {
+  grid-column: city-start / city-end;
+  color: white;
+  font-family: 'Oswald', sans-serif;
+  font-size: 7vw;
 }
 
 .field-container img.coin {

@@ -43,6 +43,8 @@ export default class Run {
     this.timesHeader = this.timesContainer.querySelector('.times-header')
     this.timesFooter = this.timesContainer.querySelector('.times-footer')
     this.ball = document.querySelector('.field-container .ball')
+    this.homeCity = document.querySelector('.home-city')
+    this.awayCity = document.querySelector('.away-city')
     this.loadingPanelText = document.querySelector('.start-screen-loading h1')
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
@@ -149,6 +151,10 @@ export default class Run {
       document.documentElement.style.setProperty('--me-color1', game.players[game.me].team.color1)
       document.documentElement.style.setProperty('--me-color2', game.players[game.me].team.color2)
     }
+
+    this.homeCity.innerText = game.players[game.home].team.city.toUpperCase()
+    this.awayCity.innerText = game.players[game.away].team.city.toUpperCase()
+
     animationSimple(this.cardsContainer, 'slide-down') // Slide cards container down
     if (!game.resume) {
       await animationWaitForCompletion(this.scoreboardContainer, 'slide-up') // Slide scoreboard up
@@ -981,7 +987,10 @@ export default class Run {
       game.changeTime = TB
     }
 
-    await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    if (this.fieldContainer.classList.contains('slide-away')) {
+      await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
+    }
+
     setBallSpot(this)
     await alertBox(this, msg)
   };
@@ -1057,7 +1066,7 @@ export default class Run {
 
     resetBoardContainer(this)
 
-    if (!game.twoPtConv) { // } && game.changeTime === TIMEOUT) {
+    if (!game.twoPtConv || (game.twoPtConv && (game.changeTime === PEN_DOWN || game.changeTime === PEN_NO_DOWN))) { // } && game.changeTime === TIMEOUT) {
       game.changeTime = CHANGE
     }
 
@@ -1075,7 +1084,7 @@ export default class Run {
   };
 
   async twoMinCheck (game) {
-    let twoMin = game.twoMinWarningute
+    let twoMin = game.twoMinWarning
     let timChg
 
     // Two-minute warning just ended
@@ -1091,7 +1100,7 @@ export default class Run {
     }
 
     game.changeTime = timChg
-    game.twoMinWarningute = twoMin
+    game.twoMinWarning = twoMin
   };
 
   async pickPlay (game) {
