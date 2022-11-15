@@ -313,6 +313,7 @@ input {
   /* transform: translateY(calc(var(--ball-spot) - 10px)); */
   transition: all .25s;
   z-index: 300;
+  /* z-index: 400; This is where it was in DevTools */
 }
 
 .helmet, .helmet-bg, .helmet2, .helmet-bg2 {
@@ -326,7 +327,7 @@ input {
   filter: brightness(0);
 }
 
-.helmet, .helmet-bg {
+.top-endzone .helmet-bg, .top-endzone .helmet, .bot-endzone .helmet-bg, .bot-endzone .helmet {
   grid-column: helmet-l / city-start;
 }
 
@@ -334,19 +335,19 @@ input {
   grid-column: city-end / helmet-r;
 }
 
-.top-endzone path.helmet-top {
+.top-endzone path.helmet-top, .away-helm path.helmet-top {
   fill: var(--away-color2);
 }
 
-.top-endzone path.helmet-bot {
+.top-endzone path.helmet-bot, .away-helm path.helmet-bot {
   fill: var(--away-color1);
 }
 
-.bot-endzone path.helmet-top {
+.bot-endzone path.helmet-top, .home-helm path.helmet-top {
   fill: var(--home-color2);
 }
 
-.bot-endzone path.helmet-bot {
+.bot-endzone path.helmet-bot, .home-helm path.helmet-bot {
   fill: var(--home-color1);
 }
 
@@ -355,6 +356,154 @@ input {
   color: white;
   font-family: 'Oswald', sans-serif;
   font-size: 7vw;
+}
+
+.player-container {
+  /* top: calc(var(--ball-spot) - 109px); LATER */
+  top: calc(var(--ball-spot) - 32vw);
+  left: 19%;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  position: absolute;
+  width: 75%;
+  /* height: 50%; */
+  justify-items: center;
+  row-gap: 3%;
+  z-index: 400;
+
+  transition: opacity .25s;
+}
+
+.def-helms, .off-helms {
+  /* height: 100%; */
+  /* width: 44%; */
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  align-self: center;
+}
+
+.away-helm, .home-helm {
+  display: flex;
+  justify-items: center;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  /* align-self: center; */
+}
+
+.away-helm svg, away-helm img, .home-helm svg, .home-helm img {
+  width: 50%;
+}
+
+.away-helm svg, .home-helm svg {
+  z-index: 501;
+}
+
+.away-helm svg, .away-helm img {
+  transform: rotate(180deg);
+}
+
+.away-helm.huddle svg, .away-helm.huddle img {
+  transform: rotate(0deg);
+}
+
+.dh1 {
+  grid-area: 2 / 1 / 3 / 2;
+}
+
+.dh2 {
+  grid-area: 2 / 5 / 3 / 6;
+}
+
+.dh3 {
+  grid-area: 3 / 2 / 4 / 3;
+}
+
+.dh4 {
+  grid-area: 3 / 4 / 4 / 5;
+}
+.dh5 {
+  grid-area: 4 / 1 / 5 / 2;
+}
+
+.dh6 {
+  grid-area: 4 / 2 / 5 / 3;
+}
+
+.dh7 {
+  grid-area: 4 / 4 / 5 / 5;
+}
+
+.dh8 {
+  grid-area: 4 / 5 / 5 / 6;
+}
+
+.oh1 {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.oh2 {
+  grid-area: 1 / 2 / 2 / 3;
+}
+
+.oh3 {
+  grid-area: 1 / 3 / 2 / 4;
+}
+
+.oh4 {
+  grid-area: 1 / 4 / 2 / 5;
+}
+
+.oh5 {
+  grid-area: 1 / 5 / 2 / 6;
+}
+
+.oh6 {
+  grid-area: 2 / 6 / 3 / 7;
+}
+
+.oh7 {
+  grid-area: 2 / 3 / 3 / 4;
+}
+
+.oh8 {
+  grid-area: 3 / 3 / 4 / 4;
+}
+
+.oh1.huddle, .dh1.huddle {
+  grid-area: 2 / 2 / 3 / 3;
+  transform: rotate(115deg);
+}
+.oh2.huddle, .dh2.huddle {
+  grid-area: 3 / 2 / 4 / 3;
+  transform: rotate(90deg);
+}
+
+.oh3.huddle, .dh3.huddle {
+  grid-area: 4 / 3 / 5 / 4;
+  transform: rotate(0deg);
+}
+
+.oh4.huddle, .dh4.huddle {
+  grid-area: 4 / 2 / 5 / 3;
+  transform: rotate(45deg);
+}
+.oh5.huddle, .dh5.huddle {
+  grid-area: 4 / 4 / 5 / 5;
+  transform: rotate(315deg);
+}
+.oh6.huddle, .dh6.huddle {
+  grid-area: 2 / 4 / 3 / 5;
+  transform: rotate(225deg);
+}
+.oh7.huddle, .dh7.huddle {
+  grid-area: 3 / 4 / 4 / 5;
+  transform: rotate(270deg);
+}
+.oh8.huddle, .dh8.huddle {
+  grid-area: 3 / 3 / 4 / 4;
+  transform: rotate(180deg);
 }
 
 .field-container img.coin {
@@ -825,7 +974,7 @@ div.times-king {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .back-home {
@@ -934,6 +1083,10 @@ div.times-king {
 
   .field-container .ball {
     top: calc(var(--ball-spot) - 5px);
+  }
+
+  .player-container {
+    top: calc(var(--ball-spot) - 43%);
   }
 
 }
