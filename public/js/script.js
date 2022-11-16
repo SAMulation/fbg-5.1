@@ -319,7 +319,7 @@ const submitGame = async (site, type) => {
     site.game = initGame(site)
     window.game = site.game
     // document.querySelector('.playButton').disabled = false
-    document.querySelector('.playSubmit').disabled = true
+    // document.querySelector('.playSubmit').disabled = true
     playGame(site.game)
   }
 }

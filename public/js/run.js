@@ -48,6 +48,7 @@ export default class Run {
     this.offHelms = this.playerContainer.querySelectorAll('.off-helms > div')
     this.homeCity = document.querySelector('.home-city')
     this.awayCity = document.querySelector('.away-city')
+    this.tdAnim = this.fieldContainer.querySelector('.td-anim')
     this.loadingPanelText = document.querySelector('.start-screen-loading h1')
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
@@ -2501,31 +2502,55 @@ export default class Run {
     const scoreEl = game.run.scoreboardContainer.querySelector((scrNo === game.away ? '.away' : '.home') + '.score')
     const temp = nameEl.innerText
     let msg1, msg2
+    let msg3 = null
 
     if (pts === 1) {
       msg1 = 'XP'
       msg2 = 'extra point was good!'
+      msg3 = null
     } else if (pts === 2 && game.status === 102) {
       msg1 = 'SAFE'
       msg2 = 'forced a safety!!'
+      msg3 = null
     } else if (pts === 2 && scrNo === game.defNum) {
       msg1 = 'RET'
       msg2 = 'returned 2-point conversion!!!'
+      msg3 = null
     } else if (pts === 2) {
       msg1 = '2-PT'
       msg2 = '2-point conversion is good!!'
+      msg3 = null
     } else if (pts === 3) {
       msg1 = 'FG'
       msg2 = 'field goal is good!!'
+      msg3 = null
     } else {
       msg1 = 'TD'
       msg2 = 'scored a touchdown!!!'
+      msg3 = 'TOUCHDOWN'
     }
 
     if (msg1 === 'TD') {
       await setBallSpot(this, 105)
     } else if (msg1 === 'SAFE' || msg1 === 'RET') {
       await setBallSpot(this, -5)
+    }
+
+    if (msg3 !== null) {
+      this.tdAnim.querySelector('.td-text').innerText = msg3
+
+      // Add home color
+      if (scrNo === game.home) {
+        const paths = this.tdAnim.querySelectorAll('path')
+        paths.forEach(path => {
+          path.classList.add('td-home')
+        })
+      }
+
+      this.tdAnim.classList.toggle('hidden', false)
+      this.tdAnim.classList.toggle('fade', false)
+      this.tdAnim.querySelector('.td-frame1').classList.toggle('spin', true)
+      await sleep(2000)
     }
 
     await animationWaitForCompletion(nameEl, 'just-scored')
@@ -2543,6 +2568,21 @@ export default class Run {
     nameEl.innerText = temp
     // nameEl.classList.toggle('poss')
     animationSimple(nameEl, 'just-scored', false)
+
+    if (msg3 !== null) {
+      this.tdAnim.classList.toggle('fade', true)
+      this.tdAnim.querySelector('.td-frame1').classList.toggle('spin', false)
+
+      // Remove home color
+      if (scrNo === game.home) {
+        const paths = this.tdAnim.querySelectorAll('path')
+        paths.forEach(path => {
+          path.classList.remove('td-home')
+        })
+      }
+
+      this.tdAnim.classList.toggle('hidden', true)
+    }
 
     // Also add to the stats at this point
     // Add to the quarter score for the game recap
