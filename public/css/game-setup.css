@@ -188,7 +188,7 @@
 
 .start-screen .title-ball.spin img {
   animation: rotate 2s linear infinite;
-  content:url(../img/football.png) 
+  content:url(../img/football.png);
 }
 
 @keyframes rotate{
