@@ -132,8 +132,13 @@ a {
 
 p.tiny {
   font-size: .5rem;
-  line-height: .75rem;
+  line-height: 1.5rem;
   justify-self: center;
+}
+
+p.tiny a {
+  text-decoration: none;
+  color: #323e42
 }
 
 details p {
@@ -254,6 +259,90 @@ input {
 
 .fg-post img {
   height: 100%;
+}
+
+.ball.fg-good {
+  animation: good 3s;
+}
+
+.ball.fg-bad {
+  animation: bad 3s;
+}
+
+@keyframes good {
+  0% {
+    transform: rotate(270deg);
+  }
+
+  30% {
+    scale: 2;
+  }
+
+  100% {
+    transform: rotate(90deg);
+    scale: 0;
+    top: -40vw;
+  }
+}
+
+@keyframes good-big {
+  0% {
+    transform: rotate(270deg);
+  }
+
+  30% {
+    scale: 2;
+  }
+
+  100% {
+    transform: rotate(90deg);
+    scale: 0;
+    top: -40vw;
+  }
+}
+
+@keyframes bad {
+  0% {
+    transform: rotate(270deg);
+  }
+
+  30% {
+    scale: 2;
+  }
+
+  70% {
+    transform: rotate(90deg);
+    scale: 1.3;
+    top: -25vw;
+  }
+
+  100% {
+    transform: rotate(270deg);
+    scale: 1;
+    top: -5vw;
+  }
+}
+
+@keyframes bad-big {
+  0% {
+    transform: rotate(270deg);
+  }
+
+  30% {
+    scale: 2;
+  }
+
+  70% {
+    transform: rotate(90deg);
+    scale: 1.3;
+    top: -140px;
+  }
+
+  100% {
+    transform: rotate(270deg);
+    scale: 1;
+    top: -30px;
+  }
 }
 
 
@@ -1132,6 +1221,14 @@ div.times-king {
 
   .player-container {
     top: calc(var(--ball-spot) - 43%);
+  }
+
+  .ball.fg-good {
+    animation: good-big 3s;
+  }
+  
+  .ball.fg-bad {
+    animation: bad-big 3s;
   }
 
 }
