@@ -2015,7 +2015,7 @@ export default class Run {
       make = false
     }
 
-    // LATER: Field goal graphics will go here
+    await this.fgAnimation(game, fdst - 10, make)
 
     if (make) {
       await this.scoreChange(game, game.offNum, 3)
@@ -2612,6 +2612,16 @@ export default class Run {
     }
   };
 
+  async fgAnimation (game, fgSpot, result = true) {
+    await animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
+    setBallSpot(this, fgSpot)
+    this.ball.classList.add(result ? 'fg-good' : 'fg-bad')
+    await sleep(3000)
+    this.ball.classList.toggle('fg-good', false)
+    this.ball.classList.toggle('fg-bad', false)
+    await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
+  };
+
   patNec (game) {
     const endGameNoTO = game.qtr === 4 && game.currentTime === 0 && game.changeTime !== TIMEOUT
     const endOT = game.isOT() && (game.otPoss === 1 || (game.otPoss === 2 && game.turnover))
@@ -2641,17 +2651,17 @@ export default class Run {
       let die
       die = await Utils.rollDie(game, game.me)
       if (die === 6) {
-        die = null
         die = await Utils.coinFlip(game, game.me)
         if (!die) {
           die = 6
         }
       }
-      // printFG(die !== 6);
 
       if (die !== 6) {
+        await this.fgAnimation(game, 78, true)
         await this.scoreChange(game, game.offNum, 1)
       } else {
+        await this.fgAnimation(game, 22, false)
         await alertBox(this, oName + ' extra point was no good...')
         // Might need some graphics here
       }
