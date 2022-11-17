@@ -132,13 +132,23 @@ a {
 
 p.tiny {
   font-size: .5rem;
-  line-height: 1.5rem;
+  line-height: .75rem;
   justify-self: center;
 }
 
-p.tiny a {
+p.contact {
+  font-size: 1.5rem;
+  line-height: 1rem;
+  justify-self: center;
+}
+
+p.contact a {
   text-decoration: none;
-  color: #323e42
+  color: #efdcf9;
+}
+
+p.contact a:hover {
+  color: #323e42;
 }
 
 details p {
