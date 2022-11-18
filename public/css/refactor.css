@@ -224,10 +224,6 @@ input {
   /* margin-bottom: 1px; */
 }
 
-.field-container .just-field:hover {
-  /* transform: rotate(180deg); */
-}
-
 .field-container::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
 }
@@ -1293,8 +1289,12 @@ div.times-king {
     animation: bad-big 3s;
   }
 
-}
+  .home-city, .away-city, .td-text {
+    font-size: 50px;
+  }
 
 #netlify-identity-widget {
   z-index: 1500 !important;
+}
+
 }
