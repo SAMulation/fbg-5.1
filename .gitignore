@@ -1,3 +1,5 @@
 node_modules/
 message.html
 functions/
+# Local Netlify folder
+.netlify
