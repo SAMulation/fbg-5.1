@@ -49,6 +49,8 @@ export default class Run {
     this.homeCity = document.querySelector('.home-city')
     this.awayCity = document.querySelector('.away-city')
     this.tdAnim = this.fieldContainer.querySelector('.td-anim')
+    this.firstAnim = this.fieldContainer.querySelector('.first-anim')
+    this.firstStick = this.firstAnim.querySelector('.first-stick')
     this.loadingPanelText = document.querySelector('.start-screen-loading h1')
     this.docStyle = document.documentElement.style
     this.channel = null // This is the Pusher channel
@@ -2691,11 +2693,21 @@ export default class Run {
     // Sticks
     if (game.spot === game.firstDown) {
       await alertBox(this, 'Sticks...')
+      this.firstAnim.classList.toggle('hidden')
+      this.firstAnim.classList.toggle('fade')
       coin = await Utils.coinFlip(game, game.me)
 
       if (!coin) {
+        await animationWaitForCompletion(this.firstStick, 'bad')
         await alertBox(this, 'Almost!')
+      } else {
+        await animationWaitForCompletion(this.firstStick, 'good')
       }
+
+      this.firstAnim.classList.toggle('fade')
+      await sleep(1)
+      this.firstAnim.classList.toggle('hidden')
+      this.firstStick.className = 'first-stick'
     }
 
     if (game.down === 0) {
