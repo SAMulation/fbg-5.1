@@ -138,7 +138,7 @@ p.tiny {
 
 p.contact {
   font-size: 1.5rem;
-  line-height: 1rem;
+  line-height: 1.5rem;
   justify-self: center;
 }
 
@@ -160,9 +160,7 @@ h1 {
   font-size: 2em;
 }
 
-.hidden {
-  display: none;
-}
+
 
 .show {
   display: block;
@@ -636,8 +634,8 @@ input {
 
 .td-anim {
   height: 69%;
-  width: fit-content;
-  margin: -4% 50%;
+  width: 100%;
+  margin: -2% 0%;
   position: relative;
   z-index: 799;
 
@@ -654,6 +652,7 @@ input {
 
 .td-frame1 {
   height: 100%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -661,16 +660,13 @@ input {
 }
 
 img.td-bg1 {
-  height: 100%;
+  width: 100%;
   z-index: 600;
   position: absolute;
-  width: fit-content;
   filter: brightness(0.0);
 }
 
 svg.td-svg1 {
-  width: fit-content;
-  height: 100%;
   z-index: 601;
   position: absolute;
 }
@@ -1127,6 +1123,10 @@ div.times-king {
 
 .front img {
   width: 100%;
+}
+
+.hidden {
+  display: none;
 }
 
 /* Responsive */
