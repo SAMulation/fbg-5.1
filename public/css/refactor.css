@@ -311,7 +311,7 @@ input {
 
 @keyframes bad {
   0% {
-    animation-timing-function: ease-out;
+    animation-timing-function: ease-in;
     transform: rotate(270deg);
   }
 
@@ -321,7 +321,7 @@ input {
   }
 
   70% {
-    animation-timing-function: ease-in;
+    animation-timing-function: ease-out;
     transform: rotate(90deg);
     scale: 1.3;
     top: -25vw;
@@ -336,6 +336,7 @@ input {
 
 @keyframes bad-big {
   0% {
+    animation-timing-function: ease-in;
     transform: rotate(270deg);
   }
 
@@ -344,6 +345,7 @@ input {
   }
 
   70% {
+    animation-timing-function: ease-out;
     transform: rotate(90deg);
     scale: 1.3;
     top: -140px;
