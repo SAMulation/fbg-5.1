@@ -1,14 +1,14 @@
-/* global Pusher */
+/* global Pusher, netlifyIdentity */
 /* global prompt */
-import Team from './team.js'
-import Game from './game.js'
-import Site from './site.js'
 import ButtonInput from './buttonInput.js'
-import PromptInput from './promptInput.js'
 import FormInput from './formInput.js'
-import { TEAMS } from './teams.js'
-import Utils from './remoteUtils.js'
+import Game from './game.js'
 import { animationWaitForCompletion, animationWaitThenHide } from './graphics.js'
+import PromptInput from './promptInput.js'
+import Utils from './remoteUtils.js'
+import Site from './site.js'
+import Team from './team.js'
+import { TEAMS } from './teams.js'
 const channel = null
 
 // Enable pusher logging - don't include this in production
@@ -23,6 +23,8 @@ const pusher = new Pusher('41b31f79c4e658e350a5', {
 })
 
 pusher.signin()
+
+netlifyIdentity.on('init', user => { document.getElementById('current-user').innerText = user.user_metadata.full_name })
 
 // pusher.bind('pusher:signin_success', (data) => {
 //   channel = pusher.subscribe('private-channel')
