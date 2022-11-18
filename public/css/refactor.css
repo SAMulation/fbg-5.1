@@ -1294,3 +1294,7 @@ div.times-king {
   }
 
 }
+
+#netlify-identity-widget {
+  z-index: 1500 !important;
+}
