@@ -1289,7 +1289,4 @@ div.times-king {
     animation: bad-big 3s;
   }
 
-  .home-city, .away-city, .td-text {
-    font-size: 50px;
-  }
 }
