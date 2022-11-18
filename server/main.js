@@ -26,7 +26,7 @@ router.post('/pusher/user-auth', (req, res) => {
   const user = {
     id: '12345',
     user_info: {
-      name: JSON.stringify(req.serverlessContext.clientContext.identity)
+      name: 'John Smith' // JSON.stringify(req.serverlessContext.clientContext.identity)
     }
   }
   const authResponse = pusher.authenticateUser(socketId, user)
