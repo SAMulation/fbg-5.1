@@ -24,7 +24,7 @@ const pusher = new Pusher('41b31f79c4e658e350a5', {
 
 pusher.signin()
 
-netlifyIdentity.on('init', user => { document.getElementById('current-user').innerText = user?.user_metadata?.full_name ?? 'logged out' })
+// netlifyIdentity.on('init', user => { document.getElementById('current-user').innerText = user?.user_metadata?.full_name ?? 'logged out' })
 
 // pusher.bind('pusher:signin_success', (data) => {
 //   channel = pusher.subscribe('private-channel')

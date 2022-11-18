@@ -16,17 +16,19 @@ app.use(cors())
 
 const router = express.Router()
 router.post('/pusher/user-auth', (req, res) => {
+  console.log('serverlessContext:', req.serverlessContext)
   const socketId = req.body.socket_id
   // Replace this with code to retrieve the actual user id and info
   const user = {
     id: '12345',
     user_info: {
-      name: 'John Smith'
+      name: JSON.stringify(req.serverlessContext.clientContext.identity)
     }
   }
   const authResponse = pusher.authenticateUser(socketId, user)
   res.send(authResponse)
 })
+
 router.post('/pusher/auth', (req, res) => {
   const socketId = req.body.socket_id
   const channel = req.body.channel_name
@@ -38,4 +40,8 @@ app.use('/.netlify/functions/main', router) // path must route to lambda
 app.use(express.static('public'))
 
 module.exports = app
-module.exports.handler = serverless(app)
+module.exports.handler = serverless(app, {
+  request (req, event, context) {
+    req.serverlessContext = context
+  }
+})
