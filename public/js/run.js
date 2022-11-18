@@ -2694,6 +2694,7 @@ export default class Run {
     if (game.spot === game.firstDown) {
       await alertBox(this, 'Sticks...')
       this.firstAnim.classList.toggle('hidden')
+      await sleep(1)
       this.firstAnim.classList.toggle('fade')
       coin = await Utils.coinFlip(game, game.me)
 
