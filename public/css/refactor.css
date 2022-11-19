@@ -6,7 +6,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
 }
 
 html {
@@ -203,7 +202,7 @@ input {
 .field-container {
   grid-area: top / left-all / bot / right-all;
   max-height: 100%;
-  max-width: 600px;
+  /* max-width: 600px; */
   padding: 0;
   transform: translateX(0);
   /* background: rgb(44, 163, 44); */
@@ -612,9 +611,15 @@ input {
   transform: rotate(180deg);
 }
 
+.coin {
+  transition: opacity 0.5s;
+}
+
 .field-container img.coin {
   height: 50%;
   margin-top: 10%;
+
+  transition: opacity 0.5s;
 }
 
 .field-container img.coin.flip {
@@ -729,7 +734,7 @@ img.first-stick.bad {
   grid-area: field-top / left-all / bot-msg / right-all;
   align-self: center;
   height: 75%;
-  max-width: 600px;
+  /* max-width: 600px; */
 
   display: grid;
   grid-template-rows: 1fr 4fr 4fr 1fr;
@@ -959,7 +964,7 @@ div.times-king {
   /* background: rgb(129, 0, 17); */
   background: var(--away-color2);
   grid-area: cards-top / left-all / bot / right-all;
-  max-width: 600px;
+  /* max-width: 600px; */
 
   display: grid;
   grid-template-columns: 1fr;
@@ -1293,4 +1298,42 @@ div.times-king {
     animation: bad-big 3s;
   }
 
+  .home-city, .away-city {
+    font-size: 44px;
+  }
+
+}
+
+@media (min-width: 1800px) {
+  .main-container {
+    max-width: 1200px;
+  }
+
+  .away.bg {
+    border-radius: 10px 0 0 10px;
+  }
+
+  .home.bg {
+    border-radius: 0 10px 10px 0;
+  }
+
+  .top-msg.home-msg {
+    border-radius: 0 10px 0 0;
+  }
+
+  .top-msg.away-msg {
+    border-radius: 10px 0 0 0;
+  }
+
+  .bot-msg.home-msg {
+    border-radius: 0 0 10px 0;
+  }
+
+  .bot-msg.away-msg {
+    border-radius: 0 0 0 10px;
+  }
+
+  .player-container {
+    top: calc(var(--ball-spot) - 66%);
+  }
 }

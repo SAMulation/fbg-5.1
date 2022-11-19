@@ -21,7 +21,6 @@ export default class Game {
       this.firstDown = tempGame.firstDown
       this.lastCallTO = tempGame.lastCallTO
       this.otPoss = tempGame.otPoss
-      this.over = tempGame.over
       this.qtr = tempGame.qtr
       this.qtrLength = tempGame.qtrLength
       this.recFirst = tempGame.recFirst
@@ -60,8 +59,7 @@ export default class Game {
       this.down = 0
       this.firstDown = null
       this.lastCallTO = 0
-      this.otPoss = -1
-      this.over = false
+      this.otPoss = 2
       this.qtr = 0
       this.qtrLength = qtrLength
       this.recFirst = null // Set in coin toss
@@ -143,7 +141,6 @@ export default class Game {
         firstDown: this.firstDown,
         lastCallTO: this.lastCallTO,
         otPoss: this.otPoss,
-        over: this.over,
         qtr: this.qtr,
         qtrLength: this.qtrLength,
         recFirst: this.recFirst,
@@ -289,5 +286,9 @@ export default class Game {
   callTime (p) {
     this.players[p].timeouts--
     return this.players[p].timeouts + 1 // Stop showing this timeout
+  }
+
+  over () {
+    return this.qtr >= 4 && this.players[1].score !== this.players[2].score
   }
 }

@@ -35,7 +35,7 @@ export const setBallSpot = async (run, forceSpot = null) => {
 export const firstDownLine = async (run, forceSpot = null) => {
   const newSpot = forceSpot || run.game.firstDown
   const theLine = document.querySelector('.first-down-line')
-  if (run.game.firstDown < 10) {
+  if (newSpot < 10) {
     theLine.classList.toggle('fade', true)
   } else {
     if (theLine.classList.contains('fade')) {

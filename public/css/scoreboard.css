@@ -2,7 +2,7 @@
   .scoreboard-container {
     --rad: 2vw;
 
-    max-width: 600px;
+    /* max-width: 600px; */
     grid-area: top / left-all / field-top / right-all;
     display: grid;
     grid-template:

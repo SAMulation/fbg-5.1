@@ -5,7 +5,7 @@ import Player from './player.js'
 import Stat from './stat.js'
 import Utils from './remoteUtils.js'
 import { Queue } from './queue.js'
-import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT } from './defaults.js'
+import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT, OT_START } from './defaults.js'
 import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer, firstDownLine } from './graphics.js'
 
 export default class Run {
@@ -269,13 +269,13 @@ export default class Run {
 
   async gameControl (game) {
     // The game just started
-    if (game.status === INIT || game.status === INIT_OTC) {
+    if (game.status === INIT || game.status === INIT_OTC || game.status === OT_START) {
       await this.coinToss(game)
       await this.resetVar(game)
       await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
     } else {
       // End of half
-      if (!(game.qtr % 2)) {
+      if (!(game.qtr % 2 && !game.over)) {
         await this.resetVar(game)
       } else {
         await this.resetTime(game)
@@ -361,15 +361,26 @@ export default class Run {
     let decPick = null
     let recFirst = 'away'
 
+    await firstDownLine(this, 1)
+    this.ball.classList.toggle('fade', true)
+
     console.log('Connection type: ' + game.connection.type + ', Connections[me]: ' + game.connection.connections[game.me])
     console.log(game.me + ' coinPick before: ' + coinPick)
+    game.players[game.away].currentPlay = null
     coinPick = await this.input.getInput(game, game.away, 'coin', awayName + ' pick for coin toss...')
     console.log(game.me + ' coinPick after: ' + coinPick)
 
     // Show result
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '... The toss!'
     await alertBox(this, result)
-    // await animationWaitForCompletion(this.coinImage, 'fade', true)
+    if (game.qtr === 4) {
+      alertBox(this, 'End of regulation!')
+      this.coinImage.className = 'coin fade'
+      this.coinImage.style.display = ''
+      // await animationWaitForCompletion(this.coinImage, 'fade', false)
+      this.coinImage.classList.toggle('fade', false)
+    }
+
     this.coinImage.classList.toggle('flip')
     // await animationWaitForCompletion(this.coinImage, 'fade', false)
     await sleep(2000)
@@ -393,6 +404,7 @@ export default class Run {
     console.log('checkpoint')
 
     console.log(game.me + ' decPick before: ' + decPick)
+    game.players[actFlip === coinPick ? game.away : game.home].currentPlay = null
     decPick = await this.input.getInput(game, (actFlip === coinPick ? game.away : game.home), (game.qtr >= 4 ? 'kickDecOT' : 'kickDecReg'), (actFlip === coinPick ? awayName : homeName) + ' decide whether to kick or receive...')
 
     // if (game.connection.type === 'host' || game.connection.type === 'remote') {
@@ -484,20 +496,22 @@ export default class Run {
     }
 
     // Refill timeout pills
-    for (let t = 1; t <= to; t++) {
+    for (let t = 1; t <= 3; t++) {
       for (let p = 1; p <= 2; p++) {
-        if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.contains('called')) {
-          document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.remove('called')
-        }
+        this.scoreboardContainer.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.toggle('called', t > to)
+        // if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.contains('called')) {
+        //   document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .to' + t).classList.remove('called')
+        // }
       }
     }
 
     // Refill hail mary pills
-    for (let h = 1; h <= (game.qtr < 4 ? 3 : 2); h++) {
+    for (let h = 1; h <= 3; h++) {
       for (let p = 1; p <= 2; p++) {
-        if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.contains('called')) {
-          document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.remove('called')
-        }
+        this.scoreboardContainer.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.toggle('called', h > (game.qtr < 4 ? 3 : 2))
+        // if (document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.contains('called')) {
+        //   document.querySelector('.' + (game.away === p ? 'away' : 'home') + ' .hm' + h).classList.remove('called')
+        // }
       }
     }
 
@@ -506,7 +520,8 @@ export default class Run {
     //   await this.coinToss(game)
     // }
 
-    await this.updateDown(game) // Forces game to set itself up
+    game.down = 0
+    await this.updateDown(game, -1) // Forces game to set itself up
 
     if (game.qtr <= 3) {
       game.status = KICK
@@ -519,7 +534,7 @@ export default class Run {
 
     await this.resetTime(game)
 
-    if (!game.over) {
+    if (!game.over()) {
       if (game.qtr === 1) {
         await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
       }
@@ -531,10 +546,10 @@ export default class Run {
   };
 
   async resetTime (game) {
-    const over = game.qtr >= 4 && game.players[1].score !== game.players[2].score
+    // const over = game.qtr >= 4 && game.players[1].score !== game.players[2].score
 
     // Is the game over?
-    if (over) {
+    if (game.over()) {
       await this.endGame(game)
     // No, then let's increase the quarter
     } else {
@@ -550,7 +565,7 @@ export default class Run {
       }
 
       if (game.qtr !== 0 && (game.qtr !== 4 || game.gameType !== 'otc')) {
-        await alertBox(this, 'End of ' + this.showQuarter(game.qtr) + ' quarter')
+        await alertBox(this, 'End of ' + this.showQuarter(game.qtr) + (game.qtr > 4 ? '' : ' quarter'))
 
         if (!(game.qtr % 2)) {
           await alertBox(this, (game.qtr === 2 ? 'Halftime' : 'Overtime') + ' shuffle...')
@@ -564,18 +579,20 @@ export default class Run {
         game.otPoss = 2
         game.spot = 75
         game.firstDown = 85
-        await this.moveBall(game, 'show')
+        await setBallSpot(this)
         this.printMsgDown(game, this.scoreboardContainer)
         this.printMsgSpot(game, this.scoreboardContainer)
+        this.scoreboardContainer.querySelector('.clock .time').innerText = ''
       } else {
         game.currentTime = game.qtrLength
         await this.tickingClock('end', game.currentTime)
       }
 
       game.qtr++
+
       this.printQuarter(game, this.scoreboardContainer)
 
-      if (game.isOT() && this.ot_qtr_switch(game)) {
+      if (game.isOT() && this.otQtrSwitch(game)) {
         await this.changePoss(game, 'nop')
 
         // First OT needs a little help
@@ -596,7 +613,7 @@ export default class Run {
         await alertBox(this, 'The ball is hiked...')
       }
       this.ball.classList.toggle('hidden', false)
-      setBallSpot(this)
+      await setBallSpot(this)
       if (mode === 'show/clear') {
         await this.moveBall(game, 'clear')
       }
@@ -661,6 +678,7 @@ export default class Run {
     } else if (mode === 'ot') {
       // Probably need a visual reset here
       game.spot = 75
+      game.down = 0
       game.otPoss = Math.abs(game.otPoss) - 1
     } else if (mode === 'pnt') {
       game.spot = 100 - game.spot // Switch side of field
@@ -679,7 +697,7 @@ export default class Run {
     }
 
     if (mode !== '' && mode !== 'k' && mode !== 'nop') {
-      // moveBall('s');  // Which showed ball
+      this.moveBall('show') // Which showed ball
     }
 
     // This should never happen, but it's making sure the possessions don't equal each other
@@ -699,7 +717,7 @@ export default class Run {
         // printFirst(game);  // These are the first down markers
       }
       game.firstDown = game.spot + 10 // CHECK: I think this is needed
-      await this.updateDown(game)
+      await this.updateDown(game, mode === 'ot' ? -1 : 0)
     }
   };
 
@@ -754,7 +772,7 @@ export default class Run {
       selection = await this.input.getInput(game, game.offNum, 'kick', oName + ' pick kickoff type...')
 
       // Handle timeouts being called
-      if (game.players[game.offNum].currentPlay === 'TO') {
+      if (game.players[game.offNum].currentPlay === 'TO' || selection === 'TO') {
         await this.timeout(game, game.offNum)
         selection = 'TO'
       }
@@ -783,7 +801,7 @@ export default class Run {
       selection = await this.input.getInput(game, game.defNum, 'ret', dName + ' pick return type...')
 
       // Handle timeouts being called
-      if (game.players[game.defNum].currentPlay === 'TO') {
+      if (game.players[game.defNum].currentPlay === 'TO' || selection === 'TO') {
         await this.timeout(game, game.defNum)
         selection = 'TO'
       }
@@ -830,7 +848,7 @@ export default class Run {
       }
       await animationWaitForCompletion(this.plCard2, 'picked')
 
-      setBallSpot(this)
+      await setBallSpot(this)
       await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     }
 
@@ -998,7 +1016,7 @@ export default class Run {
       await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     }
 
-    setBallSpot(this)
+    await setBallSpot(this)
     await alertBox(this, msg)
   };
 
@@ -1067,6 +1085,15 @@ export default class Run {
     game.players[2].currentPlay = null
 
     await firstDownLine(this)
+
+    if (game.twoPtConv) {
+      const twoPtText = 'Two-point conversion'
+      if (game.offNum === game.away) {
+        this.scoreboardContainerBotLeft.innerText = twoPtText
+      } else {
+        this.scoreboardContainerBotRight.innerText = twoPtText
+      }
+    }
 
     if (game.status > KICK) {
       animationSimple(this.scoreboardContainerBotLeft, 'collapsed', false)
@@ -1678,7 +1705,9 @@ export default class Run {
 
   printClock (game, scoreboard) {
     const clockTime = scoreboard.querySelector('.clock .time')
-    clockTime.innerText = this.printTime(game.currentTime)
+    if (game.qtr < 5) {
+      clockTime.innerText = this.printTime(game.currentTime)
+    }
   }
 
   printMsgDown (game, scoreboard) {
@@ -1864,10 +1893,12 @@ export default class Run {
 
     if (multCard.card === 'King') {
       await this.bigPlay(game, coin ? game.offNum : game.defNum)
-    } else if ((multCard.card === 'Queen' && coin) || (multCard.card === 'Jack' && !coin)) {
+    } else if (multCard.card === 'Queen' && coin) {
       game.thisPlay.multiplier = 3
-    } else if ((multCard.card === 'Queen' && !coin) || (multCard.card === 'Jack' && coin)) {
+    } else if (multCard.card === 'Jack' && !coin) {
       game.thisPlay.multiplier = -3
+    } else if ((multCard.card === 'Queen' && !coin) || (multCard.card === 'Jack' && coin)) {
+      game.thisPlay.multiplier = 0
     } else {
       if (coin) {
         await alertBox(this, 'Picked!')
@@ -2067,7 +2098,7 @@ export default class Run {
       // Probably reset graphics
       game.spot = 35
       // await this.moveBall(game, 'show')
-      setBallSpot(this, 65)
+      await setBallSpot(this, 65)
       // Punt
     } else {
       // Add Recap for punt, maybe remove first down sticks
@@ -2253,17 +2284,17 @@ export default class Run {
       }
     }
 
-    await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist)
+    const recentScore = await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist)
 
-    if (!game.isOT() && game.otPoss < 0 && !game.twoPtConv && (game.status < FG || game.status === HAIL)) {
-      await this.updateDown(game)
+    if (!(game.isOT() && game.otPoss < 0) && !game.twoPtConv && (game.status < FG || game.status === HAIL)) {
+      await this.updateDown(game, recentScore)
     }
 
     if (!game.twoPtConv) {
       await this.timeChanger(game)
     }
 
-    if (game.status > INIT && game.status < REG) {
+    if (game.status > INIT && game.status < REG && game.status !== OT_START) {
       game.status = REG
     }
   };
@@ -2439,7 +2470,7 @@ export default class Run {
 
     await animationWaitForCompletion(this.fieldContainer, 'slide-away', false)
     this.playerContainer.classList.toggle('fade', true)
-    setBallSpot(this)
+    await setBallSpot(this)
 
     animationSimple(this.scoreboardContainerTopLeft, 'collapsed', false)
     animationSimple(this.scoreboardContainerTopRight, 'collapsed', false)
@@ -2451,6 +2482,7 @@ export default class Run {
     const oname = game.players[ono].team.name
     let good = false
     let coin
+    let recentScore = 0
 
     // Two-Point Conversion
     if (game.twoPtConv) {
@@ -2467,6 +2499,7 @@ export default class Run {
 
         if (good) {
           await this.scoreChange(game, ono, 2)
+          recentScore = 2
         } else {
           if (game.changeTime < PEN_DOWN || game.changeTime > PEN_NO_DOWN) {
             await alertBox(this, oname + ' 2-point conversion no good!')
@@ -2474,6 +2507,7 @@ export default class Run {
         }
       } else if ((game.spot + dst <= 0 || game.spot + dst >= 100) && game.turnover) {
         await this.scoreChange(game, dno, 2)
+        recentScore = 2
       } else {
         if (game.changeTime < PEN_DOWN || game.changeTime > PEN_NO_DOWN) {
           await alertBox(this, oname + ' 2-point conversion no good!')
@@ -2492,11 +2526,15 @@ export default class Run {
 
     if (game.status === 101) {
       await this.touchdown(game)
+      recentScore = 6
     }
 
     if (game.status === 102) {
       await this.safety(game)
+      recentScore = 2
     }
+
+    return recentScore
   };
 
   async scoreChange (game, scrNo, pts) {
@@ -2616,7 +2654,7 @@ export default class Run {
 
   async fgAnimation (game, fgSpot, result = true) {
     await animationWaitForCompletion(this.scoreboardContainer, 'slide-up')
-    setBallSpot(this, fgSpot)
+    await setBallSpot(this, 100 - fgSpot)
     this.ball.classList.add(result ? 'fg-good' : 'fg-bad')
     await sleep(3000)
     this.ball.classList.toggle('fg-good', false)
@@ -2643,7 +2681,7 @@ export default class Run {
     if (selection === '2P') {
       // printDown('2PT');
       game.spot = 98
-      setBallSpot(this)
+      await setBallSpot(this)
       if (game.changeTime !== TIMEOUT) {
         game.changeTime = TWOPT // Two-point
       }
@@ -2660,7 +2698,7 @@ export default class Run {
       }
 
       if (die !== 6) {
-        await this.fgAnimation(game, 78, true)
+        await this.fgAnimation(game, 22, true)
         await this.scoreChange(game, game.offNum, 1)
       } else {
         await this.fgAnimation(game, 22, false)
@@ -2678,24 +2716,25 @@ export default class Run {
     }
   };
 
-  async updateDown (game) {
+  async updateDown (game, recentScore = 0) {
+    // Recent score is -1 during resetting states
     let coin
 
     // BREADCRUMB: IF INIT OR INIT_OTC, DON'T DISPLAY A BUNCH OF SHIT, JUST UPDATE
     // if init kick then just get it right
 
-    if (game.down !== 0) {
+    if (game.down !== 0 && !recentScore) {
       game.spot += game.thisPlay.dist
     }
 
-    setBallSpot(this)
+    await setBallSpot(this)
 
     // Sticks
-    if (game.spot === game.firstDown) {
-      await alertBox(this, 'Sticks...')
+    if (game.spot === game.firstDown && !recentScore) {
       this.firstAnim.classList.toggle('hidden')
-      await sleep(1)
-      this.firstAnim.classList.toggle('fade')
+      await alertBox(this, 'Sticks...')
+      // await sleep(1)
+      await animationWaitForCompletion(this.firstAnim, 'fade', false)
       coin = await Utils.coinFlip(game, game.me)
 
       if (!coin) {
@@ -2705,8 +2744,8 @@ export default class Run {
         await animationWaitForCompletion(this.firstStick, 'good')
       }
 
-      this.firstAnim.classList.toggle('fade')
-      await sleep(1)
+      await animationWaitForCompletion(this.firstAnim, 'fade')
+      await sleep(10)
       this.firstAnim.classList.toggle('hidden')
       this.firstStick.className = 'first-stick'
     }
@@ -2717,8 +2756,10 @@ export default class Run {
 
     if (game.spot > game.firstDown || coin) {
       if (game.down !== 0) {
-        await alertBox(this, 'First down!')
-        await firstDownLine(this)
+        if (game.status !== INIT && game.status !== INIT_OTC && game.status !== OT_START && !recentScore) {
+          await alertBox(this, 'First down!')
+          await firstDownLine(this)
+        }
       }
       game.down = 1
 
@@ -2730,7 +2771,7 @@ export default class Run {
 
       // print_down(game);
 
-      if (game.status > 10) {
+      if (game.status > 10 && !recentScore) {
         // LATER: Inc player's first downs here
       }
 
@@ -2741,7 +2782,7 @@ export default class Run {
       game.down += 1
     }
 
-    if (game.down > 4) {
+    if (game.down > 4 && !recentScore) { // WATCH THIS
       await alertBox(this, 'Turnover on downs!!!')
       await this.changePoss(game, 'to')
 
@@ -2760,23 +2801,38 @@ export default class Run {
       // Inc TOP for offense
     }
 
+    // OT START
+    if (game.currentTime === -0.5 && game.qtr === 4) {
+      game.status = OT_START
+      game.down = 0
+    }
+
     // LATER: Add this for OT
-    // if (game.otPoss < 0) {
-    //     if (game.isOT() && game.otPoss_switch(qtr, ono, recFirst, otPoss)) {
-    //         changePoss(game, 'ot');
-    //     } else {
-    //         this.otPoss_switch2()
-    //         game.otPoss = Math.abs(game.otPoss) - 1;
-    //     }
-    // }
+    if (game.otPoss < 0) {
+      if (game.isOT() && this.otPossSwitch(game)) {
+        this.changePoss(game, 'ot')
+      } else {
+        await this.otPossReset(game)
+        game.otPoss = Math.abs(game.otPoss) - 1
+      }
+    }
 
     if (game.qtr > 4 && game.otPoss === 0) {
       game.currentTime = -0.5
     }
   };
 
+  async otPossReset (game) {
+    game.down = 0
+    game.spot = 75
+    game.firstDown = 85
+    await setBallSpot(this)
+    await firstDownLine(this)
+    this.updateDown(game, -1)
+  }
+
   async tickingClock (oldTime, newTime) {
-    const clockTime = document.querySelector('.clock .time')
+    const clockTime = this.scoreboardContainer.querySelector('.clock .time')
     let curTime = oldTime
     if (this.game.animation && oldTime !== 'end' && newTime >= 0) {
       while (curTime > newTime) {
@@ -2788,7 +2844,7 @@ export default class Run {
     clockTime.innerText = this.printTime(newTime)
   }
 
-  ot_qtr_switch (game) {
+  otQtrSwitch (game) {
     const qtrEven = !(game.qtr % 2)
     const offRecdFirst = game.offNum === game.recFirst
     let swtch = false
@@ -2815,7 +2871,7 @@ export default class Run {
     // storeStats(winner, false);
   };
 
-  otPoss_switch (game) {
+  otPossSwitch (game) {
     const qtrEven = !(game.qtr % 2)
     const offEqRec = game.offNum === game.recFirst
     const otp = game.otPoss
