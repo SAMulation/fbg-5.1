@@ -358,11 +358,14 @@ input {
 }
 
 
-.field-container .modal-message {
-  grid-area: top-endzone / left / top-field / right;
-  z-index: 20;
+.modal-message {
+  grid-area: 2 / 2 / 3 / 3;
+  z-index: 2000;
   margin: 10px;
-  color: purple;
+  background-color: #7954a1;
+  border: 5px solid black;
+  border-radius: 5px;
+  box-shadow: 0 10px 25px 0 #0000008c;
 
   color: white;
   font-weight: bold;
@@ -370,13 +373,17 @@ input {
   display: flex;
   text-align: center;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   overflow-y: scroll;
   overflow-x: hidden;
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */
+
+  transition: all 0.5s;
 }
 
-.field-container .modal-message::-webkit-scrollbar {
+.modal-message::-webkit-scrollbar {
   display: none;
 }
 
