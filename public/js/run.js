@@ -2883,4 +2883,19 @@ export default class Run {
 
     return possSwitch
   };
+
+  setModalButton (header, body, buttonText, buttonAction, elDetails) {
+    const modal = document.querySelector('.modal-message')
+    const modalButton = modal.querySelector('.modal-button')
+    modal.querySelector('.modal-header').innerText = header
+    modal.querySelector('.modal-body').innerText = body
+    modalButton.innerText = header
+    modalButton.addEventListener('click', () => {
+      if (buttonAction === 'next') {
+      // nextEl(elDetails)
+      } else {
+      // closeModal()
+      }
+    })
+  };
 }
