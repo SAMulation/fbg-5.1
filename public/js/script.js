@@ -3,12 +3,14 @@
 import Team from './team.js'
 import Game from './game.js'
 import Site from './site.js'
+import { setModalMessage } from './run.js'
 import ButtonInput from './buttonInput.js'
 import PromptInput from './promptInput.js'
 import FormInput from './formInput.js'
 import { TEAMS } from './teams.js'
 import Utils from './remoteUtils.js'
 import { animationWaitForCompletion, animationWaitThenHide } from './graphics.js'
+import { MODAL_MESSAGES } from './defaults.js'
 const channel = null
 
 // Enable pusher logging - don't include this in production
@@ -101,7 +103,15 @@ const attachNextEvent = async (site, buttons) => {
         await animationWaitThenHide(gamePickPanel, 'fade')
         await animationWaitForCompletion(multiPickPanel, 'fade', false)
       } else if (val === 'about') {
-        // Pull up about
+        await setModalMessage(MODAL_MESSAGES.welcome)
+      } else if (val === 'special') {
+        await setModalMessage(MODAL_MESSAGES.special)
+      } else if (val === 'strategy') {
+        await setModalMessage(MODAL_MESSAGES.strategy)
+      } else if (val === 'upcoming') {
+        await setModalMessage(MODAL_MESSAGES.upcoming)
+      } else if (val === 'overtime') {
+        await setModalMessage(MODAL_MESSAGES.overtime)
       } else if (val === 'local-multi') {
         hideElement(onlinePickPanel)
         hideElement(hostCodePanel)
