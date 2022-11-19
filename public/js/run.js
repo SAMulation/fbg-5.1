@@ -1613,7 +1613,7 @@ export default class Run {
       }
 
       // Super long FG
-      if (legal && abrv === 'FG' && this.game.spot < 30) {
+      if (legal && abrv === 'FG' && this.game.spot < 45) {
         legal = false
       }
 
@@ -2286,7 +2286,7 @@ export default class Run {
 
     const recentScore = await this.checkScore(game, game.thisPlay.bonus, game.thisPlay.dist)
 
-    if (!(game.isOT() && game.otPoss < 0) && !game.twoPtConv && (game.status < FG || game.status === HAIL)) {
+    if (!(game.isOT() && game.otPoss < 0) && !game.twoPtConv && ((game.status > OT_START && game.status < FG) || game.status === HAIL)) {
       await this.updateDown(game, recentScore)
     }
 
