@@ -2872,6 +2872,8 @@ export default class Run {
 
     this.tdAnim.querySelector('.td-text').innerText = wName.toUpperCase() + ' WIN!!!'
 
+    this.ball.classList.add('fade')
+
     // Add home color
     if (winner === game.home) {
       const paths = this.tdAnim.querySelectorAll('path')
@@ -2880,10 +2882,16 @@ export default class Run {
       })
     }
 
+    this.tdAnim.addEventListener('click', () => {
+      window.location.reload()
+    })
+
     this.tdAnim.classList.toggle('hidden', false)
     this.tdAnim.classList.toggle('fade', false)
     this.tdAnim.querySelector('.td-frame1').classList.toggle('spin', true)
-    await sleep(2000)
+    await sleep(5000)
+
+    await alertBox(this, 'Tap the player to play another game! 🏈 🏈 🏈')
   };
 
   otPossSwitch (game) {
