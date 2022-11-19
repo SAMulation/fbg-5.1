@@ -275,7 +275,7 @@ export default class Run {
       await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
     } else {
       // End of half
-      if (!(game.qtr % 2 && !game.over)) {
+      if (!(game.qtr % 2) && !game.over) {
         await this.resetVar(game)
       } else {
         await this.resetTime(game)
