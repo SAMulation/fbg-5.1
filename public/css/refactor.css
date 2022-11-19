@@ -374,7 +374,9 @@ input {
   text-align: center;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 2%;
+  padding: 2%;
   overflow-y: scroll;
   overflow-x: hidden;
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
@@ -385,6 +387,10 @@ input {
 
 .modal-message::-webkit-scrollbar {
   display: none;
+}
+
+.modal-message h1 {
+  line-height: 125%;
 }
 
 .field-container .field {

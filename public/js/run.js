@@ -5,7 +5,7 @@ import Player from './player.js'
 import Stat from './stat.js'
 import Utils from './remoteUtils.js'
 import { Queue } from './queue.js'
-import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT, OT_START } from './defaults.js'
+import { MULTI, MATCHUP, CHANGE, TB, PEN_DOWN, PEN_NO_DOWN, TIMEOUT, TWOMIN, SAFETY_KICK, KICKOFF, KICK, INIT, INIT_OTC, REG, OFF_TP, DEF_TP, SAME, FG, PUNT, HAIL, TWO_PT, TD, SAFETY, LEAVE, P1_WINS, P2_WINS, EXIT, TWOPT, OT_START, MODAL_MESSAGES } from './defaults.js'
 import { alertBox, sleep, setBallSpot, setSpot, animationSimple, animationWaitForCompletion, animationWaitThenHide, animationPrePick, animationPostPick, resetBoardContainer, firstDownLine } from './graphics.js'
 
 export default class Run {
@@ -2884,18 +2884,47 @@ export default class Run {
     return possSwitch
   };
 
-  setModalButton (header, body, buttonText, buttonAction, elDetails) {
-    const modal = document.querySelector('.modal-message')
-    const modalButton = modal.querySelector('.modal-button')
-    modal.querySelector('.modal-header').innerText = header
-    modal.querySelector('.modal-body').innerText = body
-    modalButton.innerText = header
-    modalButton.addEventListener('click', () => {
-      if (buttonAction === 'next') {
-      // nextEl(elDetails)
-      } else {
-      // closeModal()
-      }
-    })
-  };
+  // async setModalMessage (modalMessage) {
+  //   const modal = document.querySelector('.modal-message')
+  //   const modalButton = modal.querySelector('.modal-button')
+
+  //   modal.classList.toggle('hidden', false)
+  //   modal.classList.toggle('fade', false)
+
+  //   modal.querySelector('.modal-header').innerText = modalMessage.header
+  //   modal.querySelector('.modal-body').innerText = modalMessage.body
+  //   modalButton.innerText = modalMessage.buttonText
+  //   modalButton.addEventListener('click', async () => {
+  //     if (modalMessage.buttonAction === 'next') {
+  //       this.setModalButton(MODAL_MESSAGES[modalMessage.buttonGoTo])
+  //     } else {
+  //       await animationWaitThenHide(modal, 'fade')
+  //     }
+  //   })
+  // };
+}
+
+export const setModalMessage = async (modalMessage) => {
+  const modal = document.querySelector('.modal-message')
+  const modalButton = modal.querySelector('.modal-button')
+
+  modal.querySelector('.modal-header').innerText = modalMessage.header
+  modal.querySelector('.modal-body').innerText = modalMessage.body
+  modalButton.innerText = modalMessage.buttonText
+  modalButton.setAttribute('data-button-value', modalMessage.buttonGoTo)
+  modal.scrollTop = 0
+  modalButton.addEventListener('click', async () => {
+    if (modalMessage.buttonAction === 'next') {
+      // await animationWaitForCompletion(modal, 'fade')
+      return modalMessage.buttonGoTo
+    } else {
+      await animationWaitForCompletion(modal, 'fade')
+      modal.scrollTop = 0
+      modal.classList.add('hidden')
+      return null
+    }
+  })
+
+  modal.classList.toggle('hidden', false)
+  modal.classList.toggle('fade', false)
 }
