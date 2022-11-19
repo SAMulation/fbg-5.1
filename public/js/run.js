@@ -269,7 +269,7 @@ export default class Run {
 
   async gameControl (game) {
     // The game just started
-    if (game.status === INIT || game.status === INIT_OTC || game.status === OT_START) {
+    if ((game.status === INIT || game.status === INIT_OTC || game.status === OT_START) && !game.over()) {
       await this.coinToss(game)
       await this.resetVar(game)
       await animationWaitForCompletion(this.scoreboardContainer, 'slide-up', false)
@@ -2869,6 +2869,21 @@ export default class Run {
     // this.EnablePlayButton(document.querySelector('.playButton'));
     // fireworks();
     // storeStats(winner, false);
+
+    this.tdAnim.querySelector('.td-text').innerText = wName.toUpperCase() + ' WIN!!!'
+
+    // Add home color
+    if (winner === game.home) {
+      const paths = this.tdAnim.querySelectorAll('path')
+      paths.forEach(path => {
+        path.classList.add('td-home')
+      })
+    }
+
+    this.tdAnim.classList.toggle('hidden', false)
+    this.tdAnim.classList.toggle('fade', false)
+    this.tdAnim.querySelector('.td-frame1').classList.toggle('spin', true)
+    await sleep(2000)
   };
 
   otPossSwitch (game) {
