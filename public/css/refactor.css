@@ -223,10 +223,6 @@ input {
   /* margin-bottom: 1px; */
 }
 
-.field-container .just-field:hover {
-  /* transform: rotate(180deg); */
-}
-
 .field-container::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
 }
@@ -1298,7 +1294,8 @@ div.times-king {
     animation: bad-big 3s;
   }
 
-  .home-city, .away-city {
+
+  .home-city, .away-city, .td-text {
     font-size: 44px;
   }
 
@@ -1336,4 +1333,5 @@ div.times-king {
   .player-container {
     top: calc(var(--ball-spot) - 66%);
   }
+
 }
