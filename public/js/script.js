@@ -1,4 +1,4 @@
-/* global Pusher */
+/* global Pusher, LZString */
 /* global prompt */
 import Team from './team.js'
 import Game from './game.js'
@@ -40,7 +40,7 @@ pusher.signin()
 
 // FIX: REMOVE LATER - Set to window for easy access
 const site = new Site(document.querySelector('.main-container'))
-const resumeSelection = document.getElementById('resume-game')
+const resumeSelection = document.querySelector('.resume-button')
 const startScreen = document.querySelector('.start-screen')
 const titleBall = startScreen.querySelector('.title-ball')
 const setupButtons = document.querySelectorAll('.setup-button')
@@ -87,7 +87,7 @@ const attachNextEvent = async (site, buttons) => {
         titleBall.classList.toggle('spin', false)
         await animationWaitForCompletion(gamePickPanel, 'fade', false)
       } else if (val === 'resume') {
-        await animationWaitThenHide(startScreen, 'fade')
+        // await animationWaitThenHide(startScreen, 'fade')
         site.connectionType = 'resume'
         site.game = initGame(site)
         playGame(site.game)
@@ -373,7 +373,7 @@ const initGame = (site) => {
   // }
 
   if (site.connectionType === 'resume') {
-    return new Game(window.localStorage.getItem('savedGame'), { gamecode: site.gamecode, pusher })
+    return new Game(LZString.decompressFromUTF16(window.localStorage.getItem('savedGame')), { gamecode: site.gamecode, pusher })
   } else {
     return new Game(null, { me: site.me, connections: site.connections, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, site.animation, user[1], user[2], window.inputType)
   }
@@ -381,7 +381,7 @@ const initGame = (site) => {
 
 // MAIN FUNCTION CALLS
 if (window.localStorage.getItem('savedGame')) {
-  resumeSelection.disabled = false
+  resumeSelection.removeAttribute('disabled')
 }
 await setTeamLists(document.querySelectorAll('.teamList'))
 // submitTeams(site, document.querySelector('#gameForm'))

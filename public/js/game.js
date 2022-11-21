@@ -112,7 +112,7 @@ export default class Game {
       this.fillMults()
     }
 
-    if (!this.plays) {
+    if (!this.yards) {
       this.fillYards()
     }
 
