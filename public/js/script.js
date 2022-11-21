@@ -1,4 +1,4 @@
-/* global Pusher, LZString */
+/* global Pusher, LZString, netlifyIdentity */
 /* global prompt */
 import Team from './team.js'
 import Game from './game.js'
@@ -15,16 +15,27 @@ const channel = null
 
 // Enable pusher logging - don't include this in production
 Pusher.logToConsole = true
+let pusher = null
 
-const pusher = new Pusher('41b31f79c4e658e350a5', {
-  userAuthentication: {
-    endpoint: '/.netlify/functions/main/pusher/user-auth'
-  },
-  channelAuthorization: { endpoint: '/.netlify/functions/main/pusher/auth' },
-  cluster: 'us3'
+netlifyIdentity.on('init', user => {
+  document.getElementById('current-user').innerText = user?.user_metadata?.full_name ?? 'logged out'
+
+  if (!user) return
+
+  pusher = new Pusher('41b31f79c4e658e350a5', { // 41b31f79c4e658e350a5
+    userAuthentication: {
+      endpoint: '/.netlify/functions/main/pusher/user-auth',
+      headers: { Authorization: 'Bearer ' + netlifyIdentity.currentUser().token.access_token }
+    },
+    channelAuthorization: {
+      endpoint: '/.netlify/functions/main/pusher/auth',
+      headers: { Authorization: 'Bearer ' + netlifyIdentity.currentUser().token.access_token }
+    },
+    cluster: 'us3'
+  })
+
+  pusher.signin()
 })
-
-pusher.signin()
 
 // pusher.bind('pusher:signin_success', (data) => {
 //   channel = pusher.subscribe('private-channel')

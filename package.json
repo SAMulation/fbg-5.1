@@ -5,7 +5,8 @@
   "main": "script2.test.js",
   "scripts": {
     "test": "jest --watchAll",
-    "build": "netlify-lambda build server"
+    "build": "netlify-lambda build server",
+    "dev": "node server/main.js"
   },
   "repository": {
     "type": "git",

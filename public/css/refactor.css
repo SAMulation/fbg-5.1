@@ -1350,3 +1350,7 @@ div.times-king {
     top: calc(var(--ball-spot) - 66%);
   }
 }
+
+#netlify-identity-widget {
+  z-index: 1500 !important;
+}
