@@ -48,7 +48,7 @@ export default class Player {
       }
     }
 
-    if (!plays) {
+    if (!this.plays) {
       this.fillPlays('a', this.game.qtr)
     }
 

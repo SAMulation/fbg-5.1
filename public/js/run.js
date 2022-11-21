@@ -1,4 +1,4 @@
-/* global Pusher */
+/* global Pusher, LZString */
 /* global alert, debugger */
 
 import Player from './player.js'
@@ -102,7 +102,8 @@ export default class Run {
       this.docStyle.setProperty('--first-down', (100 - game.firstDown) + '%')
     })
 
-    setSpot(this, game.resume ? null : 65) // Place ball
+    setSpot(this, game.resume ? game.spot : 65) // Place ball
+    await setBallSpot(this)
     await this.moveBall(game, game.resume ? 'show' : 'show/clear')
     // await this.updateDown(game)
     // alert('Waiting for other game')
@@ -168,6 +169,10 @@ export default class Run {
       this.showBoard(game, this.scoreboardContainer)
     }
     this.actualCards.innerText = '' // Clear out default cards
+    if (game.resume) {
+      this.coinImage.classList.toggle('fade', true)
+      this.coinImage.classList.toggle('hidden', true)
+    }
     await animationWaitThenHide(this.startScreen, 'fade') // Slide away game setup screen
     this.makeBarSlideable(this.cardsContainer)
   }
@@ -608,6 +613,7 @@ export default class Run {
       // this.ball.classList.toggle('hidden', true)
     } else if (mode === 'show') {
       this.ball.classList.toggle('hidden', false)
+      this.ball.classList.toggle('fade', false)
     } else {
       if (mode !== 'kick') {
         await alertBox(this, 'The ball is hiked...')
@@ -647,6 +653,7 @@ export default class Run {
       }
       if (game.status <= KICK) { // Kicks are negative
         game.status = Math.abs(game.status) // Make status positive (no more kicking)
+        if (game.status === 1) game.status = 4 // INIT_KICK_DONE
       }
     }
   };
@@ -1073,7 +1080,9 @@ export default class Run {
 
     // Autosave
     if (game.resume) game.resume = false
-    window.localStorage.setItem('autosaveGame', JSON.stringify(game))
+    if (!game.isMultiplayer()) {
+      window.localStorage.setItem('savedGame', LZString.compressToUTF16(JSON.stringify(game)))
+    }
 
     game.thisPlay.multiplierCard = null
     game.thisPlay.yardCard = null
