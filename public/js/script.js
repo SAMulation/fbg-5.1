@@ -74,10 +74,11 @@ const loadingPanel = document.querySelector('.start-screen-loading')
 const loadingPanelText = loadingPanel.querySelector('h1')
 window.site = site
 window.inputType = 'button'
+site.silentResume = false
 
 // FUNCTION DEFINITIONS
 const playGame = async (game) => {
-  await game.runIt(channel)
+  await game.runIt(site.silentResume)
 
   // LATER: Get ready for next game
   // EnablePlayButton(document.querySelector('.playButton'))
@@ -384,7 +385,11 @@ const initGame = (site) => {
   // }
 
   if (site.connectionType === 'resume') {
-    return new Game(LZString.decompressFromUTF16(window.localStorage.getItem('savedGame')), { gamecode: site.gamecode, pusher })
+    if (site.silentResume) {
+      return new Game(LZString.decompressFromUTF16(window.localStorage.getItem('savedGame')), { gamecode: window.localStorage.lastCode, pusher }) // site.gamecode, pusher })
+    } else {
+      return new Game(LZString.decompressFromUTF16(window.localStorage.getItem('savedGame')), { gamecode: site.gamecode, pusher }) // site.gamecode, pusher })
+    }
   } else {
     return new Game(null, { me: site.me, connections: site.connections, type: site.connectionType, host: site.host, channel: site.channel, gamecode: site.gamecode, pusher }, site.team1, site.team2, site.numberPlayers, site.gameType, site.home, site.qtrLength, site.animation, user[1], user[2], window.inputType)
   }
@@ -395,6 +400,12 @@ if (window.localStorage.getItem('savedGame')) {
   resumeSelection.removeAttribute('disabled')
 }
 await setTeamLists(document.querySelectorAll('.teamList'))
-// submitTeams(site, document.querySelector('#gameForm'))
-// pressPlayButton(document.querySelector('.playButton'), site)
 attachNextEvent(site, setupButtons)
+
+// Check for silent resume
+if (window.localStorage.inGame && window.localStorage.lastCode && window.localStorage.lastConnectionType) {
+  site.silentResume = true
+  site.connectionType = 'resume'
+  site.game = initGame(site)
+  playGame(site.game)
+}

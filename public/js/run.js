@@ -2,6 +2,7 @@
 /* global alert, debugger */
 
 import Player from './player.js'
+import Game from './game.js'
 import Stat from './stat.js'
 import Utils from './remoteUtils.js'
 import { Queue } from './queue.js'
@@ -56,15 +57,15 @@ export default class Run {
     this.channel = null // This is the Pusher channel
     this.inbox = new Queue()
     this.transmissions = []
-    this.gameLog = []
+    // this.gameLog = []
     this.p2Team = ''
 
     this.toJSON = () => {
       return {
         input: this.input.type,
         alert: this.alert,
-        transmissions: JSON.stringify(this.transmissions),
-        gameLog: JSON.stringify(this.gameLog)
+        transmissions: JSON.stringify(this.transmissions) //,
+        // gameLog: JSON.stringify(this.gameLog)
       }
     }
   }
@@ -117,34 +118,58 @@ export default class Run {
       //   await this.receiveInputFromRemote()
       // }
 
-      // Host gets player 2's team
-      if (game.connection.host && this.p2Team !== 'pong') {
-        game.players[2] = new Player(null, game, JSON.parse(this.p2Team))
-      } else if (game.connection.host) {
-        const team2 = await this.receiveInputFromRemote()
-        console.log(team2)
-        console.log(team2.value)
-        game.players[2] = new Player(null, game, JSON.parse(team2))
-      // Remote
-      } else {
-        await this.sendInputToRemote(JSON.stringify(game.players[1].team))
-      }
+      // Continuing silent resume
+      if (game.resume) {
+        // Currently, host is just going to send their version of the savedGame string to remote
 
-      // Remote gets player 1's team and other game info
-      if (game.connection.host) {
-        await this.sendInputToRemote(JSON.stringify({ team: game.players[1].team, qtrlen: game.qtrLength, home: game.home }))
-      } else {
-        let tempData = await this.receiveInputFromRemote()
-        console.log(tempData)
-        tempData = JSON.parse(tempData)
-        // Copy player '1' to actual player 2
-        game.players[2] = new Player(null, game, game.players[1].team)
-        game.players[1] = new Player(null, game, tempData.team)
-        game.qtrLength = parseInt(tempData.qtrlen)
-        game.home = parseInt(tempData.home)
-        game.away = game.opp(game.home)
-        if (game.numberPlayers) {
+        // Host sends game object to remote
+        if (window.localStorage.lastConnectionType === 'host') {
+          await this.sendInputToRemote(window.localStorage.getItem('savedGame'))
+        } else {
+          // Remote receives the game string and processes it
+          const tempData = await this.receiveInputFromRemote()
+          console.log(LZString.decompressFromUTF16(tempData))
+          game = new Game(LZString.decompressFromUTF16(tempData), { gamecode: window.localStorage.lastCode, pusher: game.connection.pusher })
+
+          // Change the necessary variables to make this the remote user
           game.me = 2
+          game.connection.type = 'remote'
+        }
+
+        this.startScreen.classList.toggle('fade', true)
+        await sleep(500)
+        this.startScreen.classList.toggle('hidden', true)
+      // Establishing connection for first time
+      } else {
+        // Host gets player 2's team
+        if (game.connection.host && this.p2Team !== 'pong') {
+          game.players[2] = new Player(null, game, JSON.parse(this.p2Team))
+        } else if (game.connection.host) {
+          const team2 = await this.receiveInputFromRemote()
+          console.log(team2)
+          console.log(team2.value)
+          game.players[2] = new Player(null, game, JSON.parse(team2))
+          // Remote sends their team (which is player 1 over there)
+        } else {
+          await this.sendInputToRemote(JSON.stringify(game.players[1].team))
+        }
+
+        // Remote gets player 1's team and other game info
+        if (game.connection.host) {
+          await this.sendInputToRemote(JSON.stringify({ team: game.players[1].team, qtrlen: game.qtrLength, home: game.home }))
+        } else {
+          let tempData = await this.receiveInputFromRemote()
+          console.log(tempData)
+          tempData = JSON.parse(tempData)
+          // Copy player '1' to actual player 2
+          game.players[2] = new Player(null, game, game.players[1].team)
+          game.players[1] = new Player(null, game, tempData.team)
+          game.qtrLength = parseInt(tempData.qtrlen)
+          game.home = parseInt(tempData.home)
+          game.away = game.opp(game.home)
+          if (game.numberPlayers) {
+            game.me = 2
+          }
         }
       }
     }
@@ -181,7 +206,41 @@ export default class Run {
 
   }
 
-  async playGame () {
+  async handshake (game, msg) {
+    if (game.connection.host) {
+      let response = null
+      let result = []
+      let tries = 0
+      do {
+        await this.sendInputToRemote(msg)
+        console.log('Sender sent handshake')
+        await Promise.race([sleep(5000), this.receiveInputFromRemote()]).then(value => {
+          result = value
+          console.log('Race result: ')
+          console.log(result)
+          console.log('Lengths match? ' + (result === this.transmissions.length ? 'Yes' : 'No'))
+          // LATER: If they don't match, process here
+        })
+        if (result) {
+          response = result
+        } else {
+          tries++
+        }
+      } while (!response && tries < 5)
+      if (tries >= 5) {
+        console.log('Sender failed to send message')
+      }
+      this.p2Team = response
+    } else {
+      const incomingMessage = await this.receiveInputFromRemote()
+      console.log('Receiver received incomingMessage:')
+      console.log(incomingMessage)
+      await this.sendInputToRemote(this.transmissions.length, false)
+      console.log('Receiver sent confirmation')
+    }
+  }
+
+  async playGame (silent = false) {
     this.channel = this.game.connection.pusher.subscribe('private-game-' + this.game.connection.gamecode)
     this.channel.bind('client-value', (data) => {
       if (data.value === null || data.value === undefined) throw new Error('got empty value from remote')
@@ -197,11 +256,16 @@ export default class Run {
     // Performing Initial Handshake
     if (this.game.isMultiplayer()) {
       console.log('subscription succeeded')
-      this.loadingPanelText.innerText = 'Successfully connected to channel!'
-      await sleep(500)
+      if (silent) {
+        console.log('Successfully reconnected to channel!')
+        console.log('Waiting for other player...')
+      } else {
+        this.loadingPanelText.innerText = 'Successfully connected to channel!'
+        await sleep(500)
 
-      this.loadingPanelText.innerText = 'Waiting for other player...'
-      await sleep(500)
+        this.loadingPanelText.innerText = 'Waiting for other player...'
+        await sleep(500)
+      }
 
       if (this.game.connection.host) {
         let response = null
@@ -226,9 +290,22 @@ export default class Run {
         await this.sendInputToRemote('pong')
         console.log('Remote sent confirmation')
       }
-      this.loadingPanelText.innerText = 'Successfully connected to other player!'
-      await sleep(500)
-      this.loadingPanelText.innerText = 'Loading game...'
+
+      if (silent) {
+        console.log('Successfully connected to other player!')
+        console.log('Loading game...')
+      } else {
+        this.loadingPanelText.innerText = 'Successfully connected to other player!'
+        await sleep(500)
+        this.loadingPanelText.innerText = 'Loading game...'
+      }
+
+      if (!silent) {
+        // Store localStorage variables for future silent resumes
+        window.localStorage.setItem('inGame', true)
+        window.localStorage.setItem('lastCode', this.game.connection.gamecode)
+        window.localStorage.setItem('lastConnectionType', this.game.connection.type)
+      }
     }
 
     // Set up environment
@@ -310,10 +387,10 @@ export default class Run {
   }
 
   // Sending message away
-  async sendInputToRemote (value) {
+  async sendInputToRemote (value, log = true) {
     if (value === null || value === undefined) throw new Error('attempted to send empty value')
-    this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
-    this.transmissions.push({ msg: value, type: 'sent' })
+    // this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
+    if (log) this.transmissions.push({ msg: value, p: this.game.me, type: 'sent' })
     this.channel.trigger('client-value', { value })
     await sleep(100)
   }
@@ -335,8 +412,8 @@ export default class Run {
     console.log('inbox:')
     console.log(this.inbox.buffer)
     const value = await this.inbox.dequeue()
-    this.transmissions.push({ msg: value, type: 'recd' })
-    this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
+    this.transmissions.push({ msg: value, p: this.game.me, type: 'recd' })
+    // this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
     return value
   }
 
@@ -1069,20 +1146,24 @@ export default class Run {
 
   async prePlay (game, stat) {
     if (game.isMultiplayer()) {
-      if (game.connection.host) {
-        await this.receiveInputFromRemote()
-      } else {
-        await this.sendInputToRemote('Pre-play check-in. Last play: ' + game.lastPlay)
-      }
+      // Pre-play check-in: Send length of transmissions, verify we're still in sync
+      // if (game.connection.host) {
+      //   await this.receiveInputFromRemote()
+      // } else {
+      //   await this.sendInputToRemote(this.transmissions.length)
+      // }
+      console.log('Pre-shake: ' + this.transmissions.length)
+      this.handshake(game, this.transmissions.length)
+      console.log('Post-shake: ' + this.transmissions.length)
       // await this.sendInputToRemote('check-in: ' + (this.transmissions.length + (game.connection.host ? 0 : 1)))
       // await this.receiveInputFromRemote()
     }
 
     // Autosave
     if (game.resume) game.resume = false
-    if (!game.isMultiplayer()) {
-      window.localStorage.setItem('savedGame', LZString.compressToUTF16(JSON.stringify(game)))
-    }
+    // if (!game.isMultiplayer()) {
+    window.localStorage.setItem('savedGame', LZString.compressToUTF16(JSON.stringify(game)))
+    // }
 
     game.thisPlay.multiplierCard = null
     game.thisPlay.yardCard = null
@@ -2385,7 +2466,7 @@ export default class Run {
     document.querySelector('.' + (game.away === game.offNum ? 'away-msg' : 'home-msg') + '.top-msg').innerText = 'FootBored'
     document.querySelector('.' + (game.home === game.offNum ? 'home-msg' : 'away-msg') + '.top-msg').innerText = 'Last play: ' + p1 + ' v ' + p2 + ' | Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss')
 
-    this.gameLog.push('Last play: ' + p1 + ' v ' + p2 + ' | ' + 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss'))
+    // this.gameLog.push('Last play: ' + p1 + ' v ' + p2 + ' | ' + 'Distance: ' + game.thisPlay.dist + '-yard ' + (game.thisPlay.dist >= 0 ? 'gain' : 'loss'))
     this.plCard1.querySelector('.back').innerText = game.players[game.offNum].currentPlay
     if (game.offNum === game.home) {
       this.plCard1.querySelector('.back').classList.add('back-home')
@@ -2892,6 +2973,11 @@ export default class Run {
     }
 
     this.tdAnim.addEventListener('click', () => {
+      // Remove localStorage variables for silent resumes
+      window.localStorage.removeItem('inGame')
+      window.localStorage.removeItem('lastCode')
+      window.localStorage.removeItem('lastConnectionType')
+
       window.location.reload()
     })
 

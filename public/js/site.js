@@ -14,6 +14,7 @@ export default class Site {
     this.qtrLength = 7 // or some other int (1-15)
     this.gameMode = 'rookie' // or 'pro'
     this.me = 1 // or 2 or 0
+    this.silentResume = false // or true
     this.animation = true // or false
   }
 

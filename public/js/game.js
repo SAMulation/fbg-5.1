@@ -103,7 +103,7 @@ export default class Game {
       // Reset the following values
       this.run.alert = tempRun.alert
       this.run.transmissions = JSON.parse(tempRun.transmissions)
-      this.run.gameLog = JSON.parse(tempRun.gameLog)
+      // this.run.gameLog = JSON.parse(tempRun.gameLog)
     } else {
       this.run = new Run(this, input)
     }
@@ -124,7 +124,7 @@ export default class Game {
       return {
         channel: this.connection.channel,
         connections: JSON.stringify(this.connection.connections),
-        gamecode: null,
+        gamecode: this.connection.gamecode,
         host: this.connection.host,
         me: this.connection.me,
         pusher: null,
@@ -169,8 +169,8 @@ export default class Game {
     }
   }
 
-  async runIt (channel) {
-    await this.run.playGame(this.connection)
+  async runIt (silent) {
+    await this.run.playGame(silent)
   }
 
   opp (num) {
