@@ -16,7 +16,7 @@ const channel = null
 
 // Enable pusher logging - don't include this in production
 Pusher.logToConsole = true
-
+console.log(TOKEN)
 const pusher = new Pusher(TOKEN, {
   userAuthentication: {
     endpoint: '/.netlify/functions/main/pusher/user-auth'
