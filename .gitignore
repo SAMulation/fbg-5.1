@@ -5,3 +5,4 @@ functions/
 # Local Netlify folder
 .netlify
 public/js/config.js
+netlify.toml
