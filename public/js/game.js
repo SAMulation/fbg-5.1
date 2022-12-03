@@ -170,7 +170,8 @@ export default class Game {
   }
 
   async runIt (silent) {
-    await this.run.playGame(silent)
+    // await this.run.playGame(silent)
+    await this.run.playGame(true)
   }
 
   opp (num) {

@@ -59,6 +59,7 @@ export default class Run {
     this.transmissions = []
     // this.gameLog = []
     this.p2Team = ''
+    this.subscriptionCount = 0
 
     this.toJSON = () => {
       return {
@@ -145,20 +146,20 @@ export default class Run {
         if (game.connection.host && this.p2Team !== 'pong') {
           game.players[2] = new Player(null, game, JSON.parse(this.p2Team))
         } else if (game.connection.host) {
-          const team2 = await this.receiveInputFromRemote()
+          const team2 = await this.receiveInputFromRemoteOld()
           console.log(team2)
           console.log(team2.value)
           game.players[2] = new Player(null, game, JSON.parse(team2))
           // Remote sends their team (which is player 1 over there)
         } else {
-          await this.sendInputToRemote(JSON.stringify(game.players[1].team))
+          await this.sendInputToRemoteOld(JSON.stringify(game.players[1].team))
         }
 
         // Remote gets player 1's team and other game info
         if (game.connection.host) {
-          await this.sendInputToRemote(JSON.stringify({ team: game.players[1].team, qtrlen: game.qtrLength, home: game.home }))
+          await this.sendInputToRemoteOld(JSON.stringify({ team: game.players[1].team, qtrlen: game.qtrLength, home: game.home }))
         } else {
-          let tempData = await this.receiveInputFromRemote()
+          let tempData = await this.receiveInputFromRemoteOld()
           console.log(tempData)
           tempData = JSON.parse(tempData)
           // Copy player '1' to actual player 2
@@ -172,6 +173,8 @@ export default class Run {
           }
         }
       }
+
+      this.transmissions = []
     }
 
     // Set teams' colors
@@ -206,42 +209,95 @@ export default class Run {
 
   }
 
+  async receiveInputFromRemoteOld () {
+    await sleep(100)
+    console.log('inbox:')
+    console.log(this.inbox.buffer)
+    const value = await this.inbox.dequeue()
+    this.transmissions.push({ msg: value, type: 'recd' })
+    // this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
+    return value
+  }
+
+  async newHandshake (game, msg) {
+    // Performing Initial Handshake
+    if (this.game.isMultiplayer()) {
+      console.log('subscription succeeded')
+      this.loadingPanelText.innerText = 'Successfully connected to channel!'
+      await sleep(500)
+
+      this.loadingPanelText.innerText = 'Waiting for other player...'
+      await sleep(500)
+
+      if (this.game.connection.host) {
+        let response = null
+        let result = []
+        do {
+          await this.sendInputToRemoteOld('ping')
+          console.log('Host sent handshake')
+          await Promise.race([sleep(5000), this.receiveInputFromRemoteOld()]).then(value => {
+            result = value
+            console.log('Race result: ')
+            console.log(result)
+          })
+          if (result) {
+            response = result
+          }
+        } while (!response)
+        this.p2Team = response
+      } else {
+        const handshake = await this.receiveInputFromRemoteOld()
+        console.log('Remote received handshake:')
+        console.log(handshake)
+        await this.sendInputToRemoteOld('pong')
+        console.log('Remote sent confirmation')
+      }
+      this.loadingPanelText.innerText = 'Successfully connected to other player!'
+      await sleep(500)
+      this.loadingPanelText.innerText = 'Loading game...'
+    }
+  }
+
   async handshake (game, msg) {
     if (game.connection.host) {
       let response = null
       let result = []
       let tries = 0
       do {
-        await this.sendInputToRemote(msg)
-        console.log('Sender sent handshake')
-        await Promise.race([sleep(5000), this.receiveInputFromRemote()]).then(value => {
-          result = value
-          console.log('Race result: ')
-          console.log(result)
-          console.log('Lengths match? ' + (result === this.transmissions.length ? 'Yes' : 'No'))
-          // LATER: If they don't match, process here
-        })
+        if (tries === 0) {
+          await this.sendInputToRemote(msg, false)
+          console.log('Sender sent handshake')
+        }
+
+        result = await this.receiveInputFromRemote(false)
+        // await Promise.race([sleep(5000), this.receiveInputFromRemote()]).then(value => {
+        //   result = value
+        //   console.log('Race result: ')
+        //   console.log(result)
+        //   console.log('Lengths match? ' + (result === this.transmissions.length ? 'Yes' : 'No'))
+        //   // LATER: If they don't match, process here
+        // })
         if (result) {
           response = result
         } else {
           tries++
         }
-      } while (!response && tries < 5)
-      if (tries >= 5) {
+      } while (!response && tries < 2)
+      if (tries >= 2) {
         console.log('Sender failed to send message')
       }
-      this.p2Team = response
+      this.p2Team = response // null on failure
     } else {
-      const incomingMessage = await this.receiveInputFromRemote()
+      const incomingMessage = await this.receiveInputFromRemote(false)
       console.log('Receiver received incomingMessage:')
       console.log(incomingMessage)
-      await this.sendInputToRemote(this.transmissions.length, false)
+      await this.sendInputToRemote(this.transmissions.length, false, this.transmissions.length)
       console.log('Receiver sent confirmation')
     }
   }
 
   async playGame (silent = false) {
-    this.channel = this.game.connection.pusher.subscribe('private-game-' + this.game.connection.gamecode)
+    this.channel = this.game.connection.pusher.subscribe('private-game-' + this.game.connection.gamecode) // 'presence-game-' + this.game.connection.gamecode)
     this.channel.bind('client-value', (data) => {
       if (data.value === null || data.value === undefined) throw new Error('got empty value from remote')
       // this.inbox.enqueue(data.value)
@@ -250,8 +306,27 @@ export default class Run {
 
     await new Promise((resolve, reject) => {
       this.channel.bind('pusher:subscription_succeeded', resolve)
-      this.channel.bind('pusher:subscription_error', reject)
+      this.channel.bind('pusher:subscription_error', console.log('!!!!! SUBSCRIPTION_ERROR !!!!!'))
+      // this.game.connection.pusher.connection.bind('state_change', function (states) {
+      //   console.log('current: ' + states.current + ' | previous: ' + states.previous)
+      // })
+      this.game.connection.pusher.connection.bind('state_change', (states) => {
+        console.log('current: ' + states.current + ' | previous: ' + states.previous)
+      })
+      this.channel.bind('pusher:subscription_count', (data) => {
+        const oldSubscriptionCount = this.subscriptionCount
+        console.log('subscription_count: ' + data.subscription_count)
+        this.subscriptionCount = data.subscription_count
+        if (oldSubscriptionCount === 2 && this.subscriptionCount === 1) {
+          this.otherUserDisconnected()
+        }
+        //  console.log('****************************')
+        // console.log(this.channel.subscription_count)
+      })
     })
+
+    // this.game.connection.pusher.user.watchlist.bind('online', console.log('user online'))
+    // this.game.connection.pusher.user.watchlist.bind('offline', console.log('user offline'))
 
     // Performing Initial Handshake
     if (this.game.isMultiplayer()) {
@@ -267,37 +342,46 @@ export default class Run {
         await sleep(500)
       }
 
-      if (this.game.connection.host) {
-        let response = null
-        let result = []
-        do {
-          await this.sendInputToRemote('ping')
-          console.log('Host sent handshake')
-          await Promise.race([sleep(5000), this.receiveInputFromRemote()]).then(value => {
-            result = value
-            console.log('Race result: ')
-            console.log(result)
-          })
-          if (result) {
-            response = result
-          }
-        } while (!response)
-        this.p2Team = response
-      } else {
-        const handshake = await this.receiveInputFromRemote()
-        console.log('Remote received handshake:')
-        console.log(handshake)
-        await this.sendInputToRemote('pong')
-        console.log('Remote sent confirmation')
-      }
+      // if (this.game.connection.host) {
+      //   let response = null
+      //   let result = []
+      //   do {
+      //     await this.sendInputToRemote('ping')
+      //     console.log('Host sent handshake')
+      //     await Promise.race([sleep(5000), this.receiveInputFromRemote()]).then(value => {
+      //       result = value
+      //       console.log('Race result: ')
+      //       console.log(result)
+      //     })
+      //     if (result) {
+      //       response = result
+      //     }
+      //   } while (!response)
+      //   this.p2Team = response
+      // } else {
+      //   const handshake = await this.receiveInputFromRemote()
+      //   console.log('Remote received handshake:')
+      //   console.log(handshake)
+      //   await this.sendInputToRemote('pong')
+      //   console.log('Remote sent confirmation')
+      // }
+
+      // await this.handshake(this.game, 'ping')
+      await this.newHandshake(this.game, 'ping')
 
       if (silent) {
         console.log('Successfully connected to other player!')
         console.log('Loading game...')
-      } else {
+      } else if (this.p2Team) {
         this.loadingPanelText.innerText = 'Successfully connected to other player!'
         await sleep(500)
         this.loadingPanelText.innerText = 'Loading game...'
+      } else {
+        this.loadingPanelText.innerText = 'Connection FAILED...'
+        await sleep(1000)
+        this.loadingPanelText.innerText = 'Reloading page...'
+        await sleep(500)
+        window.location.reload()
       }
 
       if (!silent) {
@@ -387,10 +471,23 @@ export default class Run {
   }
 
   // Sending message away
-  async sendInputToRemote (value, log = true) {
+  async sendInputToRemote (value, log = true, expectedIndex = null) {
     if (value === null || value === undefined) throw new Error('attempted to send empty value')
     // this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
+
     if (log) this.transmissions.push({ msg: value, p: this.game.me, type: 'sent' })
+    if (expectedIndex) {
+      this.channel.trigger('client-value', { value, expectedIndex })
+    } else {
+      this.channel.trigger('client-value', { value })
+    }
+    await sleep(100)
+  }
+
+  async sendInputToRemoteOld (value) {
+    if (value === null || value === undefined) throw new Error('attempted to send empty value')
+    // this.gameLog.push('Sent from player ' + this.game.me + ': ' + value)
+    this.transmissions.push({ msg: value, type: 'sent' })
     this.channel.trigger('client-value', { value })
     await sleep(100)
   }
@@ -407,31 +504,81 @@ export default class Run {
   }
 
   // Receiving message
-  async receiveInputFromRemote () {
+  async receiveInputFromRemote (log = true) {
+    let msg = null
+    let tries = 0
+    let warning = false
+    let sync = true
+
     await sleep(100)
-    console.log('inbox:')
-    console.log(this.inbox.buffer)
-    const value = await this.inbox.dequeue()
-    this.transmissions.push({ msg: value, p: this.game.me, type: 'recd' })
-    // this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + value)
-    return value
+
+    do {
+      await Promise.race([sleep(5000), this.inbox.dequeue()]).then(value => {
+        msg = value
+        if (msg) { // Received something
+          if (typeof msg === 'object' && 'expectedIndex' in msg) {
+            if (this.transmissions.length === msg.expectedIndex) {
+              sync = false
+            } // else: in sync
+          }
+        } else { // else: No msg, increase tries
+          tries++
+          if (tries === 5) {
+            if (!warning) {
+              // tries = disconnectionWarning()
+              tries = 0
+              warning = true
+            } else {
+              // disconnectionForced()
+            }
+          }
+        }
+
+      //   console.log('Race result: ')
+      //   console.log(msg)
+      //   if (expectedIndex) {
+      //     console.log('Lengths match? ' + (msg.expectedIndex === this.transmissions.length ? 'Yes' : 'No'))
+      //   }
+      })
+
+      // if (!msg) {
+      //   tries++
+      //   if (tries !== 5) console.log('Message not received, trying again...')
+      // }
+    } while (!msg || tries < 5 || !sync)
+
+    // if (tries >= 5) {
+    //   console.log('!!!!! MESSAGE NOT RECEIVED !!!!!')
+    // }
+
+    // if (expectedIndex) {
+    //   if (this.transmissions.length !== expectedIndex) {
+    //     console.log('!!!!! OUT OF SYNC !!!!!')
+    //   }
+    // }
+
+    if (msg && sync) {
+      if (log) this.transmissions.push({ msg, p: this.game.me, type: 'recd' })
+      // this.gameLog.push('Received from player ' + this.game.opp(this.game.me) + ': ' + msg)
+      return (typeof msg === 'object' && 'expectedIndex' in msg) ? msg.value : msg
+    } else if (!sync) {
+      // processOutOfSync()
+      console.log('!!!!! OUT OF SYNC !!!!!')
+    } else {
+      console.log('!!!!! OUT OF WHACK !!!!!')
+      // saveGame()
+      // setLocalStorageVars()
+      // warnUser('Game reloading')
+      // reloadGame()
+    }
   }
 
-  async remoteCommunication (game, p, value = null, msg = null) {
-    if (game.connection.connections[p] === 'remote' || game.connection.connections[p] === 'host') {
-      if (value !== null) {
-      // Send value to REMOTE player
-        await this.sendInputToRemote(value)
-      } else {
-        if (msg) {
-          await alertBox(this, msg)
-        }
-        // Receive value from REMOTE player
-        value = await this.receiveInputFromRemote()
-      }
-    }
+  otherUserDisconnected () {
+    console.log('The other user disconnected... Attempting to reconnect')
 
-    return value
+    console.log('!!!!! OTHER USER DISCONNECT !!!')
+    console.log('Vain attempt to reconnect goes here...')
+    console.log('On fail, save everything and get ready for manual resume')
   }
 
   async coinToss (game) {
@@ -456,7 +603,7 @@ export default class Run {
     result += awayName + ' chose ' + (coinPick === 'H' ? 'heads' : 'tails') + '... The toss!'
     await alertBox(this, result)
     if (game.qtr === 4) {
-      alertBox(this, 'End of regulation!')
+      await alertBox(this, 'End of regulation!')
       this.coinImage.className = 'coin fade'
       this.coinImage.style.display = ''
       // await animationWaitForCompletion(this.coinImage, 'fade', false)
@@ -1153,7 +1300,7 @@ export default class Run {
       //   await this.sendInputToRemote(this.transmissions.length)
       // }
       console.log('Pre-shake: ' + this.transmissions.length)
-      this.handshake(game, this.transmissions.length)
+      await this.handshake(game, this.transmissions.length)
       console.log('Post-shake: ' + this.transmissions.length)
       // await this.sendInputToRemote('check-in: ' + (this.transmissions.length + (game.connection.host ? 0 : 1)))
       // await this.receiveInputFromRemote()
