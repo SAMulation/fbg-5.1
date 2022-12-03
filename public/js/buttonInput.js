@@ -96,11 +96,23 @@ export default class ButtonInput extends BaseInput {
     for (let i = 0; i < this.legalChoices.length; i++) {
       if (this.legalChoices[i].abrv !== 'TO') {
         const btn = document.createElement('button')
-        const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
-        btn.appendChild(t)
         btn.classList.add('card')
         btn.classList.add((game.away === p ? 'away' : 'home') + '-card')
         btn.setAttribute('data-playType', this.legalChoices[i].abrv)
+
+        btn.innerHTML = `
+          <div class="top-card-container">
+            <p class="play-abrv">${this.legalChoices[i].abrv}</p>
+            <p class="plays-left">${game.players[p].plays[this.legalChoices[i].abrv].count}
+          </div>
+          <svg class="helmet-card-away" height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 279.114" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="#card-helmet"/>
+          </svg>
+          <p class="play-name">${this.legalChoices[i].name}</p>
+        `
+        // const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
+        // btn.appendChild(t)
+
         buttonArea.appendChild(btn)
       } else {
         timeout.innerText = 'Timeouts (' + game.players[p].timeouts + ')'

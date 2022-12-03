@@ -50,3 +50,142 @@ grid-template-rows: 3fr 2fr 1fr 8fr;
 align-items: center;
 box-shadow: 0 5px 10px rgb(34 34 34 / 50%);
 color: white;
+
++
+.top-card-container {
++
+    display: grid;
++
+    /* flex-direction: row; */
++
+    font-size: -0.5em;
++
+    /* height: fit-content; */
++
+    /* height: 100%; */
++
+    /* gap: 60%; */
++
+    /* grid-auto-columns: 1fr 1fr; */
++
+    /* grid-auto-rows: 1fr; */
++
+    grid-columns: 2;
++
+    width: 100%;
++
+    justify-content: space-between;
++
+    align-content: space-around;
++
+    grid-auto-columns: 1fr 1fr;
++
+    grid-auto-rows: 1fr;
++
+}
++
++
+.top-card-container p {
++
+    font-size: .75em;
++
+    line-height: .75em;
++
+    /* align-self: flex-start; */
++
+    /* display: flex; */
++
+    /* align-items: center; */
++
+}
++
++
+.cards svg {
++
+    /* width: 112%; */
++
+    align-self: end;
++
+    margin-bottom: -15%;
++
+}
++
++
+p.play-name {
++
+    font-size: .9em;
++
+}
++
++
+section.cards-container.home-card-cont {
++
+    /* height: 100%; */
++
+}
++
++
+.top-card-container {
++
+}
++
++
+.top-card-container > p.play-abrv {
++
+    /* align-self: start; */
++
+    text-align: left;
++
+}
++
++
+p.play-abrv {
++
+    grid-area: 1 / 1 / 2 / 2;
++
+}
++
++
+p.plays-left {
++
+    grid-area: 1 / 2 / 2 / 3;
++
+    text-align: right;
++
+}
+
+
+    /* Firefox */
+    /* max-height: 100%; */
+    gap: 5%;
+    justify-content: space-between;
++
+    flex-wrap: nowrap;
+}
+.cards-container .cards::-webkit-scrollbar {
+( … Skipping 5 matching lines … )
+    /* background: #005A9C; */
+    background: var(--away-color1);
+    color: white;
+    /* font-family: 'calc', sans-serif; */
+-
+    display: flex;
+-
+    align-items: flex-end;
+-
+    justify-content: center;
++
+    display: grid;
++
+    /* gap: 12%; */
++
+    /* flex-direction: column; */
++
+    flex-basis: 1 2 1;
++
+    justify-items: center;
++
+    grid-auto-rows: 20% 1fr 20%;
++
+    align-items: center;
+}
