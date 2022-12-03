@@ -11,13 +11,13 @@ import { TEAMS } from './teams.js'
 import Utils from './remoteUtils.js'
 import { animationWaitForCompletion, animationWaitThenHide } from './graphics.js'
 import { MODAL_MESSAGES } from './defaults.js'
-import TOKEN from './config.js'
+// import TOKEN from './config.js'
 const channel = null
 
 // Enable pusher logging - don't include this in production
 Pusher.logToConsole = true
-console.log(TOKEN)
-const pusher = new Pusher(TOKEN, {
+// console.log(TOKEN)
+const pusher = new Pusher('f18497dc97d155f3f978', {
   userAuthentication: {
     endpoint: '/.netlify/functions/main/pusher/user-auth'
   },
