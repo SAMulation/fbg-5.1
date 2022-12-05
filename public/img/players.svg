@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Created with Vectornator (http://vectornator.io/) -->
-<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 279.114" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 621.056" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs/>
-    <g id="player-helmet" vectornator:layerName="Layer 1">
+    <g id="card-helmet" vectornator:layerName="Layer 1">
         <g opacity="1">
             <path class="mini-helmet-bg" d="M6.83147 87.7777C6.83147 65.9984 24.7401 48.3427 46.8315 48.3427C68.9229 48.3427 86.8315 65.9983 86.8315 87.7777C86.8315 109.557 68.9229 127.213 46.8315 127.213C24.7401 127.213 6.83148 109.557 6.83147 87.7777Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
             <path class="mini-helmet-line" d="M46.9502 47.21L46.7055 127.163" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>

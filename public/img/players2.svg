@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with Vectornator (http://vectornator.io/) -->
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 621.056" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs/>
+    <g id="card-helmet" vectornator:layerName="Layer 1">
+        <g opacity="1">
+            <path class="mini-helmet-bg" d="M3 411.28C2.99999 389.5 20.9086 371.845 43 371.845C65.0914 371.845 83 389.5 83 411.28C83 433.059 65.0914 450.715 43 450.715C20.9086 450.715 3.00001 433.059 3 411.28Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-line" d="M43.1187 370.712L42.874 450.665" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-outline" d="M3 411.28C2.99999 389.5 20.9086 371.845 43 371.845C65.0914 371.845 83 389.5 83 411.28C83 433.059 65.0914 450.715 43 450.715C20.9086 450.715 3.00001 433.059 3 411.28Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+        </g>
+        <g opacity="1">
+            <path class="mini-helmet-bg" d="M93 371.28C93 349.5 110.909 331.845 133 331.845C155.091 331.845 173 349.5 173 371.28C173 393.059 155.091 410.715 133 410.715C110.909 410.715 93 393.059 93 371.28Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-line" d="M133.119 330.712L132.874 410.665" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-outline" d="M93 371.28C93 349.5 110.909 331.845 133 331.845C155.091 331.845 173 349.5 173 371.28C173 393.059 155.091 410.715 133 410.715C110.909 410.715 93 393.059 93 371.28Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+        </g>
+        <g opacity="1">
+            <path class="mini-helmet-bg" d="M183 371.28C183 349.5 200.909 331.845 223 331.845C245.091 331.845 263 349.5 263 371.28C263 393.059 245.091 410.715 223 410.715C200.909 410.715 183 393.059 183 371.28Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-line" d="M223.119 330.712L222.874 410.665" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-outline" d="M183 371.28C183 349.5 200.909 331.845 223 331.845C245.091 331.845 263 349.5 263 371.28C263 393.059 245.091 410.715 223 410.715C200.909 410.715 183 393.059 183 371.28Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+        </g>
+        <g opacity="1">
+            <path class="mini-helmet-bg" d="M273 371.28C273 349.5 290.909 331.845 313 331.845C335.091 331.845 353 349.5 353 371.28C353 393.059 335.091 410.715 313 410.715C290.909 410.715 273 393.059 273 371.28Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-line" d="M313.119 330.712L312.874 410.665" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-outline" d="M273 371.28C273 349.5 290.909 331.845 313 331.845C335.091 331.845 353 349.5 353 371.28C353 393.059 335.091 410.715 313 410.715C290.909 410.715 273 393.059 273 371.28Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+        </g>
+        <g opacity="1">
+            <path class="mini-helmet-bg" d="M363 371.28C363 349.5 380.909 331.845 403 331.845C425.091 331.845 443 349.5 443 371.28C443 393.059 425.091 410.715 403 410.715C380.909 410.715 363 393.059 363 371.28Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-line" d="M403.119 330.712L402.874 410.665" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-outline" d="M363 371.28C363 349.5 380.909 331.845 403 331.845C425.091 331.845 443 349.5 443 371.28C443 393.059 425.091 410.715 403 410.715C380.909 410.715 363 393.059 363 371.28Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+        </g>
+        <g opacity="1">
+            <path class="mini-helmet-bg" d="M453 371.28C453 349.5 470.909 331.845 493 331.845C515.091 331.845 533 349.5 533 371.28C533 393.059 515.091 410.715 493 410.715C470.909 410.715 453 393.059 453 371.28Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-line" d="M493.119 330.712L492.874 410.665" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-outline" d="M453 371.28C453 349.5 470.909 331.845 493 331.845C515.091 331.845 533 349.5 533 371.28C533 393.059 515.091 410.715 493 410.715C470.909 410.715 453 393.059 453 371.28Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+        </g>
+        <g opacity="1">
+            <path class="mini-helmet-bg" d="M273 461.28C273 439.5 290.909 421.845 313 421.845C335.091 421.845 353 439.5 353 461.28C353 483.059 335.091 500.715 313 500.715C290.909 500.715 273 483.059 273 461.28Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-line" d="M313.119 420.712L312.874 500.665" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-outline" d="M273 461.28C273 439.5 290.909 421.845 313 421.845C335.091 421.845 353 439.5 353 461.28C353 483.059 335.091 500.715 313 500.715C290.909 500.715 273 483.059 273 461.28Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+        </g>
+        <g opacity="1">
+            <path class="mini-helmet-bg" d="M273 551.28C273 529.5 290.909 511.845 313 511.845C335.091 511.845 353 529.5 353 551.28C353 573.059 335.091 590.715 313 590.715C290.909 590.715 273 573.059 273 551.28Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-line" d="M313.119 510.712L312.874 590.665" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+            <path class="mini-helmet-outline" d="M273 551.28C273 529.5 290.909 511.845 313 511.845C335.091 511.845 353 529.5 353 551.28C353 573.059 335.091 590.715 313 590.715C290.909 590.715 273 573.059 273 551.28Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+        </g>
+    </g>
+</svg>

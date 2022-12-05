@@ -10,7 +10,7 @@ export default class BaseInput {
     // Loop through DEF_PLAYS and add to storage array if legal
     for (const key in buttons) {
       if (game.run.playLegal(p, type, key, type)) {
-        this.legalChoices.push({ name: buttons[key].name, abrv: key })
+        this.legalChoices.push({ name: buttons[key].name, abrv: key, base: buttons[key].base, count: buttons[key].count })
       }
     }
 

@@ -357,7 +357,6 @@ input {
   }
 }
 
-
 .modal-message {
   grid-area: 2 / 2 / 3 / 3;
   z-index: 2000;
@@ -1063,9 +1062,74 @@ div.times-king {
   background: var(--away-color1);
   color: white;
   /* font-family: 'calc', sans-serif; */
-  display: flex;
+  /* display: flex;
   align-items: flex-end;
-  justify-content: center;
+  justify-content: center; */
+}
+
+button.card {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-rows: 1fr 3fr 1fr;
+  align-items: center;
+}
+
+.top-card-container {
+  grid-area: 1 / 1 / 2 / 2;
+  display: grid;
+  grid-auto-columns: 1fr 1fr;
+  height: 100%;
+}
+
+.play-abrv {
+  grid-area: 1 / 1 / 2 / 2;
+  text-align: left;
+  font-size: 0.75em;
+  line-height: 0.75em;
+}
+
+.plays-left {
+  grid-area: 1 / 2 / 2 / 3;
+  text-align: right;
+  font-size: 0.75em;
+  line-height: 0.75em;
+}
+
+.card-middle {
+  grid-area: 2 / 1 / 3 / 2;
+  height: 100%;
+  display: grid;
+  grid-auto-columns: 1fr;
+  width: 100%;
+  position: relative;
+  grid-auto-rows: 1fr;
+  background: green;
+  border-top: 2px white solid;
+  border-bottom: 2px white solid;
+  align-items: center;
+  justify-items: center;
+}
+
+img.play-overlay {
+  /* width: 100%; */
+  grid-area: 1 / 1 / 2 / 2;
+  height: 100%;
+  z-index: 2;
+  position: absolute;
+}
+
+.card svg {
+  /* width: 100%; */
+  grid-area: 1 / 1 / 2 / 2;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+}
+
+.play-name {
+  grid-area: 3 / 1 / 4 / 2;
+  font-size: 0.75em;
+  line-height: 0.75em;
 }
 
 .cards-container .cards button.card.home-card {

@@ -189,3 +189,122 @@ p.plays-left {
 +
     align-items: center;
 }
+
+Window
+Global
++
+img.play-overlay {
++
+    grid-area: 1 / 1 / 2 / 2;
++
+    z-index: 2;
++
+    /* position: absolute; */
++
+    width: 70%;
++
+}
++
++
+.card svg {
++
+    grid-area: 1 / 1 / 2 / 2;
++
+    width: 70%;
++
+    height: 50%;
++
+    z-index: 1;
++
+    transform: translate(0, 100%);
++
+    /* position: absolute; */
++
+    /* position: inherit; */
++
+}
++
++
+p.play-name {
++
+    font-size: .75em;
++
+    /* position: absolute; */
++
+}
++
++
+p.play-name {
++
+}
+
+.cards-container .cards button.card {
+    /* display: flex; */
+    /* align-items: flex-end; */
+    /* justify-content: center; */
+    /* display: flex; */
+    display: grid;
+    grid-auto-rows: 4fr 1fr;
+    justify-items: center;
+    /* position: relative; */
+  }
+
+
+  /// NEWEST ///
+  /// update the svg so they're the same god damn height, then put these css changes in, see where you're at 
+  button.card {
+    /* align-items: center; */
+    /* max-height: 100%; */
+    overflow-y: none;
+    /* position: relative; */
+  .top-card-container {
+    height: 100%;
+    /* line-height: 0.5em; */
+  .play-abrv {
+    line-height: 0.75em;
+  .plays-left {
+    line-height: 0.75em;
+  img.play-overlay {
+    /* grid-area: 2 / 1 / 3 / 2; */
+    grid-area: 1 / 1 / 2 / 2;
+    height: 100%;
+    /* object-fit: contain; */
+    position: absolute;
+    /* top: -30%; */
+    left: -5%;
+  .card svg {
+    /* grid-area: 2 / 1 / 3 / 2; */
+    grid-area: 1 / 1 / 2 / 2;
+    height: 100%;
+    /* object-fit: cover; */
+    position: absolute;
+    top: 50%;
+    /* left: 5%; */
+  .play-name {
+    line-height: 0.75em;
+  }
+
+  c {
+}
+
+.card-middle {
+}
+
+.card-middle {
+  grid-area: 2 / 1 / 3 / 2;
+  height: 100%;
+  display: grid;
+  grid-auto-columns: 1fr;
+  width: 100%;
+  position: relative;
+  grid-auto-rows: 1fr;
+  background: green;
+  border-top: 2px white solid;
+  border-bottom: 2px white solid;
+  align-items: center;
+  justify-items: center;
+}
+
+}
+}
+
