@@ -124,7 +124,9 @@ export default class ButtonInput extends BaseInput {
               <use xlink:href="#card-helmet"/>
             </svg>
           </div>
-          <p class="play-name">${this.legalChoices[i].name}</p>`
+          <div class="bot-card-container">
+            <p class="play-name">${this.legalChoices[i].name}</p>
+          </div>`
 
           console.log(temp)
           btn.innerHTML = temp

@@ -126,7 +126,7 @@ a {
   /* font-family: 'calc', sans-serif; */
   font-size: 0.75rem;
   line-height: 1rem;
-  padding: 1%;
+  /* padding: 1%; */
 }
 
 p.tiny {
@@ -1072,6 +1072,17 @@ button.card {
   grid-auto-columns: 1fr;
   grid-auto-rows: 1fr 3fr 1fr;
   align-items: center;
+  padding: 0;
+}
+
+button.card * {
+  padding: 0;
+  pointer-events: none;
+}
+
+.top-card-container > p, .bot-card-container > p {
+  font-family: "Oswald", sans-serif;
+  font-size: 1em;
 }
 
 .top-card-container {
@@ -1079,20 +1090,21 @@ button.card {
   display: grid;
   grid-auto-columns: 1fr 1fr;
   height: 100%;
+  align-items: center;
 }
 
-.play-abrv {
+.top-card-container p.play-abrv {
   grid-area: 1 / 1 / 2 / 2;
   text-align: left;
-  font-size: 0.75em;
   line-height: 0.75em;
+  padding-left: 20%;
 }
 
-.plays-left {
+.top-card-container p.plays-left {
   grid-area: 1 / 2 / 2 / 3;
   text-align: right;
-  font-size: 0.75em;
   line-height: 0.75em;
+  padding-right: 20%;
 }
 
 .card-middle {
@@ -1103,9 +1115,9 @@ button.card {
   width: 100%;
   position: relative;
   grid-auto-rows: 1fr;
-  background: green;
-  border-top: 2px white solid;
-  border-bottom: 2px white solid;
+  background: rgb(0, 128, 0);
+  border-top: 3px white solid;
+  border-bottom: 3px white solid;
   align-items: center;
   justify-items: center;
 }
@@ -1114,7 +1126,7 @@ img.play-overlay {
   /* width: 100%; */
   grid-area: 1 / 1 / 2 / 2;
   height: 100%;
-  z-index: 2;
+  z-index: 1;
   position: absolute;
 }
 
@@ -1123,12 +1135,18 @@ img.play-overlay {
   grid-area: 1 / 1 / 2 / 2;
   height: 100%;
   position: absolute;
-  z-index: 1;
+  z-index: 2;
+}
+
+.bot-card-container {
+  grid-area: 3 / 1 / 4 / 2;
+  height: 100%;
+  display: grid;
+  align-items: center;
 }
 
 .play-name {
-  grid-area: 3 / 1 / 4 / 2;
-  font-size: 0.75em;
+  /* grid-area: 3 / 1 / 4 / 2; */
   line-height: 0.75em;
 }
 
@@ -1170,7 +1188,8 @@ img.play-overlay {
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: 25%;
-  border: 1vw solid white;
+  /* border: 1vw solid white; */
+  border: 5px solid white;
   border-radius: 13%;
 }
 
