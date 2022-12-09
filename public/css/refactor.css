@@ -444,12 +444,12 @@ input {
   filter: brightness(0);
 }
 
-.helmet-ez-away, .helmet-card-away {
+.helmet-ez-away, .helmet-card-away, .away-helm {
   --helmet-ez-bot: var(--away-color1);
   --helmet-ez-top: var(--away-color2);
 }
 
-.helmet-ez-home, .helmet-card-home {
+.helmet-ez-home, .helmet-card-home, .home-helm {
   --helmet-ez-bot: var(--home-color1);
   --helmet-ez-top: var(--home-color2);
 }
