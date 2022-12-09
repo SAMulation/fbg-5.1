@@ -478,6 +478,22 @@ input {
   fill: var(--home-color1);
 } */
 
+.td-anim .color2 {
+  fill: var(--away-color2);
+}
+
+.td-anim .color1 {
+  fill: var(--away-color1);
+}
+
+.td-anim .color2.td-home {
+  fill: var(--home-color2);
+}
+
+.td-anim .color1.td-home {
+  fill: var(--home-color1);
+}
+
 .home-city, .away-city, .td-text {
   grid-column: city-start / city-end;
   color: white;
@@ -1389,11 +1405,12 @@ img.play-overlay {
   }
 
   .field-container .ball {
-    top: calc(var(--ball-spot) - 5px);
+    /* top: calc(var(--ball-spot) - 5px); */
+    top: calc(var(--ball-spot));
   }
 
   .player-container {
-    top: calc(var(--ball-spot) - 43%);
+    top: calc(var(--ball-spot) - 20vh);
   }
 
   .ball.fg-good {
