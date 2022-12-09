@@ -1,0 +1,652 @@
+diff --git a/.gitignore b/.gitignore
+index 25072d1..59600f1 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -4,4 +4,4 @@ functions/
+ .env
+ # Local Netlify folder
+ .netlify
+-public/js/config.js
++public/js/config.js
+\ No newline at end of file
+diff --git a/public/css/changes.css b/public/css/changes.css
+index 8a12a2a..e904eea 100644
+--- a/public/css/changes.css
++++ b/public/css/changes.css
+@@ -1,191 +1,32 @@
+-+
+-h1.title-text sup {
+-+
+-    font-size: 34px;
+-+
+-}
+-+
+-+
+-h2 {
+-+
+-}
+-+
+-+
+-h2.title-text-sub {
+-+
+-    font-size: 16px;
+-+
+-    margin-top: -7%;
+-+
+-}
+-+
+-+
+-p.tiny strong {
+-+
+-    font-weight: 1000;
+-+
+-    font-size: 1.2em;
+-+
+-}
+-+
+-+
+-p.tiny a {
+-+
+-    text-decoration: none;
+-+
+-    color: #7954a1;
+-+
+-}
+-
+-game-setup
+-
+-grid-area: top / left / mid / right;
+-background: #323e42;
+-display: grid;
+-/* flex-direction: column; */
+--
+-grid-template-rows: 8fr 4fr 1fr;
+-+
+-grid-template-rows: 3fr 2fr 1fr 8fr;
+-align-items: center;
+-box-shadow: 0 5px 10px rgb(34 34 34 / 50%);
+-color: white;
+-
+-+
+-.top-card-container {
+-+
+-    display: grid;
+-+
+-    /* flex-direction: row; */
+-+
+-    font-size: -0.5em;
+-+
+-    /* height: fit-content; */
+-+
+-    /* height: 100%; */
+-+
+-    /* gap: 60%; */
+-+
+-    /* grid-auto-columns: 1fr 1fr; */
+-+
+-    /* grid-auto-rows: 1fr; */
+-+
+-    grid-columns: 2;
+-+
+-    width: 100%;
+-+
+-    justify-content: space-between;
+-+
+-    align-content: space-around;
+-+
+-    grid-auto-columns: 1fr 1fr;
+-+
+-    grid-auto-rows: 1fr;
+-+
+-}
+-+
+-+
+-.top-card-container p {
+-+
+-    font-size: .75em;
+-+
+-    line-height: .75em;
+-+
+-    /* align-self: flex-start; */
+-+
+-    /* display: flex; */
+-+
+-    /* align-items: center; */
+-+
+-}
+-+
+-+
+-.cards svg {
+-+
+-    /* width: 112%; */
+-+
+-    align-self: end;
+-+
+-    margin-bottom: -15%;
+-+
+-}
+-+
+-+
+-p.play-name {
+-+
+-    font-size: .9em;
+-+
+-}
+-+
+-+
+-section.cards-container.home-card-cont {
+-+
+-    /* height: 100%; */
+-+
+-}
+-+
+-+
+-.top-card-container {
+-+
+-}
+-+
+-+
+-.top-card-container > p.play-abrv {
+-+
+-    /* align-self: start; */
+-+
+-    text-align: left;
+-+
+-}
+-+
+-+
+-p.play-abrv {
+-+
+-    grid-area: 1 / 1 / 2 / 2;
+-+
+-}
+-+
+-+
+-p.plays-left {
+-+
+-    grid-area: 1 / 2 / 2 / 3;
+-+
+-    text-align: right;
+-+
+-}
+-
+-
+-    /* Firefox */
+-    /* max-height: 100%; */
+-    gap: 5%;
+-    justify-content: space-between;
+-+
+-    flex-wrap: nowrap;
+-}
+-.cards-container .cards::-webkit-scrollbar {
+-( … Skipping 5 matching lines … )
+-    /* background: #005A9C; */
+-    background: var(--away-color1);
+-    color: white;
+-    /* font-family: 'calc', sans-serif; */
+--
+-    display: flex;
+--
+-    align-items: flex-end;
+--
+-    justify-content: center;
+-+
+-    display: grid;
+-+
+-    /* gap: 12%; */
+-+
+-    /* flex-direction: column; */
+-+
+-    flex-basis: 1 2 1;
+-+
+-    justify-items: center;
+-+
+-    grid-auto-rows: 20% 1fr 20%;
+-+
+-    align-items: center;
+-}
+\ No newline at end of file
++.first-anim {
++    -
++        height: 69%;
++    -
++        width: 100%;
++    -
++        margin: -2% 0%;
++    +
++        height: -11%;
++    +
++        width: 80%;
++    +
++        /* margin: -2% 0%; */
++        position: relative;
++        z-index: 799;
++        transition: opacity 0.25s;
++    +
++        overflow: hidden;
++    +
++        /* height: 113%; */
++    +
++        display: flex;
++    +
++        justify-content: center;
++    +
++        align-items: flex-start;
++    }
++    .first-anim img {
++    -
++        width: 100%;
++    +
++        width: 169%;
+\ No newline at end of file
+diff --git a/public/css/refactor.css b/public/css/refactor.css
+index 045a6b1..1b20d76 100644
+--- a/public/css/refactor.css
++++ b/public/css/refactor.css
+@@ -445,16 +445,6 @@ input {
+   filter: brightness(0);
+ }
+ 
+-.helmet-ez-away, .helmet-card-away {
+-  --helmet-ez-bot: var(--away-color1);
+-  --helmet-ez-top: var(--away-color2);
+-}
+-
+-.helmet-ez-home, .helmet-card-home {
+-  --helmet-ez-bot: var(--home-color1);
+-  --helmet-ez-top: var(--home-color2);
+-}
+-
+ .top-endzone .helmet-bg, .top-endzone .helmet, .bot-endzone .helmet-bg, .bot-endzone .helmet {
+   grid-column: helmet-l / city-start;
+ }
+@@ -463,7 +453,7 @@ input {
+   grid-column: city-end / helmet-r;
+ }
+ 
+-/* .top-endzone path.helmet-top, .away-helm path.helmet-top, .td-anim .color2 {
++.top-endzone path.helmet-top, .away-helm path.helmet-top, .td-anim .color2 {
+   fill: var(--away-color2);
+ }
+ 
+@@ -477,7 +467,7 @@ input {
+ 
+ .bot-endzone path.helmet-bot, .home-helm path.helmet-bot, .td-anim .color1.td-home {
+   fill: var(--home-color1);
+-} */
++}
+ 
+ .home-city, .away-city, .td-text {
+   grid-column: city-start / city-end;
+diff --git a/public/img/players.svg b/public/img/players.svg
+deleted file mode 100644
+index b42c89e..0000000
+--- a/public/img/players.svg
++++ /dev/null
+@@ -1,48 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+-<!-- Created with Vectornator (http://vectornator.io/) -->
+-<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 279.114" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+-    <defs/>
+-    <g id="player-helmet" vectornator:layerName="Layer 1">
+-        <g opacity="1">
+-            <path class="mini-helmet-bg" d="M6.83147 87.7777C6.83147 65.9984 24.7401 48.3427 46.8315 48.3427C68.9229 48.3427 86.8315 65.9983 86.8315 87.7777C86.8315 109.557 68.9229 127.213 46.8315 127.213C24.7401 127.213 6.83148 109.557 6.83147 87.7777Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-line" d="M46.9502 47.21L46.7055 127.163" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-outline" d="M6.83147 87.7777C6.83147 65.9984 24.7401 48.3427 46.8315 48.3427C68.9229 48.3427 86.8315 65.9983 86.8315 87.7777C86.8315 109.557 68.9229 127.213 46.8315 127.213C24.7401 127.213 6.83148 109.557 6.83147 87.7777Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-        </g>
+-        <g opacity="1">
+-            <path class="mini-helmet-bg" d="M96.8315 47.7777C96.8315 25.9984 114.74 8.34273 136.831 8.34272C158.923 8.34272 176.831 25.9984 176.831 47.7777C176.831 69.5571 158.923 87.2127 136.831 87.2127C114.74 87.2127 96.8315 69.5571 96.8315 47.7777Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-line" d="M136.95 7.20998L136.705 87.1628" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-outline" d="M96.8315 47.7777C96.8315 25.9984 114.74 8.34273 136.831 8.34272C158.923 8.34272 176.831 25.9984 176.831 47.7777C176.831 69.5571 158.923 87.2127 136.831 87.2127C114.74 87.2127 96.8315 69.5571 96.8315 47.7777Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-        </g>
+-        <g opacity="1">
+-            <path class="mini-helmet-bg" d="M186.831 47.7777C186.831 25.9984 204.74 8.34272 226.831 8.34271C248.923 8.34271 266.831 25.9984 266.831 47.7777C266.831 69.5571 248.923 87.2127 226.831 87.2127C204.74 87.2127 186.831 69.5571 186.831 47.7777Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-line" d="M226.95 7.20997L226.705 87.1628" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-outline" d="M186.831 47.7777C186.831 25.9984 204.74 8.34272 226.831 8.34271C248.923 8.34271 266.831 25.9984 266.831 47.7777C266.831 69.5571 248.923 87.2127 226.831 87.2127C204.74 87.2127 186.831 69.5571 186.831 47.7777Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-        </g>
+-        <g opacity="1">
+-            <path class="mini-helmet-bg" d="M276.831 47.7777C276.831 25.9984 294.74 8.34271 316.831 8.3427C338.923 8.3427 356.831 25.9983 356.831 47.7777C356.831 69.557 338.923 87.2127 316.831 87.2127C294.74 87.2127 276.831 69.5571 276.831 47.7777Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-line" d="M316.95 7.20996L316.705 87.1628" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-outline" d="M276.831 47.7777C276.831 25.9984 294.74 8.34271 316.831 8.3427C338.923 8.3427 356.831 25.9983 356.831 47.7777C356.831 69.557 338.923 87.2127 316.831 87.2127C294.74 87.2127 276.831 69.5571 276.831 47.7777Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-        </g>
+-        <g opacity="1">
+-            <path class="mini-helmet-bg" d="M366.831 47.7777C366.831 25.9984 384.74 8.34274 406.831 8.34273C428.923 8.34272 446.831 25.9984 446.831 47.7777C446.831 69.5571 428.923 87.2127 406.831 87.2127C384.74 87.2127 366.831 69.5571 366.831 47.7777Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-line" d="M406.95 7.20999L406.705 87.1628" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-outline" d="M366.831 47.7777C366.831 25.9984 384.74 8.34274 406.831 8.34273C428.923 8.34272 446.831 25.9984 446.831 47.7777C446.831 69.5571 428.923 87.2127 406.831 87.2127C384.74 87.2127 366.831 69.5571 366.831 47.7777Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-        </g>
+-        <g opacity="1">
+-            <path class="mini-helmet-bg" d="M456.831 47.7777C456.831 25.9984 474.74 8.34273 496.831 8.34272C518.923 8.34272 536.831 25.9984 536.831 47.7777C536.831 69.5571 518.923 87.2127 496.831 87.2127C474.74 87.2127 456.831 69.5571 456.831 47.7777Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-line" d="M496.95 7.20998L496.705 87.1628" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-outline" d="M456.831 47.7777C456.831 25.9984 474.74 8.34273 496.831 8.34272C518.923 8.34272 536.831 25.9984 536.831 47.7777C536.831 69.5571 518.923 87.2127 496.831 87.2127C474.74 87.2127 456.831 69.5571 456.831 47.7777Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-        </g>
+-        <g opacity="1">
+-            <path class="mini-helmet-bg" d="M276.831 137.778C276.831 115.998 294.74 98.3427 316.831 98.3427C338.923 98.3427 356.831 115.998 356.831 137.778C356.831 159.557 338.923 177.213 316.831 177.213C294.74 177.213 276.831 159.557 276.831 137.778Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-line" d="M316.95 97.21L316.705 177.163" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-outline" d="M276.831 137.778C276.831 115.998 294.74 98.3427 316.831 98.3427C338.923 98.3427 356.831 115.998 356.831 137.778C356.831 159.557 338.923 177.213 316.831 177.213C294.74 177.213 276.831 159.557 276.831 137.778Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-        </g>
+-        <g opacity="1">
+-            <path class="mini-helmet-bg" d="M276.831 227.778C276.831 205.998 294.74 188.343 316.831 188.343C338.923 188.343 356.831 205.998 356.831 227.778C356.831 249.557 338.923 267.213 316.831 267.213C294.74 267.213 276.831 249.557 276.831 227.778Z" fill="#3e68ff" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-line" d="M316.95 187.21L316.705 267.163" fill="none" opacity="1" stroke="#fddf19" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-            <path class="mini-helmet-outline" d="M276.831 227.778C276.831 205.998 294.74 188.343 316.831 188.343C338.923 188.343 356.831 205.998 356.831 227.778C356.831 249.557 338.923 267.213 316.831 267.213C294.74 267.213 276.831 249.557 276.831 227.778Z" fill="#3e68ff" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-        </g>
+-    </g>
+-</svg>
+diff --git a/public/index.html b/public/index.html
+index 979253a..3fb3636 100644
+--- a/public/index.html
++++ b/public/index.html
+@@ -27,7 +27,7 @@
+         <section class="start-screen-header">
+           <div class="title-ball spin"><a href="/index.html"><img src="./img/logo.png" alt="🏈"></a></div>
+           <h1 class="title-text">FootBored</h1>
+-          <p class="tiny">v 0.9.9.5 - First play bug fixed, able to resume local autosaved games</p>
++          <p class="tiny">v 0.9.9.7 - First play bug fixed, able to resume local autosaved games</p>
+         </section>
+         <section class="start-screen-content login">
+           <section class="start-screen-login">
+@@ -158,10 +158,9 @@
+           <div class="top-endzone">
+             <h1 class="away-city">LOS ANGELES</h1>
+             <img class="helmet-bg" src="./img/helmet.png" alt="🏈">
+-            <svg class="helmet helmet-ez-away" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
++            <svg class="helmet" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+ 	 width="100%" viewBox="0 0 601 559" enable-background="new 0 0 601 559" xml:space="preserve">
+-              <g id="player-helmet">
+-                <path fill="black" opacity="0.000000" stroke="none" 
++              <path fill="black" opacity="0.000000" stroke="none" 
+                 d="
+               M351.000000,560.000000 
+                 C234.000000,560.000000 117.500000,560.000000 1.000000,560.000000 
+@@ -219,74 +218,71 @@
+                 C252.321869,419.407562 250.781647,428.957458 249.107117,438.916260 
+                 C249.878098,438.397552 250.314743,438.268219 250.376892,438.037811 
+                 C251.803040,432.751007 253.188385,427.453156 254.827591,421.369537 
+-                z"/>
+-                <path class="helmet-bot" fill="var(--helmet-ez-bot)" opacity="1.000000" stroke="none" 
+-                  d="
+-                M263.449127,476.464172 
+-                  C269.888489,451.431458 276.189056,426.782104 282.458344,402.124786 
+-                  C284.904480,392.503937 280.370911,386.492554 270.395264,386.185852 
+-                  C266.097229,386.053711 261.791748,386.163696 257.161652,386.163696 
+-                  C257.740540,376.515228 258.377136,367.285919 258.815369,358.047211 
+-                  C259.052032,353.057953 258.891876,348.051147 259.015076,343.054871 
+-                  C259.163757,337.025208 256.684052,332.718201 250.872223,330.768372 
+-                  C231.189453,324.164948 211.719940,316.743713 191.701309,311.380341 
+-                  C175.222351,306.965332 158.079132,305.029633 141.230011,301.996674 
+-                  C140.113785,301.795715 138.995209,301.607880 137.577438,301.361847 
+-                  C137.962448,289.281006 140.306122,277.771271 144.011276,266.528870 
+-                  C157.561249,225.414642 180.722473,191.755203 219.129257,169.959305 
+-                  C241.121796,157.478500 264.680084,150.991333 290.030151,150.475006 
+-                  C315.837006,149.949326 341.059631,153.180756 364.562195,163.921478 
+-                  C414.269775,186.637894 446.422974,223.374878 453.144073,279.302979 
+-                  C457.590729,316.304840 450.132385,351.425171 436.328735,385.607330 
+-                  C419.991730,426.062866 396.524048,462.291840 370.850555,497.236511 
+-                  C369.873291,498.566681 367.690460,499.663116 366.019653,499.736511 
+-                  C323.729553,501.594879 281.451233,500.941223 239.187103,498.815063 
+-                  C237.432571,498.726807 235.691345,498.374268 233.943924,498.144867 
+-                  C233.830185,497.681885 233.716431,497.218903 233.602692,496.755920 
+-                  C234.791321,496.226044 235.961548,495.294647 237.171921,495.239166 
+-                  C241.329605,495.048706 245.501740,495.202026 249.667603,495.155365 
+-                  C255.626419,495.088623 259.301758,492.301422 260.917053,486.533417 
+-                  C261.813446,483.332489 262.510773,480.075867 263.449127,476.464172 
+-                z"/>
+-                <path class="helmet-top" fill="var(--helmet-ez-top)" opacity="1.000000" stroke="none" 
+-                  d="
+-                M106.911392,185.954071 
+-                  C137.613312,130.441055 181.283936,90.684349 242.020569,71.139481 
+-                  C268.156647,62.728958 295.123260,60.637421 322.391327,61.519951 
+-                  C361.405396,62.782642 398.141998,72.712265 430.791351,94.147797 
+-                  C480.928070,127.064499 518.247070,170.558853 535.371887,229.228973 
+-                  C542.755188,254.524429 543.080750,280.391602 540.030884,306.429321 
+-                  C535.886414,341.812500 525.681213,375.150513 505.151154,404.512085 
+-                  C484.564545,433.954620 463.002991,462.716431 441.740204,491.682251 
+-                  C440.632294,493.191589 438.393311,494.553589 436.557281,494.735382 
+-                  C423.982513,495.980316 411.374695,496.891479 398.206726,497.956360 
+-                  C404.689880,488.250610 411.007812,478.953796 417.162201,469.549957 
+-                  C440.590698,433.751526 459.765594,395.906219 470.399536,354.271362 
+-                  C482.046448,308.670410 480.769623,263.747040 458.687134,221.242233 
+-                  C443.225220,191.480835 420.233917,168.287857 390.812256,151.963013 
+-                  C353.520050,131.271118 313.277588,123.896408 271.331390,129.897766 
+-                  C204.769333,139.421005 159.086700,177.102448 131.624161,237.813568 
+-                  C122.862709,257.182434 116.938622,277.319458 115.508240,298.826416 
+-                  C104.615265,298.826416 94.060318,298.826416 83.059555,298.826416 
+-                  C81.402657,259.048737 88.637917,221.544724 106.911392,185.954071 
+-                z"/>
+-                <path class="helmet-bot" fill="var(--helmet-ez-bot)" opacity="1.000000" stroke="none" 
+-                  d="
+-                M254.704468,421.763458 
+-                  C253.188385,427.453156 251.803040,432.751007 250.376892,438.037811 
+-                  C250.314743,438.268219 249.878098,438.397552 249.107117,438.916260 
+-                  C250.781647,428.957458 252.321869,419.407562 254.097687,409.901703 
+-                  C254.257126,409.048309 255.940842,408.479675 257.902405,408.545593 
+-                  C256.877472,412.820251 255.852539,417.094879 254.704468,421.763458 
+-                z"/>
+-              </g>
++              z"/>
++              <path class="helmet-bot" fill="blue" opacity="1.000000" stroke="none" 
++                d="
++              M263.449127,476.464172 
++                C269.888489,451.431458 276.189056,426.782104 282.458344,402.124786 
++                C284.904480,392.503937 280.370911,386.492554 270.395264,386.185852 
++                C266.097229,386.053711 261.791748,386.163696 257.161652,386.163696 
++                C257.740540,376.515228 258.377136,367.285919 258.815369,358.047211 
++                C259.052032,353.057953 258.891876,348.051147 259.015076,343.054871 
++                C259.163757,337.025208 256.684052,332.718201 250.872223,330.768372 
++                C231.189453,324.164948 211.719940,316.743713 191.701309,311.380341 
++                C175.222351,306.965332 158.079132,305.029633 141.230011,301.996674 
++                C140.113785,301.795715 138.995209,301.607880 137.577438,301.361847 
++                C137.962448,289.281006 140.306122,277.771271 144.011276,266.528870 
++                C157.561249,225.414642 180.722473,191.755203 219.129257,169.959305 
++                C241.121796,157.478500 264.680084,150.991333 290.030151,150.475006 
++                C315.837006,149.949326 341.059631,153.180756 364.562195,163.921478 
++                C414.269775,186.637894 446.422974,223.374878 453.144073,279.302979 
++                C457.590729,316.304840 450.132385,351.425171 436.328735,385.607330 
++                C419.991730,426.062866 396.524048,462.291840 370.850555,497.236511 
++                C369.873291,498.566681 367.690460,499.663116 366.019653,499.736511 
++                C323.729553,501.594879 281.451233,500.941223 239.187103,498.815063 
++                C237.432571,498.726807 235.691345,498.374268 233.943924,498.144867 
++                C233.830185,497.681885 233.716431,497.218903 233.602692,496.755920 
++                C234.791321,496.226044 235.961548,495.294647 237.171921,495.239166 
++                C241.329605,495.048706 245.501740,495.202026 249.667603,495.155365 
++                C255.626419,495.088623 259.301758,492.301422 260.917053,486.533417 
++                C261.813446,483.332489 262.510773,480.075867 263.449127,476.464172 
++              z"/>
++              <path class="helmet-top" fill="gold" opacity="1.000000" stroke="none" 
++                d="
++              M106.911392,185.954071 
++                C137.613312,130.441055 181.283936,90.684349 242.020569,71.139481 
++                C268.156647,62.728958 295.123260,60.637421 322.391327,61.519951 
++                C361.405396,62.782642 398.141998,72.712265 430.791351,94.147797 
++                C480.928070,127.064499 518.247070,170.558853 535.371887,229.228973 
++                C542.755188,254.524429 543.080750,280.391602 540.030884,306.429321 
++                C535.886414,341.812500 525.681213,375.150513 505.151154,404.512085 
++                C484.564545,433.954620 463.002991,462.716431 441.740204,491.682251 
++                C440.632294,493.191589 438.393311,494.553589 436.557281,494.735382 
++                C423.982513,495.980316 411.374695,496.891479 398.206726,497.956360 
++                C404.689880,488.250610 411.007812,478.953796 417.162201,469.549957 
++                C440.590698,433.751526 459.765594,395.906219 470.399536,354.271362 
++                C482.046448,308.670410 480.769623,263.747040 458.687134,221.242233 
++                C443.225220,191.480835 420.233917,168.287857 390.812256,151.963013 
++                C353.520050,131.271118 313.277588,123.896408 271.331390,129.897766 
++                C204.769333,139.421005 159.086700,177.102448 131.624161,237.813568 
++                C122.862709,257.182434 116.938622,277.319458 115.508240,298.826416 
++                C104.615265,298.826416 94.060318,298.826416 83.059555,298.826416 
++                C81.402657,259.048737 88.637917,221.544724 106.911392,185.954071 
++              z"/>
++              <path class="helmet-bot" fill="blue" opacity="1.000000" stroke="none" 
++                d="
++              M254.704468,421.763458 
++                C253.188385,427.453156 251.803040,432.751007 250.376892,438.037811 
++                C250.314743,438.268219 249.878098,438.397552 249.107117,438.916260 
++                C250.781647,428.957458 252.321869,419.407562 254.097687,409.901703 
++                C254.257126,409.048309 255.940842,408.479675 257.902405,408.545593 
++                C256.877472,412.820251 255.852539,417.094879 254.704468,421.763458 
++              z"/>
+             </svg>
+             <img class="helmet-bg2" src="./img/helmet.png" alt="🏈">
+-            <svg class="helmet2 helmet-ez-away" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
++            <svg class="helmet2" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+ 	 width="100%" viewBox="0 0 601 559" enable-background="new 0 0 601 559" xml:space="preserve">
+-              <use xlink:href="#player-helmet"/>
+-            </svg>
+-              <!-- <path fill="black" opacity="0.000000" stroke="none" 
++              <path fill="black" opacity="0.000000" stroke="none" 
+                 d="
+               M351.000000,560.000000 
+                 C234.000000,560.000000 117.500000,560.000000 1.000000,560.000000 
+@@ -404,7 +400,7 @@
+                 C254.257126,409.048309 255.940842,408.479675 257.902405,408.545593 
+                 C256.877472,412.820251 255.852539,417.094879 254.704468,421.763458 
+               z"/>
+-            </svg> -->
++            </svg>
+           </div>
+           <div class="field">
+             <div class="first-down-line fade">
+@@ -2366,11 +2362,9 @@
+           <div class="bot-endzone">
+             <h1 class="home-city">CINCINATTI</h1>
+             <img class="helmet-bg" src="./img/helmet.png" alt="🏈">
+-            <svg class="helmet helmet-ez-home" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
++            <svg class="helmet" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+ 	 width="100%" viewBox="0 0 601 559" enable-background="new 0 0 601 559" xml:space="preserve">
+-              <use xlink:href="#player-helmet"/>
+-            </svg>
+-              <!-- <path fill="black" opacity="0.000000" stroke="none" 
++              <path fill="black" opacity="0.000000" stroke="none" 
+                 d="
+               M351.000000,560.000000 
+                 C234.000000,560.000000 117.500000,560.000000 1.000000,560.000000 
+@@ -2488,13 +2482,11 @@
+                 C254.257126,409.048309 255.940842,408.479675 257.902405,408.545593 
+                 C256.877472,412.820251 255.852539,417.094879 254.704468,421.763458 
+               z"/>
+-            </svg> -->
++            </svg>
+             <img class="helmet-bg2" src="./img/helmet.png" alt="🏈">
+-            <svg class="helmet2 helmet-ez-home" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
++            <svg class="helmet2" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+ 	 width="100%" viewBox="0 0 601 559" enable-background="new 0 0 601 559" xml:space="preserve">
+-              <use xlink:href="#player-helmet"/>
+-            </svg>
+-              <!-- <path fill="black" opacity="0.000000" stroke="none" 
++              <path fill="black" opacity="0.000000" stroke="none" 
+                 d="
+               M351.000000,560.000000 
+                 C234.000000,560.000000 117.500000,560.000000 1.000000,560.000000 
+@@ -2612,7 +2604,7 @@
+                 C254.257126,409.048309 255.940842,408.479675 257.902405,408.545593 
+                 C256.877472,412.820251 255.852539,417.094879 254.704468,421.763458 
+               z"/>
+-            </svg> -->
++            </svg>
+           </div>
+         </div>
+       </section>
+@@ -2789,54 +2781,6 @@
+         </div>
+       </section>
+ 
+-      <section class="hidden">
+-        <svg class="helmet-card-away" height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 279.114" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+-          <defs/>
+-          <g id="player-helmet" vectornator:layerName="Layer 1">
+-              <g opacity="1">
+-                  <path class="mini-helmet-bg" d="M6.83147 87.7777C6.83147 65.9984 24.7401 48.3427 46.8315 48.3427C68.9229 48.3427 86.8315 65.9983 86.8315 87.7777C86.8315 109.557 68.9229 127.213 46.8315 127.213C24.7401 127.213 6.83148 109.557 6.83147 87.7777Z" fill="var(--helmet-ez-bot)" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-line" d="M46.9502 47.21L46.7055 127.163" fill="none" opacity="1" stroke="var(--helmet-ez-top)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-outline" d="M6.83147 87.7777C6.83147 65.9984 24.7401 48.3427 46.8315 48.3427C68.9229 48.3427 86.8315 65.9983 86.8315 87.7777C86.8315 109.557 68.9229 127.213 46.8315 127.213C24.7401 127.213 6.83148 109.557 6.83147 87.7777Z" fill="var(--helmet-ez-bot)" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-              </g>
+-              <g opacity="1">
+-                  <path class="mini-helmet-bg" d="M96.8315 47.7777C96.8315 25.9984 114.74 8.34273 136.831 8.34272C158.923 8.34272 176.831 25.9984 176.831 47.7777C176.831 69.5571 158.923 87.2127 136.831 87.2127C114.74 87.2127 96.8315 69.5571 96.8315 47.7777Z" fill="var(--helmet-ez-bot)" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-line" d="M136.95 7.20998L136.705 87.1628" fill="none" opacity="1" stroke="var(--helmet-ez-top)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-outline" d="M96.8315 47.7777C96.8315 25.9984 114.74 8.34273 136.831 8.34272C158.923 8.34272 176.831 25.9984 176.831 47.7777C176.831 69.5571 158.923 87.2127 136.831 87.2127C114.74 87.2127 96.8315 69.5571 96.8315 47.7777Z" fill="var(--helmet-ez-bot)" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-              </g>
+-              <g opacity="1">
+-                  <path class="mini-helmet-bg" d="M186.831 47.7777C186.831 25.9984 204.74 8.34272 226.831 8.34271C248.923 8.34271 266.831 25.9984 266.831 47.7777C266.831 69.5571 248.923 87.2127 226.831 87.2127C204.74 87.2127 186.831 69.5571 186.831 47.7777Z" fill="var(--helmet-ez-bot)" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-line" d="M226.95 7.20997L226.705 87.1628" fill="none" opacity="1" stroke="var(--helmet-ez-top)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-outline" d="M186.831 47.7777C186.831 25.9984 204.74 8.34272 226.831 8.34271C248.923 8.34271 266.831 25.9984 266.831 47.7777C266.831 69.5571 248.923 87.2127 226.831 87.2127C204.74 87.2127 186.831 69.5571 186.831 47.7777Z" fill="var(--helmet-ez-bot)" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-              </g>
+-              <g opacity="1">
+-                  <path class="mini-helmet-bg" d="M276.831 47.7777C276.831 25.9984 294.74 8.34271 316.831 8.3427C338.923 8.3427 356.831 25.9983 356.831 47.7777C356.831 69.557 338.923 87.2127 316.831 87.2127C294.74 87.2127 276.831 69.5571 276.831 47.7777Z" fill="var(--helmet-ez-bot)" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-line" d="M316.95 7.20996L316.705 87.1628" fill="none" opacity="1" stroke="var(--helmet-ez-top)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-outline" d="M276.831 47.7777C276.831 25.9984 294.74 8.34271 316.831 8.3427C338.923 8.3427 356.831 25.9983 356.831 47.7777C356.831 69.557 338.923 87.2127 316.831 87.2127C294.74 87.2127 276.831 69.5571 276.831 47.7777Z" fill="var(--helmet-ez-bot)" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-              </g>
+-              <g opacity="1">
+-                  <path class="mini-helmet-bg" d="M366.831 47.7777C366.831 25.9984 384.74 8.34274 406.831 8.34273C428.923 8.34272 446.831 25.9984 446.831 47.7777C446.831 69.5571 428.923 87.2127 406.831 87.2127C384.74 87.2127 366.831 69.5571 366.831 47.7777Z" fill="var(--helmet-ez-bot)" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-line" d="M406.95 7.20999L406.705 87.1628" fill="none" opacity="1" stroke="var(--helmet-ez-top)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-outline" d="M366.831 47.7777C366.831 25.9984 384.74 8.34274 406.831 8.34273C428.923 8.34272 446.831 25.9984 446.831 47.7777C446.831 69.5571 428.923 87.2127 406.831 87.2127C384.74 87.2127 366.831 69.5571 366.831 47.7777Z" fill="var(--helmet-ez-bot)" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-              </g>
+-              <g opacity="1">
+-                  <path class="mini-helmet-bg" d="M456.831 47.7777C456.831 25.9984 474.74 8.34273 496.831 8.34272C518.923 8.34272 536.831 25.9984 536.831 47.7777C536.831 69.5571 518.923 87.2127 496.831 87.2127C474.74 87.2127 456.831 69.5571 456.831 47.7777Z" fill="var(--helmet-ez-bot)" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-line" d="M496.95 7.20998L496.705 87.1628" fill="none" opacity="1" stroke="var(--helmet-ez-top)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-outline" d="M456.831 47.7777C456.831 25.9984 474.74 8.34273 496.831 8.34272C518.923 8.34272 536.831 25.9984 536.831 47.7777C536.831 69.5571 518.923 87.2127 496.831 87.2127C474.74 87.2127 456.831 69.5571 456.831 47.7777Z" fill="var(--helmet-ez-bot)" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-              </g>
+-              <g opacity="1">
+-                  <path class="mini-helmet-bg" d="M276.831 137.778C276.831 115.998 294.74 98.3427 316.831 98.3427C338.923 98.3427 356.831 115.998 356.831 137.778C356.831 159.557 338.923 177.213 316.831 177.213C294.74 177.213 276.831 159.557 276.831 137.778Z" fill="var(--helmet-ez-bot)" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-line" d="M316.95 97.21L316.705 177.163" fill="none" opacity="1" stroke="var(--helmet-ez-top)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-outline" d="M276.831 137.778C276.831 115.998 294.74 98.3427 316.831 98.3427C338.923 98.3427 356.831 115.998 356.831 137.778C356.831 159.557 338.923 177.213 316.831 177.213C294.74 177.213 276.831 159.557 276.831 137.778Z" fill="var(--helmet-ez-bot)" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-              </g>
+-              <g opacity="1">
+-                  <path class="mini-helmet-bg" d="M276.831 227.778C276.831 205.998 294.74 188.343 316.831 188.343C338.923 188.343 356.831 205.998 356.831 227.778C356.831 249.557 338.923 267.213 316.831 267.213C294.74 267.213 276.831 249.557 276.831 227.778Z" fill="var(--helmet-ez-bot)" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-line" d="M316.95 187.21L316.705 267.163" fill="none" opacity="1" stroke="var(--helmet-ez-top)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="4"/>
+-                  <path class="mini-helmet-outline" d="M276.831 227.778C276.831 205.998 294.74 188.343 316.831 188.343C338.923 188.343 356.831 205.998 356.831 227.778C356.831 249.557 338.923 267.213 316.831 267.213C294.74 267.213 276.831 249.557 276.831 227.778Z" fill="var(--helmet-ez-bot)" fill-opacity="0" fill-rule="nonzero" opacity="1" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+-              </g>
+-          </g>
+-        </svg>
+-      </section>
+-
+     </div>
+ </body>
+ </html>
+\ No newline at end of file
+diff --git a/public/js/buttonInput.js b/public/js/buttonInput.js
+index acb8ee1..04fd641 100644
+--- a/public/js/buttonInput.js
++++ b/public/js/buttonInput.js
+@@ -96,23 +96,11 @@ export default class ButtonInput extends BaseInput {
+     for (let i = 0; i < this.legalChoices.length; i++) {
+       if (this.legalChoices[i].abrv !== 'TO') {
+         const btn = document.createElement('button')
++        const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
++        btn.appendChild(t)
+         btn.classList.add('card')
+         btn.classList.add((game.away === p ? 'away' : 'home') + '-card')
+         btn.setAttribute('data-playType', this.legalChoices[i].abrv)
+-
+-        btn.innerHTML = `
+-          <div class="top-card-container">
+-            <p class="play-abrv">${this.legalChoices[i].abrv}</p>
+-            <p class="plays-left">${game.players[p].plays[this.legalChoices[i].abrv].count}
+-          </div>
+-          <svg class="helmet-card-away" height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 279.114" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+-            <use xlink:href="#card-helmet"/>
+-          </svg>
+-          <p class="play-name">${this.legalChoices[i].name}</p>
+-        `
+-        // const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
+-        // btn.appendChild(t)
+-
+         buttonArea.appendChild(btn)
+       } else {
+         timeout.innerText = 'Timeouts (' + game.players[p].timeouts + ')'
+diff --git a/public/js/script.js b/public/js/script.js
+index 4724f64..26782b6 100644
+--- a/public/js/script.js
++++ b/public/js/script.js
+@@ -11,12 +11,13 @@ import { TEAMS } from './teams.js'
+ import Utils from './remoteUtils.js'
+ import { animationWaitForCompletion, animationWaitThenHide } from './graphics.js'
+ import { MODAL_MESSAGES } from './defaults.js'
++// import TOKEN from './config.js'
+ const channel = null
+ 
+ // Enable pusher logging - don't include this in production
+ Pusher.logToConsole = true
+-
+-const pusher = new Pusher('41b31f79c4e658e350a5', {
++// console.log(TOKEN)
++const pusher = new Pusher('f18497dc97d155f3f978', {
+   userAuthentication: {
+     endpoint: '/.netlify/functions/main/pusher/user-auth'
+   },

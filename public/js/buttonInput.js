@@ -94,15 +94,49 @@ export default class ButtonInput extends BaseInput {
 
     // Loop through legalChoices and add buttons
     for (let i = 0; i < this.legalChoices.length; i++) {
+      let temp = ''
       if (this.legalChoices[i].abrv !== 'TO') {
         const btn = document.createElement('button')
-        const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
-        btn.appendChild(t)
         btn.classList.add('card')
         btn.classList.add((game.away === p ? 'away' : 'home') + '-card')
         btn.setAttribute('data-playType', this.legalChoices[i].abrv)
+
+        // If the choice has a count, it has a base
+        if (this.legalChoices[i].base) {
+          if (this.legalChoices[i].count) {
+            let count
+            if (this.legalChoices[i].abrv === 'HM') {
+              count = game.players[p].hm
+            } else {
+              count = game.players[p].plays[this.legalChoices[i].abrv].count
+            }
+            btn.classList.add('count') // 3 rows, space for count
+            temp = `<div class="top-card-container">
+              <p class="play-abrv">${this.legalChoices[i].abrv}</p>
+              <p class="plays-left">${count}</p>
+            </div>`
+          } else { // base, but no count
+            btn.classList.add('base') // 2 rows, mostly kicks, coins
+          }
+          temp += `<div class="card-middle">
+            <img class="play-overlay" src="./img/${this.legalChoices[i].abrv}.png" alt="🏈">
+            <svg class="helmet-card-away" height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 621.056" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="#card-helmet"/>
+            </svg>
+          </div>
+          <div class="bot-card-container">
+            <p class="play-name">${this.legalChoices[i].name}</p>
+          </div>`
+
+          console.log(temp)
+          btn.innerHTML = temp
+        } else {
+        // This is the old styling style, works for yeses and noes
+          const t = document.createTextNode(this.legalChoices[i].name) // Formerly .abrv
+          btn.appendChild(t)
+        }
         buttonArea.appendChild(btn)
-      } else {
+      } else { // If a timeout is legal, enable button
         timeout.innerText = 'Timeouts (' + game.players[p].timeouts + ')'
       }
     }

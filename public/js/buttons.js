@@ -1,90 +1,139 @@
 export const BUTTONS = {
   reg: {
     SR: {
-      name: 'Short Run'
+      name: 'Short Run',
+      base: 'play',
+      count: true
     },
     LR: {
-      name: 'Long Run'
+      name: 'Long Run',
+      base: 'play',
+      count: true
     },
     SP: {
-      name: 'Short Pass'
+      name: 'Short Pass',
+      base: 'play',
+      count: true
     },
     LP: {
-      name: 'Long Pass'
+      name: 'Long Pass',
+      base: 'play',
+      count: true
     },
     TP: {
-      name: 'Trick Play'
+      name: 'Trick Play',
+      base: 'play',
+      count: true
     },
     HM: {
-      name: 'Hail Mary'
+      name: 'Hail Mary',
+      base: 'play',
+      count: true
     },
     FG: {
-      name: 'Field Goal'
+      name: 'Field Goal',
+      base: false,
+      count: false
     },
     PT: {
-      name: 'Punt'
+      name: 'Punt',
+      base: false,
+      count: false
+
     }
   },
   kick: {
     RK: {
-      name: 'Regular Kick'
+      name: 'Regular Kick',
+      base: false,
+      count: false
     },
     OK: {
-      name: 'Onside Kick'
+      name: 'Onside Kick',
+      base: false,
+      count: false
     },
     SK: {
-      name: 'Squib Kick'
+      name: 'Squib Kick',
+      base: false,
+      count: false
     }
   },
   ret: {
     RR: {
-      name: 'Regular Return'
+      name: 'Regular Return',
+      base: false,
+      count: false
     },
     OR: {
-      name: 'Onside Return'
+      name: 'Onside Return',
+      base: false,
+      count: false
     },
     TB: {
-      name: 'Touchback'
+      name: 'Touchback',
+      base: false,
+      count: false
     }
   },
   pat: {
     XP: {
-      name: 'Extra Point'
+      name: 'Extra Point',
+      base: false,
+      count: false
     },
     '2P': {
-      name: '2-point Conversion'
+      name: '2-point Conversion',
+      base: false,
+      count: false
     }
   },
   coin: {
     H: {
-      name: 'Heads'
+      name: 'Heads',
+      base: false,
+      count: false
     },
     T: {
-      name: 'Tails'
+      name: 'Tails',
+      base: false,
+      count: false
     }
   },
   kickDecReg: {
     K: {
-      name: 'Kick'
+      name: 'Kick',
+      base: false,
+      count: false
     },
     R: {
-      name: 'Receive'
+      name: 'Receive',
+      base: false,
+      count: false
     }
   },
   kickDecOT: {
     1: {
-      name: 'Ball 1st'
+      name: 'Ball 1st',
+      base: false,
+      count: false
     },
     2: {
-      name: 'Ball 2nd'
+      name: 'Ball 2nd',
+      base: false,
+      count: false
     }
   },
   last: {
     Y: {
-      name: 'Yes!!! Call timeout!'
+      name: 'Yes!!! Call timeout!',
+      base: false,
+      count: false
     },
     N: {
-      name: 'Nah... End this!'
+      name: 'Nah... End this!',
+      base: false,
+      count: false
     }
   }
 }
