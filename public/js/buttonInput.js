@@ -118,9 +118,10 @@ export default class ButtonInput extends BaseInput {
           } else { // base, but no count
             btn.classList.add('base') // 2 rows, mostly kicks, coins
           }
+          const svgClass = game.away === p ? 'away' : 'home'
           temp += `<div class="card-middle">
             <img class="play-overlay" src="./img/${this.legalChoices[i].abrv}.png" alt="🏈">
-            <svg class="helmet-card-away" height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 621.056" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <svg class="helmet-card-${svgClass}" height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 551.574 621.056" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
               <use xlink:href="#card-helmet"/>
             </svg>
           </div>
