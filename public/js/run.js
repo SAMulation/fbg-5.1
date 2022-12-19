@@ -1,5 +1,5 @@
 /* global Pusher, LZString */
-/* global alert, debugger */
+/* global alert, debugger, plausible */
 
 import Player from './player.js'
 import Stat from './stat.js'
@@ -273,6 +273,8 @@ export default class Run {
   };
 
   async gameControl (game) {
+    // Analytic event: GAME-START
+    plausible('GAME-START')
     // The game just started
     if ((game.status === INIT || game.status === INIT_OTC || game.status === OT_START) && !game.over()) {
       await this.coinToss(game)
@@ -574,6 +576,10 @@ export default class Run {
 
         if (!(game.qtr % 2)) {
           await alertBox(this, (game.qtr === 2 ? 'Halftime' : 'Overtime') + ' shuffle...')
+          if (game.qtr !== 2) {
+            // Analytic event: GAME-START
+            plausible('OT-START')
+          }
           // LATER: Stat review statBoard(game);
         }
       }
@@ -2868,6 +2874,9 @@ export default class Run {
   async endGame (game) {
     const winner = (game.players[1].score > game.players[2].score) ? 1 : 2
     const wName = game.players[winner].team.name
+
+    // Analytic event: GAME-START
+    plausible('GAME-END')
 
     // printQtr('FINAL');
     // display game over
