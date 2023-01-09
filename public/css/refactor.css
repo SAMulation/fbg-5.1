@@ -1582,13 +1582,12 @@ img.play-overlay {
 }
 
 .bug-fix {
-  margin-top: 16px;
   margin: 0;
   position: fixed;
   z-index: 1000000;
   transform-origin: top left;
   transform: rotate(90deg) translate(0, -100%);
-  top: 39vh;
+  top: 35vh;
   font-family: 'Cabin', sans-serif;
   background: #eedcf8;
   border: none;
@@ -1596,5 +1595,4 @@ img.play-overlay {
   font-size: 0.5em;
   height: min-content;
   color: #323e42;
-}
 }
