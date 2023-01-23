@@ -3,6 +3,6 @@
   functions = "functions" #  netlify-lambda reads this
 
 [[redirects]]
-  from = "blog.footbored.com"
+  from = "/blog"
   to = "https://footbored.thencandesigns.com"
-  status = 301
+  status = 200!
