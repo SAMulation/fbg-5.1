@@ -6,3 +6,4 @@
   from = "/blog"
   to = "https://footbored.thencandesigns.com"
   status = 200
+  force = true
